@@ -725,7 +725,8 @@
     "generalInfo": "General information",
     "capacity": "Capacity",
     "assignedDriver": "Assigned driver",
-    "dailyKm": "Km today"
+    "dailyKm": "Km today",
+    "avgConsumptionLoaded": "Average consumption (loaded truck)"
   },
 
   "vehicleForm": {
@@ -1025,6 +1026,9 @@
     "plannedArrivalOptional": "Planned arrival (optional)",
     "cargoOptional": "Cargo (optional)",
     "cargoPlaceholder": "Miscellaneous goods",
+    "cargoWeightOptional": "Cargo weight (kg, optional)",
+    "cargoWeightPlaceholder": "E.g.: 2500",
+    "cargoWeightHint": "Refines the fuel estimate once several loaded fill-ups are recorded — never required.",
     "missionFeeOptional": "Mission fee (FCFA, optional)",
     "missionFeePlaceholder": "Driver's trip allowance",
     "missionFeeHint": "Food, lodging… — known from planning, distinct from expenses settled at closeout.",

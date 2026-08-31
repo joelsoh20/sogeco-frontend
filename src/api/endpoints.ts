@@ -89,6 +89,7 @@ export const missionApi = {
     originCityId?: number; destinationCityId?: number;
     originAgencyId?: number; destinationAgencyId?: number;
     originQuartierId?: number; destinationQuartierId?: number; vehicleId?: number;
+    cargoWeightKg?: number;
   }) => api.get<MissionEstimate>(`${V1}/missions/estimate`, { params }).then((r) => r.data),
 
   create: (payload: CreateMissionRequest) =>

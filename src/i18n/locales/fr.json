@@ -722,7 +722,8 @@
     "generalInfo": "Informations générales",
     "capacity": "Capacité",
     "assignedDriver": "Chauffeur affecté",
-    "dailyKm": "Km du jour"
+    "dailyKm": "Km du jour",
+    "avgConsumptionLoaded": "Consommation moyenne (camion chargé)"
   },
 
   "vehicleForm": {
@@ -1022,6 +1023,9 @@
     "plannedArrivalOptional": "Arrivée prévue (optionnel)",
     "cargoOptional": "Marchandise (optionnel)",
     "cargoPlaceholder": "Marchandises diverses",
+    "cargoWeightOptional": "Tonnage (kg, optionnel)",
+    "cargoWeightPlaceholder": "Ex. : 2500",
+    "cargoWeightHint": "Affine l'estimation de carburant une fois plusieurs pleins chargés enregistrés — jamais obligatoire.",
     "missionFeeOptional": "Frais de mission (FCFA, optionnel)",
     "missionFeePlaceholder": "Indemnité de voyage du chauffeur",
     "missionFeeHint": "Nourriture, hébergement… — connu dès la planification, distinct des frais réglés à la clôture.",

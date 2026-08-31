@@ -76,6 +76,9 @@ export function VehicleDetailPanel({ vehicleId }: { vehicleId: number }) {
         <DetailRow label={t('reportsPage.colCity')} value={vehicle.cityName ?? '—'} />
         <DetailRow label={t('vehicleDetail.assignedDriver')} value={vehicle.driverName ?? t('common.none')} />
         <DetailRow label={t('vehicleDetail.dailyKm')} value={formatKm(vehicle.dailyKm)} />
+        {vehicle.avgFuelConsumptionLoaded != null && (
+          <DetailRow label={t('vehicleDetail.avgConsumptionLoaded')} value={formatConsumption(vehicle.avgFuelConsumptionLoaded)} />
+        )}
       </div>
 
       <EditVehicleDrawer open={editOpen} onClose={() => setEditOpen(false)} vehicle={vehicle} />

@@ -40,6 +40,7 @@ interface FormValues {
   plannedStart: string;
   plannedArrival: string;
   cargoDescription: string;
+  cargoWeightKg: string;
   missionFeeCost: string;
 }
 
@@ -99,6 +100,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
   const agencyId = watch('agencyId');
   const destinationAgencyId = watch('destinationAgencyId');
   const vehicleId = watch('vehicleId');
+  const cargoWeightKg = watch('cargoWeightKg');
 
   const localCities = (cities.data ?? []).filter((c) => ACTIVE_CITY_NAMES.includes(c.name));
 
@@ -270,7 +272,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
 
   const estimate = useQuery({
     queryKey: ['missions', 'estimate', originCityId, destinationCityId, agencyId, destinationAgencyId,
-      originQuartierId, destinationQuartierId, vehicleId],
+      originQuartierId, destinationQuartierId, vehicleId, cargoWeightKg],
     queryFn: () => missionApi.estimate({
       originCityId: originCityId ? Number(originCityId) : undefined,
       destinationCityId: destinationCityId ? Number(destinationCityId) : undefined,
@@ -279,6 +281,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       originQuartierId: originQuartierId ? Number(originQuartierId) : undefined,
       destinationQuartierId: destinationQuartierId ? Number(destinationQuartierId) : undefined,
       vehicleId: vehicleId ? Number(vehicleId) : undefined,
+      cargoWeightKg: cargoWeightKg ? Number(cargoWeightKg) : undefined,
     }),
     enabled: hasEnoughForEstimate,
   });
@@ -322,6 +325,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       plannedStart: toLocalInput(mission.plannedStart),
       plannedArrival: toLocalInput(mission.plannedArrival),
       cargoDescription: mission.cargoDescription ?? '',
+      cargoWeightKg: mission.cargoWeightKg?.toString() ?? '',
       missionFeeCost: mission.missionFeeCost?.toString() ?? '',
     });
     setMapTarget('origin');
@@ -360,6 +364,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       plannedStart: toInstant(values.plannedStart),
       plannedArrival: toInstant(values.plannedArrival),
       cargoDescription: values.cargoDescription || undefined,
+      cargoWeightKg: values.cargoWeightKg ? Number(values.cargoWeightKg) : undefined,
       missionFeeCost: values.missionFeeCost ? Number(values.missionFeeCost) : undefined,
     });
   };
@@ -761,9 +766,23 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
           </div>
         </div>
 
-        <div>
-          <label className="label">{t('missionForm.cargoOptional')}</label>
-          <input className="input" placeholder={t('missionForm.cargoPlaceholder')} {...register('cargoDescription')} />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label className="label">{t('missionForm.cargoOptional')}</label>
+            <input className="input" placeholder={t('missionForm.cargoPlaceholder')} {...register('cargoDescription')} />
+          </div>
+          <div>
+            <label className="label">{t('missionForm.cargoWeightOptional')}</label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              className="input"
+              placeholder={t('missionForm.cargoWeightPlaceholder')}
+              {...register('cargoWeightKg')}
+            />
+            <p className="mt-1 text-xs text-slate-400">{t('missionForm.cargoWeightHint')}</p>
+          </div>
         </div>
 
         {isVoyageHorsVille && (

@@ -95,6 +95,7 @@ export interface Vehicle {
   currentKilometers: number;
   dailyKm: number;
   avgFuelConsumption: number | null;
+  avgFuelConsumptionLoaded: number | null;
   fuelLevelPercent: number | null;
   active: boolean;
   usageType: UsageType;
@@ -125,6 +126,7 @@ export interface VehicleDetail {
   fuelLevelPercent: number | null;
   fuelLevelLiters: number | null;
   avgFuelConsumption: number | null;
+  avgFuelConsumptionLoaded: number | null;
   nextMaintenanceDate: string | null;
   nextMaintenanceKm: number | null;
   driverId: number | null;
