@@ -1,0 +1,1348 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "menu": "Menu",
+    "refresh": "Refresh",
+    "search": "Search",
+    "confirm": "Confirm",
+    "back": "Back",
+    "results": "results",
+    "noData": "No data",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "optional",
+    "required": "required",
+    "requiredField": "Required",
+    "selectPlaceholder": "Select…",
+    "none": "None",
+    "addLine": "Add a line",
+    "total": "Total"
+  },
+
+  "nav": {
+    "home": "Home",
+    "driverPortal": "My space",
+    "dashboard": "Dashboard",
+    "map": "GPS Map",
+    "vehicles": "Trucks",
+    "missions": "Missions",
+    "fuel": "Fuel",
+    "maintenance": "Maintenance",
+    "compliance": "Insurance & Inspection",
+    "drivers": "Drivers",
+    "reports": "Reports & Statistics",
+    "alerts": "Alerts",
+    "settings": "Settings",
+    "tagline": "Smart fleet management",
+    "footer": "SOGECO Sarl · Douala"
+  },
+
+  "topbar": {
+    "logout": "Log out",
+    "changePassword": "Change my password",
+    "alerts": "Alerts"
+  },
+
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Switch theme"
+  },
+
+  "language": {
+    "french": "Français",
+    "english": "English",
+    "toggle": "Switch language"
+  },
+
+  "vehicle": {
+    "bodyType": {
+      "UTILITAIRE": "Van / Pickup",
+      "TRACTEUR": "Tractor unit",
+      "PORTEUR": "Rigid truck",
+      "BENNE": "Dump truck",
+      "CITERNE": "Tanker",
+      "FOURGON": "Box truck",
+      "PLATEAU": "Flatbed",
+      "MOTO": "Motorcycle",
+      "TRICYCLE": "Tricycle",
+      "VOITURE_LIVRAISON": "Delivery car",
+      "SEMI_REMORQUE": "Semi-trailer"
+    },
+    "usageType": {
+      "VOYAGE": "Trip (long distance)",
+      "TOUR_VILLE": "City round"
+    }
+  },
+
+  "roles": {
+    "ROLE_ADMIN": "Administrator",
+    "ROLE_DIRECTION": "Senior Management",
+    "ROLE_GESTIONNAIRE": "Fleet Manager",
+    "ROLE_SUPERVISEUR": "Supervisor",
+    "ROLE_COMPTABLE": "Accountant",
+    "ROLE_AGENT_FLOTTE": "Fleet Agent",
+    "ROLE_CHAUFFEUR": "Driver"
+  },
+
+  "status": {
+    "vehicle": {
+      "DISPONIBLE": "Available",
+      "EN_MISSION": "On mission",
+      "EN_MAINTENANCE": "In maintenance",
+      "EN_PANNE": "Broken down",
+      "HORS_SERVICE": "Out of service"
+    },
+    "mission": {
+      "EN_ATTENTE": "Pending",
+      "EN_COURS": "In progress",
+      "TERMINEE": "Completed",
+      "ANNULEE": "Cancelled"
+    },
+    "alertLevel": {
+      "CRITIQUE": "Critical",
+      "IMPORTANT": "Important",
+      "MINEUR": "Minor",
+      "INFORMATION": "Information"
+    },
+    "maintenanceCategory": {
+      "ENTRETIEN_PREVENTIF": "Preventive maintenance",
+      "REPARATION_MECANIQUE": "Mechanical repair",
+      "PNEUMATIQUE": "Tires",
+      "ELECTRICITE": "Electrical",
+      "LAVERIE": "Wash",
+      "AUTRES": "Other"
+    },
+    "maintenanceStatus": {
+      "PLANIFIEE": "Planned",
+      "EN_COURS": "In progress",
+      "TERMINEE": "Completed",
+      "ANNULEE": "Cancelled"
+    },
+    "documentStatus": {
+      "VALIDE": "Valid",
+      "A_RENOUVELER": "To renew",
+      "EXPIRE": "Expired",
+      "SANS_ECHEANCE": "No deadline"
+    },
+    "coverageType": {
+      "TOUS_RISQUES": "Comprehensive",
+      "TIERS": "Third party",
+      "TIERS_VOL_INCENDIE": "Third party, fire and theft"
+    },
+    "claimType": {
+      "COLLISION": "Collision",
+      "VOL": "Theft",
+      "INCENDIE": "Fire",
+      "DEGATS_MATERIELS": "Property damage",
+      "DOMMAGES_CORPORELS": "Bodily injury",
+      "AUTRE": "Other"
+    },
+    "fuelLogStatus": {
+      "VALIDE": "Validated",
+      "ANOMALIE": "Anomaly",
+      "ANNULE": "Cancelled"
+    },
+    "cancellationReason": {
+      "PANNE": "Breakdown",
+      "ANNULATION_CLIENT": "Client cancellation",
+      "INDISPONIBILITE_CHAUFFEUR": "Driver unavailable",
+      "METEO": "Weather",
+      "AUTRE": "Other"
+    },
+    "costCategory": {
+      "CARBURANT": "Fuel",
+      "MAINTENANCE": "Maintenance",
+      "LAVERIE": "Wash",
+      "ASSURANCE": "Insurance",
+      "VISITE_TECHNIQUE": "Technical inspection",
+      "PEAGES": "Tolls",
+      "FRAIS_MISSION": "Mission fees",
+      "AUTRES": "Other"
+    },
+    "estimateSource": {
+      "CORRIDOR_REFERENCE": "Reference corridor — distance measured on real routes",
+      "ROUTING_API": "Real road distance (OpenRouteService, heavy-goods profile)",
+      "QUARTIER_COORDINATES": "Estimate to the delivery neighborhood (straight line, +20%)",
+      "SITE_COORDINATES": "Estimate from site coordinates (straight line, +20%)",
+      "CITY_COORDINATES": "Estimate from city coordinates (straight line, +20%)"
+    },
+    "siteType": {
+      "SIEGE": "Headquarters",
+      "AGENCE": "Agency",
+      "DEPOT": "Depot"
+    }
+  },
+
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Access your SOGECO Fleet Manager workspace.",
+    "modeEmail": "Email address",
+    "modeName": "First and last name",
+    "emailLabel": "Work email",
+    "emailPlaceholder": "first.last@sogeco.cm",
+    "emailRequired": "Email is required",
+    "firstNameLabel": "First name",
+    "firstNameRequired": "First name is required",
+    "lastNameLabel": "Last name",
+    "lastNameRequired": "Last name is required",
+    "passwordLabel": "Password",
+    "passwordRequired": "Password is required",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "totpLabel": "Verification code",
+    "totpHint": "6-digit code from your authenticator app.",
+    "totpRequiredMessage": "Enter the code from your authenticator app.",
+    "submit": "Sign in",
+    "forgotPassword": "Forgot your password? Contact your administrator.",
+    "heroTitle": "Fleet Manager",
+    "heroSubtitle": "Track your fleet in real time, control your costs, decide on real numbers.",
+    "statVehicles": "Trucks",
+    "statSites": "Sites",
+    "statCities": "Cities",
+    "footer": "© 2026 SOGECO Sarl · All rights reserved"
+  },
+
+  "dashboard": {
+    "greeting": "Welcome, {{name}}",
+    "subtitle": "Here's how your fleet is doing — {{date}}",
+    "loadingIndicators": "Loading indicators…",
+
+    "fleetStatus": "Fleet status",
+    "activeVehicles": "Active trucks",
+    "availability": "{{rate}} available",
+    "inMission": "On mission",
+    "available": "{{count}} available",
+    "inMaintenance": "In maintenance",
+    "includingBreakdown": "including {{count}} broken down",
+    "offline": "Offline",
+    "noRecentPosition": "No recent position",
+
+    "monthlyActivity": "This month's activity",
+    "monthlyMissions": "Missions this month",
+    "missionsSummary": "{{completed}} completed, {{inProgress}} in progress",
+    "kilometersDriven": "Kilometers driven",
+    "fuelCost": "Fuel cost",
+    "litersConsumed": "{{count}} L consumed",
+    "revenue": "Revenue",
+    "missionsWithoutRevenue": "{{count}} mission(s) with no amount entered",
+    "averageConsumption": "Average consumption",
+
+    "revenueWarningTitle": "{{count}} completed mission(s) with no amount billed",
+    "revenueWarningBody": "Financial reports will stay incomplete until these amounts are entered.",
+
+    "liveTracking": "Live tracking",
+    "moving": "Moving",
+    "idle": "Idle",
+
+    "recentAlerts": "Recent alerts",
+    "viewAllAlerts": "View all alerts",
+    "noAlertsTitle": "No active alerts",
+    "noAlertsAction": "Anomalies detected across the fleet will appear here."
+  },
+
+  "alertsPage": {
+    "title": "Alerts & Control Center",
+    "subtitle": "Real-time monitoring of your fleet — alerts and notifications",
+    "levelAll": "All",
+    "levelCritical": "Critical",
+    "levelImportant": "Important",
+    "levelMinor": "Minor",
+    "statCritical": "Critical alerts",
+    "statImportant": "Important alerts",
+    "statResolutionRate": "Resolution rate",
+    "statAvgDelay": "Average delay",
+    "emptyTitle": "No alerts for this filter",
+    "emptyAction": "The fleet is operating normally.",
+    "colTime": "Time",
+    "colType": "Type",
+    "colVehicle": "Vehicle",
+    "colLocation": "Location",
+    "colLevel": "Level",
+    "colStatus": "Status",
+    "statusUnresolved": "Unresolved",
+    "statusInProgress": "In progress",
+    "statusResolved": "Resolved",
+    "statusIgnored": "Ignored"
+  },
+
+  "compliancePage": {
+    "title": "Insurance & Technical Inspection",
+    "subtitle": "Tracking of regulatory documents and deadlines",
+    "tabSchedule": "Schedule",
+    "tabPolicies": "Insurance",
+    "tabInspections": "Technical inspections",
+    "tabClaims": "Claims",
+    "tabCartesBleues": "Blue cards",
+    "tabCartesGrises": "Registration cards",
+    "tabLicenses": "Transport licenses",
+
+    "claimTypeCollision": "Collision",
+    "claimTypeTheft": "Theft",
+    "claimTypeFire": "Fire",
+    "claimTypeMaterialDamage": "Material damage",
+    "claimTypeBodilyDamage": "Bodily damage",
+    "claimTypeOther": "Other",
+
+    "claimStatusDeclared": "Declared",
+    "claimStatusUnderReview": "Under review",
+    "claimStatusAccepted": "Accepted",
+    "claimStatusRefused": "Refused",
+    "claimStatusClosed": "Closed",
+
+    "statActivePolicies": "Active policies",
+    "statActivePoliciesHint": "{{count}} due within 30 days",
+    "statNonConformInspections": "Non-conforming inspections",
+    "statOpenClaims": "Open claims",
+    "statOpenClaimsHint": "{{count}} in total",
+    "statClaimsCost": "Claims cost",
+    "statClaimsCostHint": "including {{amount}} reimbursed",
+
+    "newPolicy": "New policy",
+    "newInspection": "New inspection",
+    "declareClaim": "Declare a claim",
+    "newCarteBleue": "New blue card",
+    "newCarteGrise": "New registration card",
+    "newLicense": "New transport license",
+
+    "emptyPoliciesTitle": "No policy recorded",
+    "emptyPoliciesAction": "Create a policy to start tracking insurance.",
+    "emptyInspectionsTitle": "No inspection recorded",
+    "emptyInspectionsAction": "Record the result of a technical inspection.",
+    "emptyClaimsTitle": "No claim declared",
+    "emptyClaimsAction": "That's good news — keep it up.",
+    "emptyCartesBleuesTitle": "No blue card recorded",
+    "emptyCartesBleuesAction": "Add a vehicle's blue card to start tracking.",
+    "emptyCartesGrisesTitle": "No registration card recorded",
+    "emptyCartesGrisesAction": "Add a vehicle's registration card to start tracking.",
+    "emptyLicensesTitle": "No transport license recorded",
+    "emptyLicensesAction": "Add the license covering the whole fleet.",
+
+    "colPolicyNumber": "Policy No.",
+    "colInsurer": "Insurer",
+    "colVehicle": "Vehicle",
+    "colDueDate": "Due date",
+    "colPremium": "Premium",
+    "colStatus": "Status",
+    "colDate": "Date",
+    "colCenter": "Center",
+    "colNextDueDate": "Next due date",
+    "colResult": "Result",
+    "colCost": "Cost",
+    "colClaimNumber": "Claim No.",
+    "colType": "Type",
+    "colNetCost": "Net cost",
+    "colReceiptNumber": "Receipt No.",
+    "colCategory": "Category",
+    "colPower": "Power",
+    "colExpiry": "Expiry",
+    "colRegistrationNumber": "Registration No.",
+    "colChassisNumber": "Chassis No.",
+    "colBrand": "Brand",
+    "colAmount": "Amount",
+    "colReference": "Reference",
+    "colAuthority": "Authority",
+
+    "wholeFleet": "Fleet ({{count}})",
+    "powerCv": "{{power}} hp",
+    "statusActive": "Active",
+    "statusExpired": "Expired",
+    "statusTerminated": "Terminated",
+    "resultConform": "Conforming",
+    "resultNonConform": "Non-conforming",
+    "resultWithReservations": "With reservations"
+  },
+
+  "driverPortalPage": {
+    "title": "My space",
+    "subtitle": "Your missions and documents — only you have access",
+    "tabMissions": "My missions",
+    "noProfileTitle": "No driver record linked to this account",
+    "noProfileAction": "This page is reserved for driver accounts linked to an HR record.",
+    "assignedVehicle": "Currently assigned vehicle:",
+    "noVehicleAssigned": "No vehicle is currently assigned to you — you cannot enter a new record.",
+    "emptyMissionsTitle": "No mission",
+    "emptyMissionsAction": "No mission has been assigned to you yet.",
+    "emptyInspectionsTitle": "No inspection recorded",
+    "emptyInspectionsAction": "Record the result of your last technical inspection.",
+    "emptyCartesGrisesTitle": "No registration card recorded",
+    "emptyCartesGrisesAction": "Add your vehicle's registration card.",
+    "colMissionNumber": "Mission No.",
+    "colClient": "Client",
+    "colOrigin": "Origin",
+    "colDestination": "Destination"
+  },
+
+  "driversPage": {
+    "title": "Drivers & Performance",
+    "subtitle": "Tracking, evaluation and performance of your drivers",
+    "statTotal": "Total drivers",
+    "statActive": "Active drivers",
+    "statAvgPerformance": "Average performance",
+    "statKm": "Km driven",
+    "statAvgConsumption": "Avg. consumption",
+    "statIncidents": "Incidents",
+    "licensesExpiringSoon": "{{count}} driving license(s) due soon.",
+    "ratingDistribution": "Distribution by rating",
+    "fuelEconomyTop5": "Top 5 fuel economy",
+    "driverAlerts": "Driver alerts",
+    "totalCount": "{{count}} driver(s) in total",
+    "newDriver": "New driver",
+    "emptyTitle": "No driver recorded",
+    "emptyAction": "Add your drivers to track their activity and performance.",
+    "colMatricule": "Badge number",
+    "colDriver": "Driver",
+    "colMissions": "Missions",
+    "colKm": "Km driven",
+    "colIncidents": "Incidents",
+    "colPerformance": "Performance",
+    "statusActive": "Active",
+    "statusOnLeave": "On leave",
+    "statusSuspended": "Suspended",
+    "statusLeft": "Left"
+  },
+
+  "fuelPage": {
+    "title": "Fuel",
+    "subtitle": "Track consumption, costs and performance of your vehicles",
+    "allCities": "All cities",
+    "statTotalCost": "Total fuel cost",
+    "statLitersConsumed": "Liters consumed",
+    "statAvgConsumption": "Average consumption",
+    "statAvgCostPerKm": "Average cost / km",
+    "statAnomalies": "Anomalies detected",
+    "trendTitle": "Consumption (last 6 months, Liters)",
+    "costBreakdownTitle": "Cost breakdown by vehicle",
+    "emptyMonthTitle": "No fuel log recorded this month",
+    "emptyMonthAction": "Costs will appear here as soon as the first refuel is entered.",
+    "fuelAlerts": "Fuel alerts",
+    "searchPlaceholder": "Search a vehicle, driver, station…",
+    "allVehicles": "All vehicles",
+    "allStatuses": "All statuses",
+    "statusValid": "Valid",
+    "statusAnomaly": "Anomaly",
+    "statusCancelled": "Cancelled",
+    "newFuelLog": "New refuel",
+    "emptyLogsTitle": "No fuel log found",
+    "emptyLogsActionFiltered": "No results for these filters.",
+    "emptyLogsAction": "Refuels will appear here as soon as the first one is entered.",
+    "colDateTime": "Date / Time",
+    "colStation": "Station",
+    "colLiters": "Liters",
+    "colOdometerBefore": "Km before",
+    "colOdometerAfter": "Km after",
+    "colConsumption": "Cons. (L/100km)",
+    "colShare": "Share",
+    "detailByVehicle": "Detail by vehicle",
+    "vehicleDetailsTitle": "Vehicle details"
+  },
+
+  "homePage": {
+    "greeting": "Welcome, {{name}} 👋",
+    "subtitle": "Here's an overview of your fleet today — {{date}}",
+    "statConnectedVehicles": "Connected vehicles",
+    "statConnectedHint": "{{percent}}% connected",
+    "statInProgressMissions": "Missions in progress",
+    "statInProgressHint": "Out of {{total}} missions this month",
+    "statKmToday": "Kilometers today",
+    "statFuelToday": "Fuel today",
+    "statCostThisMonth": "Total cost this month",
+    "inProgressMissions": "Missions in progress",
+    "viewAllMissions": "View all missions",
+    "emptyMissions": "No active mission at the moment",
+    "criticalAlerts": "Critical alerts",
+    "emptyCriticalAlerts": "No critical alert in progress",
+    "fleetPerformance": "Fleet performance (last 6 months)",
+    "costBreakdownMonth": "Cost breakdown (current month)",
+    "topDrivers": "Top drivers (Performance)",
+    "emptyRanking": "Not enough data for a ranking",
+    "missionsCount": "{{count}} missions"
+  },
+
+  "maintenancePage": {
+    "title": "Maintenance & Breakdowns",
+    "subtitle": "Track the condition, servicing and repairs of your vehicles",
+    "statsByCity": "Statistics by city",
+    "statTotalCost": "Total cost",
+    "statInterventions": "Interventions",
+    "statInMaintenance": "In maintenance",
+    "statBreakdowns": "Breakdowns",
+    "statUpcoming": "Upcoming (7 days)",
+    "statPlanned": "Planned servicing",
+    "costsTrendTitle": "Maintenance costs (FCFA)",
+    "costsByCategoryTitle": "Cost breakdown by category",
+    "preventiveRatio": "Preventive / corrective ratio",
+    "preventiveRatioHint": "A well-managed fleet tends toward 70% preventive",
+    "avgCostPerIntervention": "Average cost per intervention:",
+    "emptyPeriod": "No data for this period",
+    "searchPlaceholder": "Search a vehicle, garage, description…",
+    "allTypes": "All types",
+    "breakdownsOnly": "Breakdowns only",
+    "newIntervention": "New intervention",
+    "emptyTitle": "No intervention found",
+    "emptyAction": "Servicing and repairs will appear here as soon as the first one is entered.",
+    "colDescription": "Description",
+    "colGarage": "Garage",
+    "workshopReturn": "Workshop return",
+    "colNextIntervention": "Next intervention",
+    "inDays": "(in {{count}} d)",
+    "garageComparison": "Garage comparison",
+    "garageComparisonHint": "A high return rate costs more than a per-intervention rate",
+    "colTotalCost": "Total cost",
+    "colAvgCost": "Average cost",
+    "colReturnRate": "Return rate",
+    "intervention": "Intervention"
+  },
+
+  "missionsPage": {
+    "title": "Missions & Deliveries",
+    "subtitle": "Track mission and delivery execution in real time",
+    "statTotal": "Total missions",
+    "searchPlaceholder": "Search a mission, client, driver…",
+    "allDrivers": "All drivers",
+    "allDestinations": "All destinations",
+    "newDeliveryPoint": "New delivery point",
+    "newSite": "New site",
+    "newClient": "New client",
+    "automateMission": "Automate a mission",
+    "newMission": "New mission",
+    "emptyTitle": "No mission found",
+    "emptyAction": "Create a mission to start tracking deliveries.",
+    "colRoute": "Route",
+    "colProgress": "Progress"
+  },
+
+  "reportsPage": {
+    "title": "Reports & Statistics",
+    "subtitle": "Fleet expenses by vehicle and by city",
+    "clients": "Clients",
+    "statFleetTotal": "Total fleet expenses",
+    "statCostliestVehicle": "Costliest vehicle",
+    "statCostliestCity": "Costliest city",
+    "statActiveVehicles": "Active vehicles",
+    "expensesByVehicle": "Expenses by vehicle",
+    "emptyVehicleExpenses": "No expense recorded for this year",
+    "colCity": "City",
+    "colTotal": "Total",
+    "expensesByCity": "Expenses by city",
+    "emptyCityExpenses": "No vehicle assigned to a city",
+    "colVehicles": "Vehicles",
+    "top5Drivers": "Top 5 Drivers (Performance)"
+  },
+
+  "settingsPage": {
+    "title": "Settings & Administration",
+    "subtitle": "Manage users, roles, sites and system thresholds",
+    "tabUsers": "Users",
+    "tabRoles": "Roles and permissions",
+    "tabSites": "Sites and cities",
+    "tabInsurers": "Insurance companies",
+    "tabAlertRules": "Alert rules",
+    "statUsers": "Users",
+    "statRoles": "Defined roles",
+    "statActiveAgencies": "Active agencies",
+    "statVehicles": "Vehicles",
+    "statActiveRules": "Active rules",
+    "recentUsers": "Recent users",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "statusInactive": "Inactive",
+    "statusDeleted": "Deleted",
+    "statusLocked": "Locked",
+    "viewAllUsers": "View all users",
+    "agencies": "Agencies",
+    "manageAgencies": "Manage agencies",
+    "roleManagement": "Role management",
+    "viewAllRoles": "View all roles",
+    "colRole": "Role",
+    "colUsers": "Users",
+    "newUser": "New user",
+    "newInsurer": "New insurance company",
+    "colFullName": "Full name",
+    "colAddress": "Address",
+    "colManagedCity": "Managed city",
+    "allCities": "All",
+    "colLastLogin": "Last login",
+    "confirmResetPassword": "Reset {{name}}'s password?",
+    "reset": "Reset",
+    "confirmDeleteAccount": "Delete {{name}}'s account? This action is irreversible.",
+    "colPermissions": "Permissions",
+    "colType": "Type",
+    "typeSystem": "System",
+    "typeCustom": "Custom",
+    "sites": "Sites",
+    "colCode": "Code",
+    "colName": "Name",
+    "cities": "Cities",
+    "citiesHint": "Cities with an agency, depot or headquarters",
+    "colRegion": "Region",
+    "emptyInsurersTitle": "No insurance company recorded",
+    "emptyInsurersAction": "Add one to be able to select it when creating a policy.",
+    "colContact": "Contact",
+    "colPhone": "Phone",
+    "colEmail": "Email address",
+    "colAlert": "Alert",
+    "colThreshold": "Threshold",
+    "colLevel": "Level",
+    "colCooldown": "Cooldown",
+    "colEvaluation": "Evaluation",
+    "realTime": "Real time",
+    "scheduled": "Scheduled",
+    "colState": "State",
+    "ruleActive": "Active",
+    "ruleInactive": "Inactive",
+    "accountDeleted": "Account deleted.",
+    "passwordResetTitle": "Password reset",
+    "newPasswordGenerated": "New password generated for",
+    "temporaryPassword": "Temporary password",
+    "temporaryPasswordHint": "Shown only once. Pass it on to {{name}} through a secure channel — it can never be retrieved from this screen again.",
+    "copied": "Copied",
+    "copy": "Copy",
+    "passwordRemainsValid": "This password remains valid: {{name}} doesn't have to change it on first login.",
+    "copyToContinue": "Copy the password to continue",
+    "done": "Done"
+  },
+
+  "trackingPage": {
+    "subtitle": "Track the position and status of all your trucks in real time",
+    "searchPlaceholder": "Search a truck, driver…",
+    "noResults": "No truck or driver matches “{{query}}”."
+  },
+
+  "vehiclesPage": {
+    "title": "Vehicle Management",
+    "subtitle": "View and manage all the information for your vehicles",
+    "statTotal": "Total vehicles",
+    "totalCount": "{{count}} vehicle(s) in total",
+    "addVehicle": "Add a vehicle",
+    "emptyTitle": "No vehicle recorded",
+    "emptyAction": "Add your first vehicle to start tracking the fleet.",
+    "colRegistration": "Registration",
+    "colBrandModel": "Brand / Model",
+    "colConsumption": "Consumption",
+    "colFuel": "Fuel"
+  },
+
+  "maintenanceForm": {
+    "createTitle": "New intervention",
+    "createSubtitle": "Planned servicing or breakdown",
+    "editTitle": "Edit intervention",
+    "interventionDate": "Intervention date",
+    "descriptionPlaceholder": "Oil change + filters",
+    "isBreakdown": "Breakdown (rather than planned servicing)",
+    "errorCode": "Error code (optional)",
+    "errorCodePlaceholder": "Reported by the onboard unit",
+    "garage": "Garage (optional)",
+    "odometer": "Odometer (optional)",
+    "nextInterventionDate": "Next intervention — date (optional)",
+    "nextInterventionKm": "Next intervention — km (optional)",
+    "items": "Parts / services (optional)",
+    "washing": "Wash",
+    "itemPart": "Part",
+    "itemLabor": "Labor",
+    "itemLabel": "Description",
+    "itemQty": "Qty",
+    "itemUnitPrice": "Unit price (FCFA)",
+    "createSubmit": "Create intervention",
+    "editSubmit": "Save changes",
+    "createSuccess": "Intervention created on {{registration}}.",
+    "editSuccess": "Intervention on {{registration}} updated."
+  },
+
+  "changePasswordForm": {
+    "title": "Change my password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "minLength": "At least 5 characters",
+    "mismatch": "Passwords do not match",
+    "hint": "This password remains valid with no forced change — only you know it now.",
+    "submit": "Change password",
+    "success": "Password changed."
+  },
+
+  "fuelForm": {
+    "createTitle": "New refuel",
+    "createSubtitle": "Enter a refuel",
+    "editTitle": "Edit refuel",
+    "driverOptional": "Driver (optional)",
+    "stationOptional": "Station (optional)",
+    "noneFeminine": "None",
+    "assignedDriver": "Driver assigned to this vehicle: {{name}}",
+    "dateTime": "Date and time",
+    "quantity": "Quantity (liters)",
+    "unitPrice": "Price per liter (FCFA)",
+    "suspiciousQuantity": "{{liters}} L seems high for a {{bodyType}}",
+    "suspiciousQuantityTankHint": "(tank of {{liters}} L on the vehicle's record)",
+    "suspiciousQuantityDefaultHint": "(usual capacity for this type of vehicle)",
+    "suspiciousQuantityCheck": "Check the entry before validating.",
+    "odometerReading": "Odometer reading",
+    "lastKnownOdometer": "Last known odometer reading for this vehicle: {{km}} km",
+    "fullTank": "Full tank",
+    "fullTankHint": "Used to track the tank level. Consumption is computed for every refuel, full or partial.",
+    "receiptNumber": "Receipt No. (optional)",
+    "createSubmit": "Save refuel",
+    "createSuccess": "Refuel recorded on {{registration}}.",
+    "editSuccess": "Refuel on {{registration}} updated."
+  },
+
+  "weeklyRefuel": {
+    "title": "Weekly refuel",
+    "subtitle": "Km driven since Monday and quantity to add to fill up.",
+    "emptyTitle": "No active vehicle",
+    "colVehicle": "Vehicle",
+    "colWeekKm": "Km (week)",
+    "colToAdd": "To add",
+    "source": {
+      "TELEMATIQUE": "Measured (device)",
+      "ESTIMATION_DISTANCE": "Estimated (distance)",
+      "INDISPONIBLE": "Unavailable"
+    }
+  },
+
+  "vehiclesByCity": {
+    "title": "Vehicles by city",
+    "emptyTitle": "No active vehicle",
+    "noCity": "No city"
+  },
+
+  "vehicleDetail": {
+    "deactivated": "Deactivated",
+    "mileage": "Mileage",
+    "generalInfo": "General information",
+    "capacity": "Capacity",
+    "assignedDriver": "Assigned driver",
+    "dailyKm": "Km today"
+  },
+
+  "vehicleForm": {
+    "createTitle": "New vehicle",
+    "createSubtitle": "Add a vehicle to the fleet",
+    "editTitle": "Edit vehicle",
+    "registration": "Registration",
+    "registrationLocked": "Cannot be changed after creation.",
+    "brand": "Brand",
+    "model": "Model",
+    "bodyType": "Body type",
+    "loadCapacity": "Load capacity",
+    "tons": "Tons",
+    "kg": "Kg",
+    "tankCapacity": "Tank (liters)",
+    "vin": "Chassis number (optional)",
+    "vinPlaceholder": "Found on the registration card",
+    "cityOptional": "City (optional)",
+    "notProvided": "Not provided",
+    "deviceId": "GPS device ID (optional)",
+    "deviceIdPlaceholder": "IMEI or reference",
+    "currentKm": "Current mileage (optional)",
+    "usage": "Usage",
+    "weeklyWashCost": "Weekly wash cost",
+    "weeklyWashRequired": "Required for a city-round vehicle",
+    "weeklyWashHint": "Automatically deducted as a maintenance expense every Saturday.",
+    "createSubmit": "Create vehicle",
+    "createSuccess": "Vehicle {{registration}} created.",
+    "editSuccess": "Vehicle {{registration}} updated."
+  },
+
+  "clientList": {
+    "title": "Client list",
+    "subtitle": "Contact details for all company clients",
+    "count": "{{count}} client(s)",
+    "print": "Print",
+    "empty": "No client recorded",
+    "printHeaderTitle": "Client list — SOGECO Fleet Manager",
+    "generatedOn": "Generated on {{date}}",
+    "colClient": "Client",
+    "colContact": "Contact",
+    "colPhone": "Phone",
+    "colEmail": "Email",
+    "colCity": "City"
+  },
+
+  "clientForm": {
+    "createTitle": "New client",
+    "createSubtitle": "Create a customer",
+    "companyName": "Company name",
+    "contactOptional": "Contact (optional)",
+    "addressOptional": "Address (optional)",
+    "allCities": "All cities",
+    "allCitiesHint": "Uncheck if this client is only served from a single city.",
+    "cityRequired": "Required if the client is not on all cities",
+    "createSubmit": "Create client",
+    "createSuccess": "Client {{name}} created."
+  },
+
+  "carteGriseForm": {
+    "title": "New registration card",
+    "subtitle": "Registration document specific to a vehicle",
+    "vehicleSubtitle": "Vehicle {{registration}}",
+    "registrationNumber": "Registration No.",
+    "chassisNumber": "Chassis No.",
+    "genre": "Genre (optional)",
+    "bodyTypeOptional": "Body type (optional)",
+    "seatCount": "Seat count (optional)",
+    "firstCirculationDate": "First circulation date (optional)",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiry date (optional)",
+    "expiryDateHint": "Automatically computed (+10 years) if left blank",
+    "amount": "Amount (FCFA)",
+    "notes": "Notes (optional)",
+    "immutableHint": "Once saved, this registration card can no longer be edited.",
+    "success": "Registration card recorded."
+  },
+
+  "carteBleueForm": {
+    "title": "New circulation card",
+    "subtitle": "Circulation document specific to a vehicle",
+    "receiptNumber": "Receipt number",
+    "categoryOptional": "Category (optional)",
+    "categoryUnspecified": "Not specified",
+    "powerOptional": "Power (HP, optional)",
+    "expiryDate": "Expiry date",
+    "cost": "Cost (FCFA)",
+    "success": "Circulation card recorded."
+  },
+
+  "claimForm": {
+    "createTitle": "Report a claim",
+    "editTitle": "Edit claim",
+    "incidentDate": "Incident date",
+    "type": "Type",
+    "description": "Description",
+    "locationOptional": "Location (optional)",
+    "policeReportOptional": "Police report No. (optional)",
+    "estimatedCost": "Estimated cost (FCFA)",
+    "policyAttachHint": "Linking to an insurance policy happens after the report, once the file is opened.",
+    "createSubmit": "Report claim",
+    "editSubmit": "Save changes",
+    "createSuccess": "Claim reported.",
+    "editSuccess": "Claim updated.",
+    "driverImmutableHint": "Once reported, this claim can no longer be edited by you."
+  },
+
+  "inspectionForm": {
+    "title": "New technical inspection",
+    "centerOptional": "Inspection center (optional)",
+    "centerUnspecified": "Not specified",
+    "controlDate": "Inspection date",
+    "nextDeadline": "Next deadline",
+    "nextDeadlineHint": "Automatically computed if left blank",
+    "result": "Result",
+    "resultConforme": "Passed",
+    "resultConformeReserves": "Passed with reservations",
+    "resultNonConforme": "Failed",
+    "blockedWarning": "This vehicle will be blocked from assignment until a new passing inspection is recorded.",
+    "defectsNoted": "Defects noted",
+    "cost": "Cost (FCFA)",
+    "immutableHint": "Once saved, this inspection can no longer be edited.",
+    "success": "Technical inspection recorded."
+  },
+
+  "licenceForm": {
+    "title": "New transport license",
+    "subtitle": "Covers the entire fleet",
+    "reference": "Reference",
+    "receiptNumberOptional": "Receipt No. (optional)",
+    "powerOptional": "Power (optional)",
+    "success": "Transport license recorded."
+  },
+
+  "driverForm": {
+    "createTitle": "New driver",
+    "createSubtitle": "Create the HR and performance record",
+    "matricule": "Employee ID",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phoneOptional": "Phone (optional)",
+    "hireDate": "Hire date",
+    "jobTitleOptional": "Job title (optional)",
+    "jobTitlePlaceholder": "Heavy truck driver",
+    "licenseNumberOptional": "License No. (optional)",
+    "licenseCategoryOptional": "Category (optional)",
+    "licenseExpiryOptional": "License expiry (optional)",
+    "cityOptional": "City (optional)",
+    "cityUnspecified": "Not specified",
+    "linkExistingAccountOptional": "Existing app account to link (optional)",
+    "grantAccess": "Create access to the driver portal",
+    "grantAccessHint": "An account with the Driver role is created automatically, with a temporary password you'll be given to pass on. The password then stays whatever the administrator set.",
+    "accountEmailOptional": "Work email (optional)",
+    "accountEmailHint": "Without an email, the driver logs in with their first and last name.",
+    "editTitle": "Edit driver",
+    "birthDateOptional": "Date of birth (optional)",
+    "monthlySalaryOptional": "Monthly salary (optional)",
+    "linkedAccountOptional": "Linked app account (optional)",
+    "createSubmit": "Create driver",
+    "createSuccess": "Driver {{name}} created.",
+    "editSuccess": "Driver {{name}} updated.",
+    "createdTitle": "Driver created",
+    "createdWithAccount": "was created successfully, with a login account.",
+    "temporaryPasswordHint": "Shown only once. Pass it on to the driver through a secure channel — it can never be retrieved from this screen again.",
+    "passwordRemainsValid": "This password remains valid: the driver doesn't have to change it on first login."
+  },
+
+  "fuelConsumptionTrend": {
+    "consumed": "Consumed"
+  },
+
+  "tankLevels": {
+    "title": "Tank levels",
+    "emptyTitle": "No active vehicle",
+    "source": {
+      "TELEMATIQUE": "Measured (device)",
+      "ESTIMATION_DISTANCE": "Estimated (distance)",
+      "INDISPONIBLE": "Unavailable"
+    },
+    "notEnoughData": "Not enough data (no fill-up recorded or unknown average consumption).",
+    "distanceSinceFirstFill": "{{distance}} travelled since the first recorded fill-up"
+  },
+
+  "statCard": {
+    "decimalSeparator": ".",
+    "vsPreviousPeriod": "{{value}}% vs previous period"
+  },
+
+  "vehiclePanel": {
+    "approximatePosition": "Approximate position",
+    "speed": "Speed",
+    "noMission": "No mission",
+    "kmToday": "Km today",
+    "fuel": "Fuel",
+    "lastPosition": "Last position",
+    "viewOnGoogleMaps": "View on Google Maps"
+  },
+
+  "insurerForm": {
+    "title": "New insurance company",
+    "subtitle": "Add an insurer to the referential",
+    "name": "Name",
+    "emailOptional": "Email address (optional)",
+    "createSubmit": "Create company",
+    "createSuccess": "Insurance company {{name}} created."
+  },
+
+  "positionForm": {
+    "title": "New delivery point",
+    "subtitle": "City and neighborhood, in one place",
+    "mapHint": "Click an already known city on the map to select it directly, or a precise place (hotel, shop, etc.) to prefill a new neighborhood at that exact spot.",
+    "newCityOption": "➕ New city…",
+    "name": "Name",
+    "regionOptional": "Region (optional)",
+    "cityCoordinatesOptional": "City coordinates (optional)",
+    "pastedFromGoogleMaps": "Pair pasted from Google Maps.",
+    "alreadyRegisteredQuartier": "Already registered neighborhood or market",
+    "noQuartierForCity": "No neighborhood recorded for this city",
+    "pickQuartierHint": "Picking it here prefills it below — useful to confirm it's already usable as a delivery point, without recreating it.",
+    "addNewQuartierOptional": "Add a new neighborhood (optional)",
+    "quartierCoordinatesPlaceholder": "Neighborhood coordinates — optional, 4.0289, 9.7000",
+    "autoGeolocatedHint": "Left blank, the coordinates are geolocated automatically.",
+    "newQuartierLabel": "New neighborhood",
+    "quartierAlreadyRegistered": "\"{{name}}\" is already recorded for this city.",
+    "cityNotInReferential": "\"{{name}}\" is not yet in the referential — prefilled, to confirm.",
+    "cityQuartierPrefilled": "{{city}} · {{quartier}} prefilled.",
+    "alreadyRegistered": "{{city}} · {{quartier}} already recorded — usable as a delivery point.",
+    "quartierAdded": "{{quartier}} added to {{city}}.",
+    "cityCreated": "City {{city}} created."
+  },
+
+  "agencyForm": {
+    "title": "New site",
+    "subtitle": "Add a headquarters, agency, or depot",
+    "mapHint": "Click a city (then a neighborhood) on the map to select it directly.",
+    "siteType": "Site type",
+    "quartier": "Neighborhood",
+    "quartierRequired": "Required — pinpoints the site's location for distance calculations",
+    "newQuartierOption": "➕ New neighborhood…",
+    "quartierName": "Neighborhood name",
+    "coordinatesOptional": "Coordinates (optional)",
+    "siteCoordinatesOptional": "Site coordinates (optional)",
+    "createSubmit": "Create site",
+    "createSuccess": "Site {{name}} created.",
+    "cityNotInReferential": "\"{{name}}\" is not yet in the referential — add it via \"New delivery point\".",
+    "cityPrefilledAsNewQuartier": "{{city}} selected — \"{{quartier}}\" prefilled as a new neighborhood."
+  },
+
+  "monthlyCostBar": {
+    "empty": "No data for the period"
+  },
+
+  "vehicleMarginBar": {
+    "netMargin": "Net profit"
+  },
+
+  "periodPicker": {
+    "to": "to"
+  },
+
+  "missionForm": {
+    "createTitle": "New mission",
+    "editTitle": "Edit mission",
+    "tripForDriver": "Trip for {{name}}",
+    "planSubtitle": "Plan a mission or delivery",
+    "nonBillable": "(not billable)",
+    "clientBillableHint": "(recommended for a billable service)",
+    "mapHintInterCity": "Click a city, then a neighborhood on the map — even a place not listed yet: it is added and selected automatically.",
+    "mapHintLocal": "Click a site or a neighborhood on the map — even a place not listed yet: it is added and selected automatically.",
+    "destination": "Destination",
+    "originCity": "Origin city",
+    "destinationCity": "Destination city",
+    "requiredForTrip": "Required for an out-of-town trip",
+    "requiredForLocal": "Required for an in-town activity",
+    "noVehicleHint": "No truck based in this city.",
+    "currentValue": "Current: {{value}}",
+    "originAgency": "Origin agency",
+    "destinationAgency": "Destination agency",
+    "originQuartierOptional": "Departure neighborhood or market (optional)",
+    "destinationQuartierDeliveryOptional": "Delivery neighborhood or market (optional)",
+    "destinationQuartierArrivalOptional": "Arrival neighborhood or market (optional)",
+    "chooseOriginCityFirst": "Choose an origin city first",
+    "chooseDestinationCityFirst": "Choose a destination city first",
+    "noQuartierClickToAdd": "No neighborhood recorded — click the exact spot on the map to add it.",
+    "noQuartierForCityClickToAdd": "No neighborhood recorded for this city — click the exact spot on the map to add it.",
+    "estimating": "Estimating…",
+    "distanceNotEstimable": "Distance cannot be estimated: missing coordinates for these cities/sites.",
+    "estimatedDistance": "Estimated distance",
+    "estimatedFuel": "Estimated fuel",
+    "insufficientFuelWarning": "Currently estimated fuel is insufficient for the round trip: about {{available}} L available for {{needed}} L needed. Plan a refuel along the way.",
+    "departureAddressOptional": "Departure address (optional)",
+    "addressPrecisionOptional": "Address detail (optional)",
+    "destinationAddressOptional": "Destination address (optional)",
+    "addressPlaceholder": "Number, landmark…",
+    "plannedStartOptional": "Planned departure (optional)",
+    "plannedStartHint": "To plan ahead. The authoritative time remains the one set by the \"Start\" button.",
+    "plannedArrivalOptional": "Planned arrival (optional)",
+    "cargoOptional": "Cargo (optional)",
+    "cargoPlaceholder": "Miscellaneous goods",
+    "missionFeeOptional": "Mission fee (FCFA, optional)",
+    "missionFeePlaceholder": "Driver's trip allowance",
+    "missionFeeHint": "Food, lodging… — known from planning, distinct from expenses settled at closeout.",
+    "noKnownPlace": "No known place at this location.",
+    "citySelected": "{{name}} selected.",
+    "cityQuartierSelected": "{{city}} · {{quartier}} selected.",
+    "cityQuartierAdded": "{{city}} · {{quartier}} added and selected.",
+    "createSubmit": "Create mission",
+    "createSuccess": "Mission {{number}} created.",
+    "editSuccess": "Mission {{number}} updated."
+  },
+
+  "missionDetail": {
+    "started": "Mission started.",
+    "completed": "Mission completed.",
+    "cancelled": "Mission cancelled.",
+    "detourAdded": "Additional load reported, distance corrected.",
+    "cancelledReason": "Cancelled — {{reason}}",
+    "client": "Client",
+    "service": "Service",
+    "arrivalSite": "Arrival site",
+    "distance": "Distance",
+    "cargo": "Cargo",
+    "plannedDeparture": "Planned departure",
+    "plannedArrival": "Planned arrival",
+    "deliveryProgress": "Delivery progress",
+    "costs": "Costs",
+    "missionFee": "Mission fee",
+    "totalCost": "Total cost",
+    "associatedDocuments": "Associated documents",
+    "loadElsewhere": "Load elsewhere",
+    "detourHint": "The driver must pass through another site before their destination. The mission's planned distance is corrected accordingly.",
+    "siteToVisit": "Site to visit",
+    "noteOptional": "Note (optional)",
+    "detourNotesPlaceholder": "E.g.: add 2 pallets to the load",
+    "confirmDetour": "Confirm detour",
+    "back": "Back",
+    "cancellationReason": "Cancellation reason",
+    "commentOptional": "Comment (optional)",
+    "confirmCancellation": "Confirm cancellation"
+  },
+
+  "missionAutomationForm": {
+    "title": "Automate a mission",
+    "subtitle": "Daily delivery, Monday to Saturday — just cancel the day it isn't needed",
+    "nameOptional": "Name (optional)",
+    "namePlaceholder": "Central Market delivery",
+    "city": "City concerned",
+    "serviceType": "Service type",
+    "departureSite": "Departure site",
+    "deliveryPoint": "Delivery point",
+    "chooseCityFirst": "Choose a city first",
+    "noQuartierHint": "No neighborhood recorded for this city — create it first by clicking its location on the map, from \"New mission\".",
+    "dailyHint": "Daily delivery: a mission is generated every working day, Monday to Saturday (never Sunday).",
+    "noVehicleHint": "No truck based in this city.",
+    "submit": "Automate this delivery",
+    "createSuccess": "Automated delivery created — the first mission will be generated tomorrow at 9:30 AM."
+  },
+
+  "missionRouteMap": {
+    "noKnownPosition": "No known position to display yet."
+  },
+
+  "missionAutomationList": {
+    "title": "Automated deliveries",
+    "subtitle": "A mission generated every day at 9:30 AM",
+    "automateButton": "Automate a mission",
+    "empty": "No automated delivery yet",
+    "stop": "Stop",
+    "stopped": "Automation stopped.",
+    "stoppedSection": "Stopped"
+  },
+
+  "deliveryTimeline": {
+    "departure": "Departure",
+    "inProgress": "In progress",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled mission — no delivery tracking."
+  },
+
+  "maintenanceCityStats": {
+    "title": "Statistics by city",
+    "subtitle": "Current month — maintenance costs and interventions",
+    "empty": "No intervention this month",
+    "interventionCount": "{{count}} intervention(s)",
+    "breakdownCount": "{{count}} breakdown(s)"
+  },
+
+  "maintenanceCostTrend": {
+    "cost": "Cost"
+  },
+
+  "maintenanceDetail": {
+    "statusUpdated": "Status updated.",
+    "garage": "Garage",
+    "errorCode": "Error code",
+    "workshopReturn": "Repeat visit",
+    "workshopReturnValue": "Yes — same vehicle, same type recently",
+    "nextIntervention": "Next intervention",
+    "inDays": "(in {{count}} d)",
+    "partsAndServices": "Parts and services",
+    "parts": "Parts",
+    "labor": "Labor",
+    "start": "Start",
+    "finish": "Finish"
+  },
+
+  "dashboardSearch": {
+    "placeholder": "Search for a vehicle or driver…",
+    "searching": "Searching…",
+    "noResults": "No results for \"{{query}}\".",
+    "vehicles": "Vehicles",
+    "drivers": "Drivers"
+  },
+
+  "directionMessage": {
+    "quote": "\"Operational excellence is the result of discipline, technology, and teamwork.\"",
+    "attribution": "— SOGECO Management"
+  },
+
+  "fleetMiniMap": {
+    "title": "Real-time location",
+    "viewFullMap": "View full map",
+    "noDevice": "No GPS device configured yet."
+  },
+
+  "vehicleFuelDetail": {
+    "notFound": "Vehicle not found",
+    "fuelLevel": "Fuel level",
+    "periodCost": "Fuel cost (period)",
+    "periodLiters": "Liters consumed (period)",
+    "averageConsumption": "Average consumption",
+    "fleetCostShare": "Share of fleet cost",
+    "consumptionChartTitle": "Consumption (last 12 months, L/100km)",
+    "notEnoughFillUps": "Not enough full fill-ups in the last 12 months"
+  },
+
+  "vehicleFuelDonut": {
+    "empty": "No cost for the period",
+    "others": "Others"
+  },
+
+  "fuelAlertsOverview": {
+    "emptyTitle": "No fuel alert",
+    "emptyAction": "No deviation reported recently on the fleet.",
+    "unidentifiedVehicle": "Unidentified vehicle"
+  },
+
+  "fuelEconomyTop5": {
+    "empty": "Not enough fill-ups to build a ranking",
+    "consumption": "Consumption"
+  },
+
+  "performanceTrend": {
+    "notEnoughHistory": "Not enough history to plot a trend.",
+    "score": "Score"
+  },
+
+  "ratingDonut": {
+    "class": {
+      "EXCELLENT": "Excellent (90-100)",
+      "BON": "Good (70-89)",
+      "MOYEN": "Average (50-69)",
+      "FAIBLE": "Poor (< 50)"
+    },
+    "empty": "No rated data",
+    "driverCount": "{{count}} driver(s)"
+  },
+
+  "driverHistory": {
+    "actionType": {
+      "PRIME": "Bonus",
+      "AVERTISSEMENT": "Warning",
+      "FORMATION": "Training",
+      "ENTRETIEN": "Maintenance",
+      "FELICITATION": "Commendation"
+    },
+    "bonusStatus": {
+      "PROPOSEE": "proposed",
+      "VALIDEE": "approved",
+      "VERSEE": "paid",
+      "REFUSEE": "declined"
+    },
+    "bonusLabel": "Bonus {{status}}",
+    "emptyTitle": "No history",
+    "emptyAction": "No action or bonus recorded for this driver."
+  },
+
+  "driverDetail": {
+    "vehicleReleased": "Vehicle released.",
+    "performanceIndicators": "Performance indicators",
+    "criterion": {
+      "CONDUITE_SECURISEE": "Safe driving",
+      "CONSOMMATION_ECONOMIQUE": "Fuel economy",
+      "RESPECT_DELAIS": "On-time delivery",
+      "ENTRETIEN_VEHICULE": "Vehicle upkeep",
+      "RESPECT_REGLES": "Training"
+    },
+    "assignedVehicle": "Assigned vehicle",
+    "release": "Release",
+    "assignForTrip": "Assign a vehicle for a specific trip",
+    "city": "City",
+    "phone": "Phone",
+    "completedMissions": "Completed missions",
+    "kmTravelled": "Km travelled",
+    "incidents": "Incidents",
+    "license": "License",
+    "expiredSince": "Expired {{count}} d ago",
+    "expiresIn": "Expires in {{count}} d",
+    "validFor": "Valid {{count}} d",
+    "currentBonus": "Current bonus",
+    "noScore": "No score calculated: this driver hasn't reached the minimum number of missions required for a reliable evaluation.",
+    "performanceTrend": "Performance trend",
+    "actions": "Actions",
+    "recentAlerts": "Recent alerts",
+    "viewFullHistory": "View full history"
+  },
+
+  "driverAlertsFeed": {
+    "emptyTitle": "No alert for this driver",
+    "emptyAction": "No deviation reported recently.",
+    "resolved": "Resolved"
+  },
+
+  "driverAlertsOverview": {
+    "emptyTitle": "No driver alert",
+    "emptyAction": "No deviation reported recently on the fleet.",
+    "unidentifiedDriver": "Unidentified driver",
+    "driversConcerned": "{{count}} drivers concerned"
+  },
+
+  "driverActions": {
+    "bonusProposed": "Bonus proposed for {{name}}: {{amount}} FCFA.",
+    "warningRecorded": "Warning recorded.",
+    "trainingScheduled": "Training scheduled.",
+    "grantBonus": "Grant bonus",
+    "warning": "Warning",
+    "training": "Training",
+    "motifWarning": "Reason for the warning",
+    "motifTraining": "Reason for the training",
+    "warningPlaceholder": "E.g.: repeated delays on deliveries",
+    "trainingPlaceholder": "E.g.: eco-driving refresher"
+  },
+
+  "bestDrivers": {
+    "title": "Best drivers (last 6 months)",
+    "usage": {
+      "TOUR_VILLE": "City round",
+      "VOYAGE": "Trip"
+    },
+    "noDeliveries": "No delivery in this group for the period.",
+    "emptyTitle": "No driver in this group",
+    "emptyAction": "Change the city or usage type.",
+    "topDeliveries": "Top deliveries",
+    "topReliability": "Top reliability (fewest breakdowns)",
+    "breakdownCount": "{{count}} breakdown(s)"
+  },
+
+  "assignVehicleForm": {
+    "title": "Assign a vehicle",
+    "noneAvailable": "No vehicle currently available.",
+    "startDateOptional": "Start date (optional)",
+    "startDateHint": "Defaults to today.",
+    "submit": "Assign vehicle",
+    "success": "{{driverName}} assigned to vehicle {{registration}}."
+  },
+
+  "unifiedSchedule": {
+    "title": "Unified schedule",
+    "subtitle": "Sorted by urgency, all sources combined",
+    "emptyTitle": "No deadline in the next 90 days",
+    "emptyAction": "Insurance, technical inspections and licenses are all up to date.",
+    "overdueBy": "Overdue by {{count}} d",
+    "dueIn": "In {{count}} d"
+  },
+
+  "policyForm": {
+    "title": "New insurance policy",
+    "subtitle": "Genre = vehicle registration, copied from the certificate",
+    "policyNumber": "Policy number",
+    "noInsurers": "No insurer recorded. Add one from Settings → Insurance companies.",
+    "coverageType": "Coverage type",
+    "category": "Category",
+    "startDate": "Start",
+    "endDate": "End",
+    "createSubmit": "Create policy",
+    "success": "Insurance policy created."
+  },
+
+  "userForm": {
+    "createdTitle": "User created",
+    "createdSuccess": "was created successfully.",
+    "passwordRemainsValid": "This password remains valid: the user doesn't have to change it on first login.",
+    "passwordApplied": "The entered password has been applied. The user logs in directly with it, with no forced change.",
+    "createTitle": "New user",
+    "createSubtitle": "Create an application account",
+    "editTitle": "Edit user",
+    "emailOptional": "Professional address (optional)",
+    "email": "Professional address",
+    "emailHint": "Leave blank to log in with first and last name.",
+    "emailHintEdit": "Leave blank for login by first and last name (no real address).",
+    "phoneOptional": "Phone (optional)",
+    "managedCityOptional": "Managed city (optional)",
+    "allAdmin": "All (administrator)",
+    "managedCityHint": "Restricts the vehicles, drivers and missions visible to this account to this city.",
+    "createSubmit": "Create user",
+    "updateSuccess": "User updated."
+  },
+
+  "alertDetail": {
+    "unresolvedSince": "Unresolved for {{age}}",
+    "inProgressSince": "In progress for {{age}}",
+    "triggeredOn": "Triggered on",
+    "occurrences": "Occurrences",
+    "occurrencesCount": "{{count}} times",
+    "viewSource": "View source"
+  },
+
+  "alertActions": {
+    "acknowledged": "Alert acknowledged.",
+    "resolved": "Alert resolved.",
+    "contactDriver": "Contact driver",
+    "acknowledge": "Acknowledge",
+    "notePlaceholder": "Describe how this alert was handled…",
+    "confirmResolution": "Confirm resolution",
+    "resolveAlert": "Resolve alert"
+  }
+}
