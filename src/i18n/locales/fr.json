@@ -40,7 +40,7 @@
     "alerts": "Alertes",
     "settings": "Paramètres",
     "tagline": "Gestion intelligente de votre flotte",
-    "footer": "SOGECO Sarl · Douala"
+    "footer": "SOGECO Sarl · Bafoussam"
   },
 
   "topbar": {
@@ -539,6 +539,8 @@
     "tabUsers": "Utilisateurs",
     "tabRoles": "Rôles et permissions",
     "tabSites": "Sites et villes",
+    "tabDrivers": "Chauffeurs",
+    "tabVehicles": "Camions",
     "tabInsurers": "Sociétés d’assurance",
     "tabAlertRules": "Règles d’alerte",
     "statUsers": "Utilisateurs",
@@ -595,6 +597,11 @@
     "ruleActive": "Active",
     "ruleInactive": "Inactive",
     "accountDeleted": "Compte supprimé.",
+    "confirmDeleteDriver": "Supprimer le chauffeur {{name}} ? Cette action est irréversible.",
+    "driverRemoved": "Chauffeur supprimé.",
+    "confirmRemoveVehicle": "Retirer le camion {{registration}} de la flotte ? Cette action est irréversible.",
+    "vehicleRemoved": "Camion retiré de la flotte.",
+    "removeFromFleet": "Retirer",
     "passwordResetTitle": "Mot de passe réinitialisé",
     "newPasswordGenerated": "Nouveau mot de passe généré pour",
     "temporaryPassword": "Mot de passe temporaire",

@@ -50,6 +50,8 @@ export const vehicleApi = {
   update: (id: number, payload: CreateVehicleRequest) =>
     api.put<VehicleDetail>(`${V1}/vehicles/${id}`, payload).then((r) => r.data),
 
+  delete: (id: number) => api.delete(`${V1}/vehicles/${id}`),
+
   assignmentHistory: (vehicleId: number) =>
     api.get<Assignment[]>(`${V1}/vehicles/${vehicleId}/assignments`).then((r) => r.data),
 
@@ -205,6 +207,8 @@ export const driverApi = {
 
   update: (id: number, payload: CreateDriverRequest) =>
     api.put<DriverDetail>(`${V1}/drivers/${id}`, payload).then((r) => r.data),
+
+  delete: (id: number) => api.delete(`${V1}/drivers/${id}`),
 
   performanceHistory: (id: number) =>
     api.get<PerformancePoint[]>(`${V1}/drivers/${id}/performance-history`).then((r) => r.data),

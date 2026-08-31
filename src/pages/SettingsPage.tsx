@@ -15,19 +15,21 @@ import { StatGrid } from '@/components/ui/StatGrid';
 import { DataTable } from '@/components/ui/DataTable';
 import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { adminApi, partnerApi, vehicleApi } from '@/api/endpoints';
+import { adminApi, driverApi, partnerApi, vehicleApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatDateTime } from '@/lib/utils';
 import type { AlertRule, User } from '@/types/api';
 
-type Tab = 'utilisateurs' | 'roles' | 'sites' | 'assurances' | 'alertes';
+type Tab = 'utilisateurs' | 'roles' | 'sites' | 'assurances' | 'alertes' | 'chauffeurs' | 'camions';
 
 const TABS: { id: Tab; labelKey: string }[] = [
   { id: 'utilisateurs', labelKey: 'settingsPage.tabUsers' },
   { id: 'roles', labelKey: 'settingsPage.tabRoles' },
   { id: 'sites', labelKey: 'settingsPage.tabSites' },
+  { id: 'chauffeurs', labelKey: 'settingsPage.tabDrivers' },
+  { id: 'camions', labelKey: 'settingsPage.tabVehicles' },
   { id: 'assurances', labelKey: 'settingsPage.tabInsurers' },
   { id: 'alertes', labelKey: 'settingsPage.tabAlertRules' },
 ];
@@ -50,6 +52,16 @@ export function SettingsPage() {
   const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities });
   const rules = useQuery({ queryKey: ['admin', 'alertRules'], queryFn: adminApi.alertRules });
   const vehicleStats = useQuery({ queryKey: ['vehicles', 'stats'], queryFn: vehicleApi.stats });
+  const drivers = useQuery({
+    queryKey: ['drivers', 'list', page],
+    queryFn: () => driverApi.list(page, 20),
+    enabled: tab === 'chauffeurs',
+  });
+  const vehicles = useQuery({
+    queryKey: ['vehicles', 'list', page],
+    queryFn: () => vehicleApi.list(page, 20),
+    enabled: tab === 'camions',
+  });
 
   // Villes ayant reellement une implantation (agence, depot ou siege) — le referentiel
   // complet en compte des centaines, sans rapport avec l'administration du systeme.
@@ -84,6 +96,24 @@ export function SettingsPage() {
     onSuccess: () => {
       toast.success(t('settingsPage.accountDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+
+  const deleteDriver = useMutation({
+    mutationFn: (id: number) => driverApi.delete(id),
+    onSuccess: () => {
+      toast.success(t('settingsPage.driverRemoved'));
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+
+  const deleteVehicle = useMutation({
+    mutationFn: (id: number) => vehicleApi.delete(id),
+    onSuccess: () => {
+      toast.success(t('settingsPage.vehicleRemoved'));
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
@@ -410,6 +440,89 @@ export function SettingsPage() {
               </table>
             </div>
           </div>
+        )}
+
+        {tab === 'chauffeurs' && (
+          drivers.isLoading ? <LoadingPanel /> : (
+            <DataTable
+              data={drivers.data?.content ?? []}
+              keyOf={(d) => d.id}
+              page={drivers.data?.page}
+              totalPages={drivers.data?.totalPages}
+              totalElements={drivers.data?.totalElements}
+              onPageChange={setPage}
+              columns={[
+                { header: t('driversPage.colDriver'), accessor: (d) => <span className="font-medium">{d.fullName}</span> },
+                { header: t('driversPage.colMatricule'), accessor: (d) => d.matricule },
+                { header: t('reportsPage.colCity'), accessor: (d) => d.cityName ?? t('settingsPage.allCities') },
+                { header: t('vehiclesPage.colRegistration'), accessor: (d) => d.registrationNumber ?? '—' },
+                { header: t('compliancePage.colStatus'), accessor: (d) => (
+                  <span className={d.active ? 'text-emerald-600' : 'text-slate-500'}>{d.status}</span>
+                ) },
+                {
+                  header: '',
+                  accessor: (d) => d.active && (
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => {
+                          if (window.confirm(t('settingsPage.confirmDeleteDriver', { name: d.fullName }))) {
+                            deleteDriver.mutate(d.id);
+                          }
+                        }}
+                        disabled={deleteDriver.isPending}
+                        className="btn-ghost py-1 text-xs text-red-600 dark:text-red-400"
+                      >
+                        <Trash2 size={13} />
+                        {t('common.delete')}
+                      </button>
+                    </div>
+                  ),
+                  align: 'right',
+                },
+              ]}
+            />
+          )
+        )}
+
+        {tab === 'camions' && (
+          vehicles.isLoading ? <LoadingPanel /> : (
+            <DataTable
+              data={vehicles.data?.content ?? []}
+              keyOf={(v) => v.id}
+              page={vehicles.data?.page}
+              totalPages={vehicles.data?.totalPages}
+              totalElements={vehicles.data?.totalElements}
+              onPageChange={setPage}
+              columns={[
+                { header: t('vehiclesPage.colRegistration'), accessor: (v) => <span className="font-medium">{v.registrationNumber}</span> },
+                { header: t('vehiclesPage.colBrandModel'), accessor: (v) => `${v.brand} ${v.model}` },
+                { header: t('reportsPage.colCity'), accessor: (v) => v.cityName ?? '—' },
+                { header: t('compliancePage.colStatus'), accessor: (v) => (
+                  <span className={v.active ? 'text-emerald-600' : 'text-slate-500'}>{v.status}</span>
+                ) },
+                {
+                  header: '',
+                  accessor: (v) => v.active && (
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => {
+                          if (window.confirm(t('settingsPage.confirmRemoveVehicle', { registration: v.registrationNumber }))) {
+                            deleteVehicle.mutate(v.id);
+                          }
+                        }}
+                        disabled={deleteVehicle.isPending}
+                        className="btn-ghost py-1 text-xs text-red-600 dark:text-red-400"
+                      >
+                        <Trash2 size={13} />
+                        {t('settingsPage.removeFromFleet')}
+                      </button>
+                    </div>
+                  ),
+                  align: 'right',
+                },
+              ]}
+            />
+          )
         )}
 
         {tab === 'assurances' && (

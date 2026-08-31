@@ -4,7 +4,7 @@ import type {
   AgencyProfitability, CarteBleue, CarteBleueRequest, CarteGrise, CarteGriseRequest,
   CityExpenseSummary, Claim, ClaimRequest,
   ClientProfitability, ComplianceStats, CorridorProfitability, CostBreakdown, DeadlineItem,
-  ExecutiveDashboard, FleetKpis, FleetPerformancePoint, GeneratedReport, InsurancePolicy, InsurancePolicyRequest,
+  ExecutiveDashboard, FleetPerformancePoint, GeneratedReport, InsurancePolicy, InsurancePolicyRequest,
   MonthlyFinancialPoint, OperationalDashboard, ReportFormat, ReportType, TechnicalInspection,
   TechnicalInspectionRequest, TransportLicense, TransportLicenseRequest, VehicleExpenseSummary,
   VehicleProfitability,

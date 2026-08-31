@@ -40,7 +40,7 @@
     "alerts": "Alerts",
     "settings": "Settings",
     "tagline": "Smart fleet management",
-    "footer": "SOGECO Sarl · Douala"
+    "footer": "SOGECO Sarl · Bafoussam"
   },
 
   "topbar": {
@@ -542,6 +542,8 @@
     "tabUsers": "Users",
     "tabRoles": "Roles and permissions",
     "tabSites": "Sites and cities",
+    "tabDrivers": "Drivers",
+    "tabVehicles": "Trucks",
     "tabInsurers": "Insurance companies",
     "tabAlertRules": "Alert rules",
     "statUsers": "Users",
@@ -598,6 +600,11 @@
     "ruleActive": "Active",
     "ruleInactive": "Inactive",
     "accountDeleted": "Account deleted.",
+    "confirmDeleteDriver": "Delete driver {{name}}? This action is irreversible.",
+    "driverRemoved": "Driver deleted.",
+    "confirmRemoveVehicle": "Remove truck {{registration}} from the fleet? This action is irreversible.",
+    "vehicleRemoved": "Truck removed from the fleet.",
+    "removeFromFleet": "Remove",
     "passwordResetTitle": "Password reset",
     "newPasswordGenerated": "New password generated for",
     "temporaryPassword": "Temporary password",
