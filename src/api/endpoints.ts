@@ -193,7 +193,7 @@ export const driverApi = {
 
   semesterRanking: () => api.get<DriverSemesterRanking[]>(`${V1}/drivers/semester-ranking`).then((r) => r.data),
 
-  stats: () => api.get<DriverStats>(`${V1}/drivers/stats`).then((r) => r.data),
+  stats: (cityId?: number) => api.get<DriverStats>(`${V1}/drivers/stats`, { params: { cityId } }).then((r) => r.data),
 
   search: (q: string) => api.get<Driver[]>(`${V1}/drivers/search`, { params: { q } }).then((r) => r.data),
 

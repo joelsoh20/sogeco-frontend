@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Check, Copy, KeyRound, UserPlus } from 'lucide-react';
+import { Check, Copy, Eye, EyeOff, KeyRound, UserPlus } from 'lucide-react';
 import { Drawer } from '@/components/ui/Drawer';
 import { Spinner } from '@/components/ui/Spinner';
 import { adminApi, driverApi } from '@/api/endpoints';
@@ -24,6 +24,7 @@ interface FormValues {
   userId: string;
   grantAccess: boolean;
   accountEmail: string;
+  password: string;
 }
 
 /** Villes ou l'entreprise a une implantation active. */
@@ -49,6 +50,7 @@ export function CreateDriverDrawer({ open, onClose }: CreateDriverDrawerProps) {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DriverCreationResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities, enabled: open });
   const cityOptions = (cities.data ?? []).filter((c) => DRIVER_CITY_NAMES.includes(c.name));
@@ -93,6 +95,7 @@ export function CreateDriverDrawer({ open, onClose }: CreateDriverDrawerProps) {
       userId: values.userId ? Number(values.userId) : undefined,
       // Present (meme vide) declenche la creation du compte ; absent, aucun compte n'est cree.
       accountEmail: values.userId || !values.grantAccess ? undefined : (values.accountEmail || ''),
+      password: values.userId || !values.grantAccess ? undefined : (values.password || undefined),
     });
   };
 
@@ -100,6 +103,7 @@ export function CreateDriverDrawer({ open, onClose }: CreateDriverDrawerProps) {
     setError(null);
     setResult(null);
     setCopied(false);
+    setShowPassword(false);
     reset();
     onClose();
   };
@@ -255,6 +259,32 @@ export function CreateDriverDrawer({ open, onClose }: CreateDriverDrawerProps) {
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 {t('driverForm.accountEmailHint')}
               </p>
+
+              <div className="mt-3">
+                <label className="label">{t('driverForm.passwordOptional')}</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="input pr-10"
+                    autoComplete="new-password"
+                    {...register('password', {
+                      minLength: { value: 5, message: t('driverForm.passwordTooShort') },
+                    })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {errors.password && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>}
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  {t('driverForm.passwordHint')}
+                </p>
+              </div>
             </div>
           )}
         </div>

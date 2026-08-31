@@ -388,6 +388,7 @@
     "statKm": "Km driven",
     "statAvgConsumption": "Avg. consumption",
     "statIncidents": "Incidents",
+    "statsByCity": "Statistics by city",
     "licensesExpiringSoon": "{{count}} driving license(s) due soon.",
     "ratingDistribution": "Distribution by rating",
     "fuelEconomyTop5": "Top 5 fuel economy",
@@ -533,7 +534,10 @@
     "expensesByCity": "Expenses by city",
     "emptyCityExpenses": "No vehicle assigned to a city",
     "colVehicles": "Vehicles",
-    "top5Drivers": "Top 5 Drivers (Performance)"
+    "top5Drivers": "Top 5 Drivers (Performance)",
+    "statsByCity": "Statistics by city",
+    "statBestDriver": "Best driver",
+    "amountsInFcfa": "amounts in FCFA"
   },
 
   "settingsPage": {
@@ -888,9 +892,12 @@
     "cityUnspecified": "Not specified",
     "linkExistingAccountOptional": "Existing app account to link (optional)",
     "grantAccess": "Create access to the driver portal",
-    "grantAccessHint": "An account with the Driver role is created automatically, with a temporary password you'll be given to pass on. The password then stays whatever the administrator set.",
+    "grantAccessHint": "An account with the Driver role is created automatically. Choose its password below, or leave it blank to generate a temporary password you'll be given to pass on.",
     "accountEmailOptional": "Work email (optional)",
     "accountEmailHint": "Without an email, the driver logs in with their first and last name.",
+    "passwordOptional": "Password (optional)",
+    "passwordHint": "Leave blank to auto-generate a temporary password.",
+    "passwordTooShort": "The password must be at least 5 characters",
     "editTitle": "Edit driver",
     "birthDateOptional": "Date of birth (optional)",
     "monthlySalaryOptional": "Monthly salary (optional)",

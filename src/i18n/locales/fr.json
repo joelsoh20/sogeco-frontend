@@ -385,6 +385,7 @@
     "statKm": "Km parcourus",
     "statAvgConsumption": "Cons. moyenne",
     "statIncidents": "Incidents",
+    "statsByCity": "Statistiques par ville",
     "licensesExpiringSoon": "{{count}} permis de conduire à échéance prochaine.",
     "ratingDistribution": "Répartition par notation",
     "fuelEconomyTop5": "Top 5 économie de carburant",
@@ -530,7 +531,10 @@
     "expensesByCity": "Charges par ville",
     "emptyCityExpenses": "Aucun camion affecté à une ville",
     "colVehicles": "Camions",
-    "top5Drivers": "Top 5 Chauffeurs (Performance)"
+    "top5Drivers": "Top 5 Chauffeurs (Performance)",
+    "statsByCity": "Statistiques par ville",
+    "statBestDriver": "Meilleur chauffeur",
+    "amountsInFcfa": "montants en FCFA"
   },
 
   "settingsPage": {
@@ -885,9 +889,12 @@
     "cityUnspecified": "Non renseignée",
     "linkExistingAccountOptional": "Compte applicatif existant à rattacher (optionnel)",
     "grantAccess": "Créer un accès à l'espace chauffeur",
-    "grantAccessHint": "Un compte avec le rôle Chauffeur est créé automatiquement, avec un mot de passe temporaire qui vous sera communiqué à transmettre. Le mot de passe reste ensuite celui défini par l'administrateur.",
+    "grantAccessHint": "Un compte avec le rôle Chauffeur est créé automatiquement. Choisissez son mot de passe ci-dessous, ou laissez vide pour qu'un mot de passe temporaire soit généré et affiché à transmettre.",
     "accountEmailOptional": "Email professionnel (optionnel)",
     "accountEmailHint": "Sans email, le chauffeur se connecte avec son nom et prénom.",
+    "passwordOptional": "Mot de passe (optionnel)",
+    "passwordHint": "Laissez vide pour générer automatiquement un mot de passe temporaire.",
+    "passwordTooShort": "Le mot de passe doit comporter au moins 5 caractères",
     "editTitle": "Modifier le chauffeur",
     "birthDateOptional": "Date de naissance (optionnel)",
     "monthlySalaryOptional": "Salaire mensuel (optionnel)",

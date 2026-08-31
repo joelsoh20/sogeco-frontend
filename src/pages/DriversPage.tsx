@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Award, Fuel, Gauge, ShieldAlert, UserCheck, UserPlus, Users } from 'lucide-react';
+import { AlertTriangle, Award, Fuel, Gauge, MapPin, ShieldAlert, UserCheck, UserPlus, Users } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -16,7 +16,7 @@ import { FuelEconomyTop5 } from '@/components/drivers/FuelEconomyTop5';
 import { DriverAlertsOverview } from '@/components/drivers/DriverAlertsOverview';
 import { DriverDetailPanel } from '@/components/drivers/DriverDetailPanel';
 import { CreateDriverDrawer } from '@/components/drivers/CreateDriverDrawer';
-import { alertApi, driverApi, fuelApi } from '@/api/endpoints';
+import { adminApi, alertApi, driverApi, fuelApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
 import { formatConsumption, formatKm, formatNumber } from '@/lib/utils';
 
@@ -27,12 +27,51 @@ const STATUS_KEYS: Record<string, string> = {
   SORTI: 'driversPage.statusLeft',
 };
 
+/** Villes ou l'entreprise a une implantation active. */
+const CITY_STATS_NAMES = ['Douala', 'Yaoundé', 'Bafoussam'];
+
 function firstOfMonth(): string {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
 }
 function today(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+/** Meme six chiffres que le tableau de bord flotte, restreints a une seule ville. */
+function CityDriverStats({ cityId, cityName }: { cityId: number; cityName: string }) {
+  const { t } = useTranslation();
+  const stats = useQuery({ queryKey: ['drivers', 'stats', cityId], queryFn: () => driverApi.stats(cityId) });
+  const fuelStats = useQuery({
+    queryKey: ['fuel', 'stats', cityId, firstOfMonth(), today()],
+    queryFn: () => fuelApi.stats(firstOfMonth(), today(), cityId),
+  });
+
+  const rows: [string, string][] = [
+    [t('driversPage.statTotal'), String(stats.data?.total ?? '—')],
+    [t('driversPage.statActive'), String(stats.data?.actifs ?? '—')],
+    [t('driversPage.statAvgPerformance'), stats.data?.averagePerformance ? `${Math.round(stats.data.averagePerformance)}/100` : '—'],
+    [t('driversPage.statKm'), formatKm(stats.data?.totalKilometers)],
+    [t('driversPage.statAvgConsumption'), formatConsumption(fuelStats.data?.consommationMoyenne)],
+    [t('driversPage.statIncidents'), String(stats.data?.totalIncidents ?? '—')],
+  ];
+
+  return (
+    <div className="card-padded">
+      <h3 className="mb-3 flex items-center gap-1.5 font-semibold text-slate-900 dark:text-slate-100">
+        <MapPin size={15} className="text-slate-400" />
+        {cityName}
+      </h3>
+      <dl className="space-y-2 text-sm">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between">
+            <dt className="text-slate-500 dark:text-slate-400">{label}</dt>
+            <dd className="font-medium tabular text-slate-800 dark:text-slate-200">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
 }
 
 export function DriversPage() {
@@ -54,11 +93,13 @@ export function DriversPage() {
     }
   }, [searchParams, setSearchParams]);
 
-  const stats = useQuery({ queryKey: ['drivers', 'stats'], queryFn: driverApi.stats });
+  const stats = useQuery({ queryKey: ['drivers', 'stats'], queryFn: () => driverApi.stats() });
   const list = useQuery({
     queryKey: ['drivers', 'list', page],
     queryFn: () => driverApi.list(page, 20),
   });
+  const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities });
+  const cityStatsTargets = (cities.data ?? []).filter((c) => CITY_STATS_NAMES.includes(c.name));
   const fuelEconomy = useQuery({
     queryKey: ['drivers', 'fuel-economy'],
     queryFn: () => driverApi.fuelEconomy(firstOfMonth(), today(), 5),
@@ -101,6 +142,17 @@ export function DriversPage() {
             accent={(stats.data?.totalIncidents ?? 0) > 0 ? 'amber' : 'slate'}
           />
         </StatGrid>
+
+        {cityStatsTargets.length > 0 && (
+          <div>
+            <h2 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">{t('driversPage.statsByCity')}</h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              {cityStatsTargets.map((c) => (
+                <CityDriverStats key={c.id} cityId={c.id} cityName={c.name} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {(stats.data?.licensesExpiringSoon ?? 0) > 0 && (
           <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3.5 py-2.5 text-sm text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">

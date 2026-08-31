@@ -14,7 +14,7 @@ import { CityExpenseChart } from '@/components/reports/CityExpenseChart';
 import { ClientListDrawer } from '@/components/clients/ClientListDrawer';
 import { reportApi } from '@/api/compliance';
 import { driverApi } from '@/api/endpoints';
-import { formatFcfa, formatFcfaCompact, formatKm, formatNumber } from '@/lib/utils';
+import { formatFcfa, formatFcfaCompact, formatFcfaCompactNumber, formatKm, formatNumber } from '@/lib/utils';
 import type { MonthlyAmount } from '@/types/compliance';
 
 const MONTH_LABELS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -61,6 +61,15 @@ export function ReportsPage() {
   const costliestVehicle = vehicles[0]; // deja trie par yearTotal decroissant cote backend
   const costliestCity = cities[0];
 
+  // Meme trois chiffres, par ville — deja disponibles dans les donnees chargees ci-dessus
+  // (cities pour le total et le nombre de camions, vehicles pour le camion le plus couteux,
+  // driverRanking pour le meilleur chauffeur, deja trie par score cote backend).
+  const cityStats = cities.map((c) => ({
+    city: c,
+    costliestVehicle: vehicles.filter((v) => v.cityId === c.cityId)[0],
+    bestDriver: (driverRanking.data ?? []).find((d) => d.cityId === c.cityId),
+  }));
+
   const years = Array.from({ length: 5 }, (_, i) => currentYear() - i);
 
   return (
@@ -101,8 +110,44 @@ export function ReportsPage() {
           <StatCard label={t('reportsPage.statActiveVehicles')} value={String(vehicles.length)} icon={Truck} accent="blue" />
         </StatGrid>
 
+        {cityStats.length > 0 && (
+          <div>
+            <h2 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">{t('reportsPage.statsByCity')}</h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              {cityStats.map(({ city, costliestVehicle: cv, bestDriver }) => (
+                <div key={city.cityId} className="card-padded">
+                  <h3 className="mb-3 flex items-center gap-1.5 font-semibold text-slate-900 dark:text-slate-100">
+                    <MapPin size={15} className="text-slate-400" />
+                    {city.cityName}
+                  </h3>
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <dt className="text-slate-500 dark:text-slate-400">{t('reportsPage.statFleetTotal')}</dt>
+                      <dd className="font-medium tabular text-slate-800 dark:text-slate-200">{formatFcfaCompact(city.yearTotal)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <dt className="text-slate-500 dark:text-slate-400">{t('reportsPage.statActiveVehicles')}</dt>
+                      <dd className="font-medium tabular text-slate-800 dark:text-slate-200">{formatNumber(city.vehicleCount)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <dt className="text-slate-500 dark:text-slate-400">{t('reportsPage.statCostliestVehicle')}</dt>
+                      <dd className="font-medium text-slate-800 dark:text-slate-200">{cv ? cv.registrationNumber : '—'}</dd>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <dt className="text-slate-500 dark:text-slate-400">{t('reportsPage.statBestDriver')}</dt>
+                      <dd className="font-medium text-slate-800 dark:text-slate-200">{bestDriver ? bestDriver.fullName : '—'}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <section>
-          <h2 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">{t('reportsPage.expensesByVehicle')}</h2>
+          <h2 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">
+            {t('reportsPage.expensesByVehicle')} <span className="font-normal text-slate-400">({t('reportsPage.amountsInFcfa')})</span>
+          </h2>
           {vehicleExpenses.isLoading ? <LoadingPanel /> : vehicles.length === 0 ? (
             <EmptyState icon={Truck} title={t('reportsPage.emptyVehicleExpenses')} />
           ) : (
@@ -118,10 +163,10 @@ export function ReportsPage() {
                   { header: t('reportsPage.colCity'), accessor: (v) => v.cityName ?? '—' },
                   ...MONTH_LABELS.map((label, index) => ({
                     header: label,
-                    accessor: (v: typeof vehicles[number]) => formatFcfaCompact(amountFor(v.monthly, index + 1)),
+                    accessor: (v: typeof vehicles[number]) => <span className="whitespace-nowrap">{formatFcfaCompactNumber(amountFor(v.monthly, index + 1))}</span>,
                     align: 'right' as const,
                   })),
-                  { header: t('reportsPage.colTotal'), accessor: (v) => <span className="font-semibold">{formatFcfaCompact(v.yearTotal)}</span>, align: 'right' },
+                  { header: t('reportsPage.colTotal'), accessor: (v) => <span className="whitespace-nowrap font-semibold">{formatFcfaCompactNumber(v.yearTotal)}</span>, align: 'right' },
                 ]}
               />
             </>
@@ -129,7 +174,9 @@ export function ReportsPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">{t('reportsPage.expensesByCity')}</h2>
+          <h2 className="mb-3 font-semibold text-slate-900 dark:text-slate-100">
+            {t('reportsPage.expensesByCity')} <span className="font-normal text-slate-400">({t('reportsPage.amountsInFcfa')})</span>
+          </h2>
           {cityExpenses.isLoading ? <LoadingPanel /> : cities.length === 0 ? (
             <EmptyState icon={MapPin} title={t('reportsPage.emptyCityExpenses')} />
           ) : (
@@ -145,10 +192,10 @@ export function ReportsPage() {
                   { header: t('reportsPage.colVehicles'), accessor: (c) => formatNumber(c.vehicleCount), align: 'right' },
                   ...MONTH_LABELS.map((label, index) => ({
                     header: label,
-                    accessor: (c: typeof cities[number]) => formatFcfaCompact(amountFor(c.monthly, index + 1)),
+                    accessor: (c: typeof cities[number]) => <span className="whitespace-nowrap">{formatFcfaCompactNumber(amountFor(c.monthly, index + 1))}</span>,
                     align: 'right' as const,
                   })),
-                  { header: t('reportsPage.colTotal'), accessor: (c) => <span className="font-semibold">{formatFcfaCompact(c.yearTotal)}</span>, align: 'right' },
+                  { header: t('reportsPage.colTotal'), accessor: (c) => <span className="whitespace-nowrap font-semibold">{formatFcfaCompactNumber(c.yearTotal)}</span>, align: 'right' },
                 ]}
               />
             </>

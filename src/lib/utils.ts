@@ -19,13 +19,23 @@ export function formatFcfa(value: number | null | undefined): string {
 /** Version compacte pour les cartes d'indicateurs : 125,4 M FCFA. */
 export function formatFcfaCompact(value: number | null | undefined): string {
   if (value === null || value === undefined) return '—';
+  return `${formatFcfaCompactNumber(value)} FCFA`;
+}
+
+/**
+ * Meme echelle que formatFcfaCompact, sans le suffixe "FCFA" — pour les
+ * tableaux denses (12 colonnes mensuelles) ou repeter l'unite a chaque
+ * cellule fait retomber le chiffre a la ligne et casse la lisibilite.
+ */
+export function formatFcfaCompactNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined) return '—';
   if (Math.abs(value) >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1).replace('.', ',')} M FCFA`;
+    return `${(value / 1_000_000).toFixed(1).replace('.', ',')} M`;
   }
   if (Math.abs(value) >= 1_000) {
-    return `${Math.round(value / 1_000)} k FCFA`;
+    return `${Math.round(value / 1_000)} k`;
   }
-  return `${value} FCFA`;
+  return `${value}`;
 }
 
 export function formatNumber(value: number | null | undefined, decimals = 0): string {

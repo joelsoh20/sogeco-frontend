@@ -116,6 +116,8 @@ export interface CreateDriverRequest {
   userId?: number;
   /** Cree un nouveau compte de connexion (role Chauffeur) pour ce chauffeur. Ignoré si userId est fourni. */
   accountEmail?: string;
+  /** Mot de passe initial du compte créé. Si absent, un mot de passe aléatoire est généré. */
+  password?: string;
 }
 
 /**
