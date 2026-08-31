@@ -571,8 +571,6 @@
     "colManagedCity": "Managed city",
     "allCities": "All",
     "colLastLogin": "Last login",
-    "confirmResetPassword": "Reset {{name}}'s password?",
-    "reset": "Reset",
     "confirmDeleteAccount": "Delete {{name}}'s account? This action is irreversible.",
     "colPermissions": "Permissions",
     "colType": "Type",
@@ -605,13 +603,10 @@
     "confirmRemoveVehicle": "Remove truck {{registration}} from the fleet? This action is irreversible.",
     "vehicleRemoved": "Truck removed from the fleet.",
     "removeFromFleet": "Remove",
-    "passwordResetTitle": "Password reset",
-    "newPasswordGenerated": "New password generated for",
     "temporaryPassword": "Temporary password",
     "temporaryPasswordHint": "Shown only once. Pass it on to {{name}} through a secure channel — it can never be retrieved from this screen again.",
     "copied": "Copied",
     "copy": "Copy",
-    "passwordRemainsValid": "This password remains valid: {{name}} doesn't have to change it on first login.",
     "copyToContinue": "Copy the password to continue",
     "done": "Done"
   },
@@ -672,6 +667,13 @@
     "hint": "This password remains valid with no forced change — only you know it now.",
     "submit": "Change password",
     "success": "Password changed."
+  },
+
+  "setPasswordForm": {
+    "title": "Change password",
+    "hint": "This password remains valid with no forced change — share it with {{name}} through a secure channel.",
+    "submit": "Save password",
+    "success": "{{name}}'s password updated."
   },
 
   "fuelForm": {
@@ -802,7 +804,9 @@
     "amount": "Amount (FCFA)",
     "notes": "Notes (optional)",
     "immutableHint": "Once saved, this registration card can no longer be edited.",
-    "success": "Registration card recorded."
+    "success": "Registration card recorded.",
+    "editTitle": "Edit registration card",
+    "editSuccess": "Registration card updated."
   },
 
   "carteBleueForm": {
@@ -814,7 +818,9 @@
     "powerOptional": "Power (HP, optional)",
     "expiryDate": "Expiry date",
     "cost": "Cost (FCFA)",
-    "success": "Circulation card recorded."
+    "success": "Circulation card recorded.",
+    "editTitle": "Edit circulation card",
+    "editSuccess": "Circulation card updated."
   },
 
   "claimForm": {
@@ -849,7 +855,9 @@
     "defectsNoted": "Defects noted",
     "cost": "Cost (FCFA)",
     "immutableHint": "Once saved, this inspection can no longer be edited.",
-    "success": "Technical inspection recorded."
+    "success": "Technical inspection recorded.",
+    "editTitle": "Edit technical inspection",
+    "editSuccess": "Technical inspection updated."
   },
 
   "licenceForm": {
@@ -858,7 +866,9 @@
     "reference": "Reference",
     "receiptNumberOptional": "Receipt No. (optional)",
     "powerOptional": "Power (optional)",
-    "success": "Transport license recorded."
+    "success": "Transport license recorded.",
+    "editTitle": "Edit transport license",
+    "editSuccess": "Transport license updated."
   },
 
   "driverForm": {
@@ -1315,7 +1325,9 @@
     "startDate": "Start",
     "endDate": "End",
     "createSubmit": "Create policy",
-    "success": "Insurance policy created."
+    "success": "Insurance policy created.",
+    "editTitle": "Edit insurance policy",
+    "editSuccess": "Insurance policy updated."
   },
 
   "userForm": {

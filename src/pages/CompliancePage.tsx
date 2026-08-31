@@ -10,20 +10,25 @@ import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSchedule } from '@/components/compliance/UnifiedSchedule';
 import { CreatePolicyDrawer } from '@/components/compliance/CreatePolicyDrawer';
+import { EditPolicyDrawer } from '@/components/compliance/EditPolicyDrawer';
 import { CreateInspectionDrawer } from '@/components/compliance/CreateInspectionDrawer';
+import { EditInspectionDrawer } from '@/components/compliance/EditInspectionDrawer';
 import { CreateClaimDrawer } from '@/components/compliance/CreateClaimDrawer';
 import { EditClaimDrawer } from '@/components/compliance/EditClaimDrawer';
 import { CreateCarteBleueDrawer } from '@/components/compliance/CreateCarteBleueDrawer';
+import { EditCarteBleueDrawer } from '@/components/compliance/EditCarteBleueDrawer';
 import { CreateCarteGriseDrawer } from '@/components/compliance/CreateCarteGriseDrawer';
+import { EditCarteGriseDrawer } from '@/components/compliance/EditCarteGriseDrawer';
 import { CreateLicenceTransportDrawer } from '@/components/compliance/CreateLicenceTransportDrawer';
+import { EditLicenceTransportDrawer } from '@/components/compliance/EditLicenceTransportDrawer';
 import { complianceApi } from '@/api/compliance';
 import { useAuthStore } from '@/store/authStore';
 import { canEditRecord } from '@/lib/editWindow';
 import { formatDate, formatFcfa, formatFcfaCompact } from '@/lib/utils';
-import type { Claim } from '@/types/compliance';
+import type { CarteBleue, CarteGrise, Claim, InsurancePolicy, TechnicalInspection, TransportLicense } from '@/types/compliance';
 
-/** RG-8-EDIT : un sinistre reste modifiable 24h apres sa declaration (au-dela, admin uniquement). */
-const CLAIM_EDIT_WINDOW_HOURS = 24;
+/** RG-8-EDIT : un document reste modifiable 24h apres sa creation (au-dela, admin uniquement). */
+const DOCUMENT_EDIT_WINDOW_HOURS = 24;
 
 type Tab = 'echeancier' | 'assurances' | 'visites' | 'sinistres' | 'cartes_bleues' | 'cartes_grises' | 'licences_transport';
 
@@ -51,14 +56,19 @@ export function CompliancePage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>('echeancier');
   const [createPolicyOpen, setCreatePolicyOpen] = useState(false);
+  const [editPolicyTarget, setEditPolicyTarget] = useState<InsurancePolicy | null>(null);
   const [createInspectionOpen, setCreateInspectionOpen] = useState(false);
+  const [editInspectionTarget, setEditInspectionTarget] = useState<TechnicalInspection | null>(null);
   const [createClaimOpen, setCreateClaimOpen] = useState(false);
   const [editClaimTarget, setEditClaimTarget] = useState<Claim | null>(null);
   const [createCarteBleueOpen, setCreateCarteBleueOpen] = useState(false);
+  const [editCarteBleueTarget, setEditCarteBleueTarget] = useState<CarteBleue | null>(null);
   const [createCarteGriseOpen, setCreateCarteGriseOpen] = useState(false);
+  const [editCarteGriseTarget, setEditCarteGriseTarget] = useState<CarteGrise | null>(null);
   const [createLicenceTransportOpen, setCreateLicenceTransportOpen] = useState(false);
+  const [editLicenceTarget, setEditLicenceTarget] = useState<TransportLicense | null>(null);
 
-  const canUpdateClaim = useAuthStore((state) => state.hasPermission('INSURANCE_UPDATE'));
+  const canUpdateInsurance = useAuthStore((state) => state.hasPermission('INSURANCE_UPDATE'));
   const isAdmin = useAuthStore((state) => state.hasRole('ROLE_ADMIN'));
 
   const stats = useQuery({ queryKey: ['compliance', 'stats'], queryFn: () => complianceApi.stats() });
@@ -199,6 +209,18 @@ export function CompliancePage() {
                     </span>
                   ),
                 },
+                {
+                  header: '',
+                  accessor: (p) => (
+                    canUpdateInsurance && canEditRecord(p.createdAt, isAdmin, DOCUMENT_EDIT_WINDOW_HOURS) && (
+                      <button onClick={() => setEditPolicyTarget(p)} className="btn-ghost py-1 text-xs">
+                        <Pencil size={13} />
+                        {t('common.edit')}
+                      </button>
+                    )
+                  ),
+                  align: 'right',
+                },
               ]}
             />
           )
@@ -230,6 +252,18 @@ export function CompliancePage() {
                   ),
                 },
                 { header: t('compliancePage.colCost'), accessor: (i) => formatFcfa(i.cost), align: 'right' },
+                {
+                  header: '',
+                  accessor: (i) => (
+                    canUpdateInsurance && canEditRecord(i.createdAt, isAdmin, DOCUMENT_EDIT_WINDOW_HOURS) && (
+                      <button onClick={() => setEditInspectionTarget(i)} className="btn-ghost py-1 text-xs">
+                        <Pencil size={13} />
+                        {t('common.edit')}
+                      </button>
+                    )
+                  ),
+                  align: 'right',
+                },
               ]}
             />
           )
@@ -253,7 +287,7 @@ export function CompliancePage() {
                 {
                   header: '',
                   accessor: (c) => (
-                    canUpdateClaim && canEditRecord(c.createdAt, isAdmin, CLAIM_EDIT_WINDOW_HOURS) && (
+                    canUpdateInsurance && canEditRecord(c.createdAt, isAdmin, DOCUMENT_EDIT_WINDOW_HOURS) && (
                       <button onClick={() => setEditClaimTarget(c)} className="btn-ghost py-1 text-xs">
                         <Pencil size={13} />
                         {t('common.edit')}
@@ -282,6 +316,18 @@ export function CompliancePage() {
                 { header: t('compliancePage.colPower'), accessor: (c) => c.power != null ? t('compliancePage.powerCv', { power: c.power }) : '—' },
                 { header: t('compliancePage.colExpiry'), accessor: (c) => formatDate(c.expiryDate) },
                 { header: t('compliancePage.colCost'), accessor: (c) => formatFcfa(c.cost), align: 'right' },
+                {
+                  header: '',
+                  accessor: (c) => (
+                    canUpdateInsurance && canEditRecord(c.createdAt, isAdmin, DOCUMENT_EDIT_WINDOW_HOURS) && (
+                      <button onClick={() => setEditCarteBleueTarget(c)} className="btn-ghost py-1 text-xs">
+                        <Pencil size={13} />
+                        {t('common.edit')}
+                      </button>
+                    )
+                  ),
+                  align: 'right',
+                },
               ]}
             />
           )
@@ -302,6 +348,18 @@ export function CompliancePage() {
                 { header: t('compliancePage.colBrand'), accessor: (c) => c.brand },
                 { header: t('compliancePage.colExpiry'), accessor: (c) => formatDate(c.expiryDate) },
                 { header: t('compliancePage.colAmount'), accessor: (c) => formatFcfa(c.cost), align: 'right' },
+                {
+                  header: '',
+                  accessor: (c) => (
+                    canUpdateInsurance && canEditRecord(c.createdAt, isAdmin, DOCUMENT_EDIT_WINDOW_HOURS) && (
+                      <button onClick={() => setEditCarteGriseTarget(c)} className="btn-ghost py-1 text-xs">
+                        <Pencil size={13} />
+                        {t('common.edit')}
+                      </button>
+                    )
+                  ),
+                  align: 'right',
+                },
               ]}
             />
           )
@@ -330,6 +388,18 @@ export function CompliancePage() {
                   ),
                 },
                 { header: t('compliancePage.colCost'), accessor: (l) => formatFcfa(l.cost), align: 'right' },
+                {
+                  header: '',
+                  accessor: (l) => (
+                    canUpdateInsurance && canEditRecord(l.createdAt, isAdmin, DOCUMENT_EDIT_WINDOW_HOURS) && (
+                      <button onClick={() => setEditLicenceTarget(l)} className="btn-ghost py-1 text-xs">
+                        <Pencil size={13} />
+                        {t('common.edit')}
+                      </button>
+                    )
+                  ),
+                  align: 'right',
+                },
               ]}
             />
           )
@@ -337,14 +407,29 @@ export function CompliancePage() {
       </div>
 
       <CreatePolicyDrawer open={createPolicyOpen} onClose={() => setCreatePolicyOpen(false)} />
+      {editPolicyTarget && (
+        <EditPolicyDrawer open={!!editPolicyTarget} onClose={() => setEditPolicyTarget(null)} policy={editPolicyTarget} />
+      )}
       <CreateInspectionDrawer open={createInspectionOpen} onClose={() => setCreateInspectionOpen(false)} />
+      {editInspectionTarget && (
+        <EditInspectionDrawer open={!!editInspectionTarget} onClose={() => setEditInspectionTarget(null)} inspection={editInspectionTarget} />
+      )}
       <CreateClaimDrawer open={createClaimOpen} onClose={() => setCreateClaimOpen(false)} />
       {editClaimTarget && (
         <EditClaimDrawer open={!!editClaimTarget} onClose={() => setEditClaimTarget(null)} claim={editClaimTarget} />
       )}
       <CreateCarteBleueDrawer open={createCarteBleueOpen} onClose={() => setCreateCarteBleueOpen(false)} />
+      {editCarteBleueTarget && (
+        <EditCarteBleueDrawer open={!!editCarteBleueTarget} onClose={() => setEditCarteBleueTarget(null)} carte={editCarteBleueTarget} />
+      )}
       <CreateCarteGriseDrawer open={createCarteGriseOpen} onClose={() => setCreateCarteGriseOpen(false)} />
+      {editCarteGriseTarget && (
+        <EditCarteGriseDrawer open={!!editCarteGriseTarget} onClose={() => setEditCarteGriseTarget(null)} carte={editCarteGriseTarget} />
+      )}
       <CreateLicenceTransportDrawer open={createLicenceTransportOpen} onClose={() => setCreateLicenceTransportOpen(false)} />
+      {editLicenceTarget && (
+        <EditLicenceTransportDrawer open={!!editLicenceTarget} onClose={() => setEditLicenceTarget(null)} license={editLicenceTarget} />
+      )}
     </PageShell>
   );
 }

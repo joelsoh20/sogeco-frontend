@@ -35,6 +35,7 @@ export interface InsurancePolicy {
   vehicles: string[];
   coversFleet: boolean;
   notes: string | null;
+  createdAt: string;
 }
 
 export interface InsurancePolicyRequest {
@@ -63,6 +64,7 @@ export interface TechnicalInspection {
   result: InspectionResult;
   defectsNoted: string | null;
   cost: number;
+  createdAt: string;
 }
 
 export interface TechnicalInspectionRequest {
@@ -122,6 +124,7 @@ export interface CarteBleue {
   power: number | null;
   cost: number | null;
   notes: string | null;
+  createdAt: string;
 }
 
 export interface CarteBleueRequest {
@@ -151,6 +154,7 @@ export interface CarteGrise {
   daysUntilExpiry: number;
   cost: number | null;
   notes: string | null;
+  createdAt: string;
 }
 
 export interface CarteGriseRequest {
@@ -181,6 +185,7 @@ export interface TransportLicense {
   status: PolicyStatus;
   cost: number | null;
   notes: string | null;
+  createdAt: string;
 }
 
 export interface TransportLicenseRequest {

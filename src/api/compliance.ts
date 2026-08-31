@@ -26,6 +26,9 @@ export const complianceApi = {
   createPolicy: (payload: InsurancePolicyRequest) =>
     api.post<InsurancePolicy>(`${V1}/insurance-policies`, payload).then((r) => r.data),
 
+  updatePolicy: (id: number, payload: InsurancePolicyRequest) =>
+    api.put<InsurancePolicy>(`${V1}/insurance-policies/${id}`, payload).then((r) => r.data),
+
   cancelPolicy: (id: number) => api.delete(`${V1}/insurance-policies/${id}`),
 
   inspections: (page = 0, size = 20) =>
@@ -34,6 +37,9 @@ export const complianceApi = {
 
   createInspection: (payload: TechnicalInspectionRequest) =>
     api.post<TechnicalInspection>(`${V1}/technical-inspections`, payload).then((r) => r.data),
+
+  updateInspection: (id: number, payload: TechnicalInspectionRequest) =>
+    api.put<TechnicalInspection>(`${V1}/technical-inspections/${id}`, payload).then((r) => r.data),
 
   mineInspections: () =>
     api.get<TechnicalInspection[]>(`${V1}/technical-inspections/mine`).then((r) => r.data),
@@ -59,11 +65,17 @@ export const complianceApi = {
   createCarteBleue: (payload: CarteBleueRequest) =>
     api.post<CarteBleue>(`${V1}/cartes-bleues`, payload).then((r) => r.data),
 
+  updateCarteBleue: (id: number, payload: CarteBleueRequest) =>
+    api.put<CarteBleue>(`${V1}/cartes-bleues/${id}`, payload).then((r) => r.data),
+
   cartesGrises: (page = 0, size = 20) =>
     api.get<PageResponse<CarteGrise>>(`${V1}/cartes-grises`, { params: { page, size } }).then((r) => r.data),
 
   createCarteGrise: (payload: CarteGriseRequest) =>
     api.post<CarteGrise>(`${V1}/cartes-grises`, payload).then((r) => r.data),
+
+  updateCarteGrise: (id: number, payload: CarteGriseRequest) =>
+    api.put<CarteGrise>(`${V1}/cartes-grises/${id}`, payload).then((r) => r.data),
 
   mineCartesGrises: () =>
     api.get<CarteGrise[]>(`${V1}/cartes-grises/mine`).then((r) => r.data),
@@ -74,6 +86,9 @@ export const complianceApi = {
 
   createTransportLicense: (payload: TransportLicenseRequest) =>
     api.post<TransportLicense>(`${V1}/transport-licenses`, payload).then((r) => r.data),
+
+  updateTransportLicense: (id: number, payload: TransportLicenseRequest) =>
+    api.put<TransportLicense>(`${V1}/transport-licenses/${id}`, payload).then((r) => r.data),
 };
 
 export const reportApi = {

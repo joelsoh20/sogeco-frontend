@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
-  ArrowRight, Building2, Check, Copy, KeyRound, MapPin, Pencil, Plus, ShieldAlert, ShieldCheck, Trash2, Truck, UserPlus, Users,
+  ArrowRight, Building2, KeyRound, MapPin, Pencil, Plus, ShieldAlert, ShieldCheck, Trash2, Truck, UserPlus, Users,
 } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
-import { Drawer } from '@/components/ui/Drawer';
 import { CreateUserDrawer } from '@/components/admin/CreateUserDrawer';
 import { EditUserDrawer } from '@/components/admin/EditUserDrawer';
+import { SetUserPasswordModal } from '@/components/admin/SetUserPasswordModal';
 import { ChangeMyPasswordModal } from '@/components/layout/ChangeMyPasswordModal';
 import { CreateInsurerDrawer } from '@/components/settings/CreateInsurerDrawer';
 import { StatCard } from '@/components/ui/StatCard';
@@ -43,6 +43,7 @@ export function SettingsPage() {
   const [createInsurerOpen, setCreateInsurerOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [passwordTarget, setPasswordTarget] = useState<User | null>(null);
 
   const currentUserId = useAuthStore((state) => state.user?.id);
 
@@ -117,27 +118,6 @@ export function SettingsPage() {
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
-
-  const [resetResult, setResetResult] = useState<{ user: User; temporaryPassword: string } | null>(null);
-  const [resetCopied, setResetCopied] = useState(false);
-  const resetPassword = useMutation({
-    mutationFn: (user: User) => adminApi.resetPassword(user.id).then((r) => ({ user, temporaryPassword: r.temporaryPassword })),
-    onSuccess: (result) => {
-      setResetResult(result);
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-    },
-    onError: (e) => toast.error(errorMessage(e)),
-  });
-  const closeResetResult = () => {
-    setResetResult(null);
-    setResetCopied(false);
-  };
-  const copyResetPassword = () => {
-    if (resetResult) {
-      navigator.clipboard.writeText(resetResult.temporaryPassword);
-      setResetCopied(true);
-    }
-  };
 
   return (
     <PageShell
@@ -328,16 +308,11 @@ export function SettingsPage() {
                           {t('common.edit')}
                         </button>
                         <button
-                          onClick={() => {
-                            if (window.confirm(t('settingsPage.confirmResetPassword', { name: u.fullName }))) {
-                              resetPassword.mutate(u);
-                            }
-                          }}
-                          disabled={resetPassword.isPending}
+                          onClick={() => setPasswordTarget(u)}
                           className="btn-ghost py-1 text-xs"
                         >
                           <KeyRound size={13} />
-                          {t('settingsPage.reset')}
+                          {t('setPasswordForm.title')}
                         </button>
                         <button
                           onClick={() => {
@@ -589,49 +564,7 @@ export function SettingsPage() {
       <EditUserDrawer user={editingUser} onClose={() => setEditingUser(null)} />
       <CreateInsurerDrawer open={createInsurerOpen} onClose={() => setCreateInsurerOpen(false)} />
       <ChangeMyPasswordModal open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} />
-
-      {resetResult && (
-        <Drawer open={!!resetResult} onClose={closeResetResult} title={t('settingsPage.passwordResetTitle')}>
-          <div className="space-y-5">
-            <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              {t('settingsPage.newPasswordGenerated')} <span className="font-medium">{resetResult.user.fullName}</span>.
-            </div>
-
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <div className="flex items-center gap-2 text-sm font-medium text-amber-900">
-                <KeyRound size={16} />
-                {t('settingsPage.temporaryPassword')}
-              </div>
-              <p className="mt-1.5 text-xs text-amber-800">
-                {t('settingsPage.temporaryPasswordHint', { name: resetResult.user.firstName })}
-              </p>
-              <div className="mt-3 flex items-center gap-2">
-                <code className="flex-1 rounded-lg bg-white px-3 py-2 font-mono text-sm tracking-wide text-slate-800 ring-1 ring-amber-200">
-                  {resetResult.temporaryPassword}
-                </code>
-                <button
-                  onClick={copyResetPassword}
-                  className={`btn-ghost ${resetCopied ? 'border-emerald-300 text-emerald-700' : ''}`}
-                >
-                  {resetCopied ? <Check size={15} /> : <Copy size={15} />}
-                  {resetCopied ? t('settingsPage.copied') : t('settingsPage.copy')}
-                </button>
-              </div>
-              <p className="mt-2 text-xs text-amber-700">
-                {t('settingsPage.passwordRemainsValid', { name: resetResult.user.firstName })}
-              </p>
-            </div>
-
-            <button
-              onClick={closeResetResult}
-              disabled={!resetCopied}
-              className="btn-primary w-full"
-            >
-              {!resetCopied ? t('settingsPage.copyToContinue') : t('settingsPage.done')}
-            </button>
-          </div>
-        </Drawer>
-      )}
+      <SetUserPasswordModal user={passwordTarget} onClose={() => setPasswordTarget(null)} />
     </PageShell>
   );
 }

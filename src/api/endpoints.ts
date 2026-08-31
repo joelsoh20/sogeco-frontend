@@ -279,6 +279,9 @@ export const adminApi = {
   resetPassword: (id: number) =>
     api.post<{ temporaryPassword: string }>(`${V1}/users/${id}/reset-password`).then((r) => r.data),
 
+  setUserPassword: (id: number, newPassword: string) =>
+    api.put(`${V1}/users/${id}/password`, { newPassword }),
+
   deleteUser: (id: number) => api.delete(`${V1}/users/${id}`),
 
   roles: () => api.get<Role[]>(`${V1}/roles`).then((r) => r.data),

@@ -568,8 +568,6 @@
     "colManagedCity": "Ville gérée",
     "allCities": "Toutes",
     "colLastLogin": "Dernière connexion",
-    "confirmResetPassword": "Réinitialiser le mot de passe de {{name}} ?",
-    "reset": "Réinitialiser",
     "confirmDeleteAccount": "Supprimer le compte de {{name}} ? Cette action est irréversible.",
     "colPermissions": "Permissions",
     "colType": "Type",
@@ -602,13 +600,10 @@
     "confirmRemoveVehicle": "Retirer le camion {{registration}} de la flotte ? Cette action est irréversible.",
     "vehicleRemoved": "Camion retiré de la flotte.",
     "removeFromFleet": "Retirer",
-    "passwordResetTitle": "Mot de passe réinitialisé",
-    "newPasswordGenerated": "Nouveau mot de passe généré pour",
     "temporaryPassword": "Mot de passe temporaire",
     "temporaryPasswordHint": "Affiché une seule fois. Transmettez-le à {{name}} par un canal sûr — il ne sera plus jamais récupérable depuis cet écran.",
     "copied": "Copié",
     "copy": "Copier",
-    "passwordRemainsValid": "Ce mot de passe reste valable : {{name}} n'a pas à le changer à la première connexion.",
     "copyToContinue": "Copiez le mot de passe pour continuer",
     "done": "Terminé"
   },
@@ -669,6 +664,13 @@
     "hint": "Ce mot de passe reste valable sans changement imposé — vous seul le connaissez désormais.",
     "submit": "Modifier le mot de passe",
     "success": "Mot de passe modifié."
+  },
+
+  "setPasswordForm": {
+    "title": "Modifier le mot de passe",
+    "hint": "Ce mot de passe reste valable sans changement imposé — transmettez-le à {{name}} par un canal sûr.",
+    "submit": "Enregistrer le mot de passe",
+    "success": "Mot de passe de {{name}} modifié."
   },
 
   "fuelForm": {
@@ -799,7 +801,9 @@
     "amount": "Montant (FCFA)",
     "notes": "Notes (optionnel)",
     "immutableHint": "Une fois enregistrée, cette carte grise ne pourra plus être modifiée.",
-    "success": "Carte grise enregistrée."
+    "success": "Carte grise enregistrée.",
+    "editTitle": "Modifier la carte grise",
+    "editSuccess": "Carte grise modifiée."
   },
 
   "carteBleueForm": {
@@ -811,7 +815,9 @@
     "powerOptional": "Puissance (CV, optionnel)",
     "expiryDate": "Date d'expiration",
     "cost": "Coût (FCFA)",
-    "success": "Carte bleue enregistrée."
+    "success": "Carte bleue enregistrée.",
+    "editTitle": "Modifier la carte bleue",
+    "editSuccess": "Carte bleue modifiée."
   },
 
   "claimForm": {
@@ -846,7 +852,9 @@
     "defectsNoted": "Défauts constatés",
     "cost": "Coût (FCFA)",
     "immutableHint": "Une fois enregistrée, cette visite ne pourra plus être modifiée.",
-    "success": "Visite technique enregistrée."
+    "success": "Visite technique enregistrée.",
+    "editTitle": "Modifier la visite technique",
+    "editSuccess": "Visite technique modifiée."
   },
 
   "licenceForm": {
@@ -855,7 +863,9 @@
     "reference": "Référence",
     "receiptNumberOptional": "N° de reçu (optionnel)",
     "powerOptional": "Puissance (optionnel)",
-    "success": "Licence de transport enregistrée."
+    "success": "Licence de transport enregistrée.",
+    "editTitle": "Modifier la licence de transport",
+    "editSuccess": "Licence de transport modifiée."
   },
 
   "driverForm": {
@@ -1312,7 +1322,9 @@
     "startDate": "Début",
     "endDate": "Fin",
     "createSubmit": "Créer la police",
-    "success": "Police d’assurance créée."
+    "success": "Police d’assurance créée.",
+    "editTitle": "Modifier la police d'assurance",
+    "editSuccess": "Police d’assurance modifiée."
   },
 
   "userForm": {

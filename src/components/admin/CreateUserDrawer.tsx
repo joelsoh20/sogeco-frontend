@@ -18,6 +18,9 @@ interface FormValues {
   roleCode: string;
 }
 
+/** Villes ou l'entreprise a une implantation active. */
+const USER_CITY_NAMES = ['Douala', 'Yaoundé', 'Bafoussam'];
+
 interface CreateUserDrawerProps {
   open: boolean;
   onClose: () => void;
@@ -41,6 +44,7 @@ export function CreateUserDrawer({ open, onClose }: CreateUserDrawerProps) {
 
   const roles = useQuery({ queryKey: ['admin', 'roles'], queryFn: adminApi.roles, enabled: open });
   const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities, enabled: open });
+  const cityOptions = (cities.data ?? []).filter((c) => USER_CITY_NAMES.includes(c.name));
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormValues>();
 
@@ -184,7 +188,7 @@ export function CreateUserDrawer({ open, onClose }: CreateUserDrawerProps) {
           <label className="label">{t('userForm.managedCityOptional')}</label>
           <select className="input" {...register('cityId')}>
             <option value="">{t('userForm.allAdmin')}</option>
-            {cities.data?.map((city) => (
+            {cityOptions.map((city) => (
               <option key={city.id} value={city.id}>{city.name}</option>
             ))}
           </select>
