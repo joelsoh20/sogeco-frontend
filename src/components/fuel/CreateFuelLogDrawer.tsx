@@ -169,11 +169,11 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
             <AlertTriangle size={16} className="mt-0.5 shrink-0" />
             <span>
               {t('fuelForm.suspiciousQuantity', {
-                liters: formatNumber(Number(quantityLiters)),
+                liters: formatNumber(Number(quantityLiters), 2),
                 bodyType: selectedVehicle ? t(`vehicle.bodyType.${selectedVehicle.bodyType}`).toLowerCase() : '',
               })}
               {selectedVehicle?.tankCapacityLiters
-                ? ` ${t('fuelForm.suspiciousQuantityTankHint', { liters: formatNumber(selectedVehicle.tankCapacityLiters) })}`
+                ? ` ${t('fuelForm.suspiciousQuantityTankHint', { liters: formatNumber(selectedVehicle.tankCapacityLiters, 2) })}`
                 : ` ${t('fuelForm.suspiciousQuantityDefaultHint')}`}
               {' '}{t('fuelForm.suspiciousQuantityCheck')}
             </span>

@@ -18,6 +18,7 @@ interface FormValues {
   description: string;
   interventionDate: string;
   odometerKm: string;
+  testFuelLiters: string;
   isBreakdown: boolean;
   errorCode: string;
   nextInterventionDate: string;
@@ -71,6 +72,7 @@ export function CreateMaintenanceDrawer({ open, onClose }: CreateMaintenanceDraw
       description: values.description,
       interventionDate: values.interventionDate,
       odometerKm: values.odometerKm ? Number(values.odometerKm) : undefined,
+      testFuelLiters: values.testFuelLiters ? Number(values.testFuelLiters) : undefined,
       isBreakdown: values.isBreakdown,
       errorCode: values.errorCode || undefined,
       nextInterventionDate: values.nextInterventionDate || undefined,
@@ -157,6 +159,14 @@ export function CreateMaintenanceDrawer({ open, onClose }: CreateMaintenanceDraw
             <label className="label">{t('maintenanceForm.odometer')}</label>
             <input type="number" className="input" {...register('odometerKm')} />
           </div>
+        </div>
+
+        <div>
+          <label className="label">{t('maintenanceForm.testFuelLiters')}</label>
+          <input type="number" step="0.01" className="input" {...register('testFuelLiters')} />
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {t('maintenanceForm.testFuelLitersHint')}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

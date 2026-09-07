@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Fuel, Gauge, Pencil, Wrench } from 'lucide-react';
-import { vehicleApi } from '@/api/endpoints';
+import { fuelApi, vehicleApi } from '@/api/endpoints';
 import { VehicleStatusBadge } from '@/components/ui/StatusBadge';
 import { DetailRow } from '@/components/ui/Drawer';
 import { LoadingPanel } from '@/components/ui/Spinner';
 import { EditVehicleDrawer } from './EditVehicleDrawer';
 import { useAuthStore } from '@/store/authStore';
 import { canEditRecord } from '@/lib/editWindow';
-import { formatConsumption, formatKm, formatPercent } from '@/lib/utils';
+import { formatConsumption, formatKm, formatLiters, formatPercent } from '@/lib/utils';
 
 export function VehicleDetailPanel({ vehicleId }: { vehicleId: number }) {
   const { t } = useTranslation();
@@ -18,12 +18,25 @@ export function VehicleDetailPanel({ vehicleId }: { vehicleId: number }) {
   const [editOpen, setEditOpen] = useState(false);
 
   const detail = useQuery({ queryKey: ['vehicles', 'detail', vehicleId], queryFn: () => vehicleApi.get(vehicleId) });
+  // Repli quand le camion n'a pas de jauge physique (la grande majorite du parc) :
+  // niveau estime cote backend a partir des pleins et de la distance GPS.
+  const tankLevel = useQuery({
+    queryKey: ['fuel', 'tank-level', vehicleId],
+    queryFn: () => fuelApi.tankLevel(vehicleId),
+    enabled: detail.data?.fuelLevelPercent == null,
+  });
 
   if (detail.isLoading || !detail.data) {
     return <LoadingPanel />;
   }
 
   const vehicle = detail.data;
+  const tankEstimate = vehicle.fuelLevelPercent == null && tankLevel.data?.source !== 'INDISPONIBLE'
+    ? tankLevel.data : null;
+  const displayedFuelPercent = vehicle.fuelLevelPercent ?? tankEstimate?.estimatedFuelPercent ?? null;
+  // Sans capacite de reservoir renseignee, l'estimation ne peut pas se
+  // traduire en pourcentage -- on retombe alors sur le litrage brut.
+  const displayedFuelLiters = displayedFuelPercent === null ? tankEstimate?.estimatedFuelLiters ?? null : null;
 
   return (
     <div className="space-y-5">
@@ -60,7 +73,8 @@ export function VehicleDetailPanel({ vehicleId }: { vehicleId: number }) {
         <div className="rounded-lg bg-slate-50 p-3 text-center dark:bg-slate-800/50">
           <Wrench size={16} className="mx-auto text-slate-400" />
           <p className="mt-1.5 text-sm font-semibold tabular text-slate-800 dark:text-slate-200">
-            {formatPercent(vehicle.fuelLevelPercent)}
+            {vehicle.fuelLevelPercent == null && (displayedFuelPercent != null || displayedFuelLiters != null) && '≈ '}
+            {displayedFuelPercent !== null ? formatPercent(displayedFuelPercent) : formatLiters(displayedFuelLiters)}
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('vehiclesPage.colFuel')}</p>
         </div>

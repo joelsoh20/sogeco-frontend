@@ -19,18 +19,29 @@ import { missionApi, fuelApi, alertApi, driverApi, trackingApi } from '@/api/end
 import { reportApi } from '@/api/compliance';
 import { useAuthStore } from '@/store/authStore';
 import { alertSourceRoute } from '@/lib/alertNavigation';
-import { formatAge, formatFcfa, formatKm, formatLiters, formatNumber } from '@/lib/utils';
+import { formatAge, formatFcfa, formatKm, formatLiters, formatNumber, toLocalDateString } from '@/lib/utils';
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalDateString(new Date());
 }
 function firstOfMonth(): string {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  return toLocalDateString(new Date(now.getFullYear(), now.getMonth(), 1));
 }
-function sixMonthsAgo(): string {
+/**
+ * Pour la courbe "Performance de la flotte" : le mois en cours n'a pas encore
+ * fini d'accumuler ses couts (ReportingService.fleetPerformance le plafonne
+ * a "aujourd'hui"), donc l'inclure ferait chuter le dernier point vers zero
+ * en comparaison des mois precedents, entierement ecoules — un artefact,
+ * pas une vraie tendance. On s'arrete donc au dernier mois complet.
+ */
+function lastCompleteMonthEnd(): string {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString().slice(0, 10);
+  return toLocalDateString(new Date(now.getFullYear(), now.getMonth(), 0));
+}
+function sixCompleteMonthsAgo(): string {
+  const now = new Date();
+  return toLocalDateString(new Date(now.getFullYear(), now.getMonth() - 6, 1));
 }
 
 /**
@@ -61,8 +72,8 @@ export function HomePage() {
   const missionList = useQuery({ queryKey: ['missions', 'list-home'], queryFn: () => missionApi.list(0, 50), enabled: canSeeMissions });
   const criticalAlerts = useQuery({ queryKey: ['alerts', 'recent'], queryFn: alertApi.recent, enabled: canSeeAlerts });
   const trend = useQuery({
-    queryKey: ['reports', 'fleet-performance', sixMonthsAgo(), today()],
-    queryFn: () => reportApi.fleetPerformance(sixMonthsAgo(), today()),
+    queryKey: ['reports', 'fleet-performance', sixCompleteMonthsAgo(), lastCompleteMonthEnd()],
+    queryFn: () => reportApi.fleetPerformance(sixCompleteMonthsAgo(), lastCompleteMonthEnd()),
     enabled: canSeeReports,
   });
   const costMonth = useQuery({

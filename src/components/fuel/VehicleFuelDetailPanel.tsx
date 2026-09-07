@@ -7,7 +7,7 @@ import { VehicleStatusBadge } from '@/components/ui/StatusBadge';
 import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { fuelApi, vehicleApi } from '@/api/endpoints';
-import { cn, formatConsumption, formatDate, formatFcfa, formatKm, formatNumber, fuelLevelColor } from '@/lib/utils';
+import { cn, formatConsumption, formatDate, formatFcfa, formatKm, formatLiters, formatNumber, fuelLevelColor } from '@/lib/utils';
 import type { FuelStats } from '@/types/api';
 
 interface VehicleFuelDetailPanelProps {
@@ -28,6 +28,13 @@ export function VehicleFuelDetailPanel({ vehicleId, breakdown }: VehicleFuelDeta
   const { t } = useTranslation();
   const vehicle = useQuery({ queryKey: ['vehicles', 'detail', vehicleId], queryFn: () => vehicleApi.get(vehicleId) });
   const history = useQuery({ queryKey: ['fuel', 'for-vehicle', vehicleId], queryFn: () => fuelApi.forVehicle(vehicleId) });
+  // Repli quand le camion n'a pas de jauge physique (la grande majorite du parc) :
+  // niveau estime cote backend a partir des pleins et de la distance GPS.
+  const tankLevel = useQuery({
+    queryKey: ['fuel', 'tank-level', vehicleId],
+    queryFn: () => fuelApi.tankLevel(vehicleId),
+    enabled: vehicle.data?.fuelLevelPercent == null,
+  });
 
   if (vehicle.isLoading) {
     return <LoadingPanel />;
@@ -35,6 +42,15 @@ export function VehicleFuelDetailPanel({ vehicleId, breakdown }: VehicleFuelDeta
   if (!vehicle.data) {
     return <p className="py-8 text-center text-sm text-slate-400">{t('vehicleFuelDetail.notFound')}</p>;
   }
+
+  const measuredPercent = vehicle.data.fuelLevelPercent;
+  const estimate = tankLevel.data;
+  const isEstimated = measuredPercent == null && estimate != null && estimate.source !== 'INDISPONIBLE';
+  const isApproximate = isEstimated && estimate?.source === 'ESTIMATION_APPROXIMATIVE';
+  const displayedPercent = measuredPercent ?? (isEstimated ? estimate!.estimatedFuelPercent : null);
+  // Sans capacite de reservoir renseignee sur la fiche du camion, l'estimation ne
+  // peut pas se traduire en pourcentage -- on retombe alors sur le litrage brut.
+  const displayedLiters = displayedPercent === null && isEstimated ? estimate!.estimatedFuelLiters : null;
 
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -60,18 +76,38 @@ export function VehicleFuelDetailPanel({ vehicleId, breakdown }: VehicleFuelDeta
         <VehicleStatusBadge status={vehicle.data.status} />
       </div>
 
-      {vehicle.data.fuelLevelPercent !== null && (
+      {(displayedPercent !== null || displayedLiters !== null) && (
         <div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">{t('vehicleFuelDetail.fuelLevel')}</span>
-            <span className="tabular font-medium text-slate-700 dark:text-slate-300">{formatNumber(vehicle.data.fuelLevelPercent, 0)}%</span>
+            <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+              {t('vehicleFuelDetail.fuelLevel')}
+              {isEstimated && (
+                <span
+                  title={t(isApproximate ? 'vehicleFuelDetail.fuelLevelApproximateTooltip' : 'vehicleFuelDetail.fuelLevelEstimatedTooltip')}
+                  className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                >
+                  {t(isApproximate ? 'vehicleFuelDetail.fuelLevelApproximate' : 'vehicleFuelDetail.fuelLevelEstimated')}
+                </span>
+              )}
+            </span>
+            <span className="tabular font-medium text-slate-700 dark:text-slate-300">
+              {displayedPercent !== null
+                ? <>{isEstimated && '≈ '}{formatNumber(displayedPercent, 0)}%</>
+                : <>≈ {formatLiters(displayedLiters)}</>}
+            </span>
           </div>
-          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div
-              className={cn('h-full', fuelLevelColor(vehicle.data.fuelLevelPercent))}
-              style={{ width: `${Math.min(vehicle.data.fuelLevelPercent, 100)}%` }}
-            />
-          </div>
+          {displayedPercent !== null ? (
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+              <div
+                className={cn('h-full', fuelLevelColor(displayedPercent), isApproximate && 'opacity-60')}
+                style={{ width: `${Math.min(displayedPercent, 100)}%` }}
+              />
+            </div>
+          ) : (
+            <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+              {t('vehicleFuelDetail.tankCapacityMissing')}
+            </p>
+          )}
         </div>
       )}
 
@@ -80,7 +116,7 @@ export function VehicleFuelDetailPanel({ vehicleId, breakdown }: VehicleFuelDeta
         {breakdown && (
           <>
             <DetailRow label={t('vehicleFuelDetail.periodCost')} value={formatFcfa(breakdown.cout)} />
-            <DetailRow label={t('vehicleFuelDetail.periodLiters')} value={`${formatNumber(breakdown.litres)} L`} />
+            <DetailRow label={t('vehicleFuelDetail.periodLiters')} value={formatLiters(breakdown.litres)} />
             <DetailRow label={t('vehicleFuelDetail.averageConsumption')} value={formatConsumption(breakdown.consommationMoyenne)} />
             <DetailRow label={t('vehicleFuelDetail.fleetCostShare')} value={`${formatNumber(breakdown.partPourcent, 1)} %`} />
           </>

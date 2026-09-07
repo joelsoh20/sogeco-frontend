@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Award, MapPin, Truck, Users, Wallet } from 'lucide-react';
+import { MapPin, Truck, Users, Wallet } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
 import { DataTable } from '@/components/ui/DataTable';
 import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { ScoreBadge } from '@/components/ui/ScoreBadge';
 import { VehicleExpenseChart } from '@/components/reports/VehicleExpenseChart';
 import { CityExpenseChart } from '@/components/reports/CityExpenseChart';
+import { VehicleProfitabilityPanel } from '@/components/reports/VehicleProfitabilityPanel';
 import { ClientListDrawer } from '@/components/clients/ClientListDrawer';
 import { reportApi } from '@/api/compliance';
-import { driverApi } from '@/api/endpoints';
-import { formatFcfa, formatFcfaCompact, formatFcfaCompactNumber, formatKm, formatNumber } from '@/lib/utils';
+import { adminApi, driverApi, vehicleApi } from '@/api/endpoints';
+import { formatFcfa, formatFcfaCompact, formatFcfaCompactNumber, formatNumber } from '@/lib/utils';
 import type { MonthlyAmount } from '@/types/compliance';
 
 const MONTH_LABELS_FR = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 const MONTH_LABELS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Villes ou l'entreprise a une implantation active. */
+const CITY_STATS_NAMES = ['Douala', 'Yaoundé', 'Bafoussam'];
 
 function amountFor(monthly: MonthlyAmount[], month: number): number {
   return monthly.find((m) => m.month === month)?.amount ?? 0;
@@ -52,10 +55,16 @@ export function ReportsPage() {
     queryFn: () => reportApi.cityExpenses(year),
   });
   const driverRanking = useQuery({ queryKey: ['drivers', 'ranking'], queryFn: driverApi.ranking });
+  const allCities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities });
+  const allVehicles = useQuery({ queryKey: ['vehicles', 'for-profitability'], queryFn: () => vehicleApi.list(0, 200) });
+  const vehicleProfitability = useQuery({
+    queryKey: ['reports', 'vehicle-profitability', year],
+    queryFn: () => reportApi.vehicles(`${year}-01-01`, `${year}-12-31`),
+  });
 
   const vehicles = vehicleExpenses.data ?? [];
   const cities = cityExpenses.data ?? [];
-  const topDrivers = (driverRanking.data ?? []).slice(0, 5);
+  const profitabilityCities = (allCities.data ?? []).filter((c) => CITY_STATS_NAMES.includes(c.name));
 
   const fleetTotal = vehicles.reduce((sum, v) => sum + v.yearTotal, 0);
   const costliestVehicle = vehicles[0]; // deja trie par yearTotal decroissant cote backend
@@ -202,38 +211,12 @@ export function ReportsPage() {
           )}
         </section>
 
-        <div className="card overflow-hidden">
-          <div className="flex items-center justify-between border-b border-surface-border px-5 py-4 dark:border-slate-800">
-            <h2 className="flex items-center gap-2 font-semibold text-slate-900 dark:text-slate-100">
-              <Award size={16} className="text-amber-500" />
-              {t('reportsPage.top5Drivers')}
-            </h2>
-          </div>
-          {driverRanking.isLoading ? <LoadingPanel /> : topDrivers.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-slate-400">{t('homePage.emptyRanking')}</p>
-          ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50">
-                <tr>
-                  <th className="table-header">{t('driversPage.colDriver')}</th>
-                  <th className="table-header text-right">{t('driversPage.colMissions')}</th>
-                  <th className="table-header text-right">{t('driversPage.colKm')}</th>
-                  <th className="table-header">{t('driversPage.colPerformance')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-border dark:divide-slate-800">
-                {topDrivers.map((d) => (
-                  <tr key={d.id}>
-                    <td className="table-cell font-medium">{d.fullName}</td>
-                    <td className="table-cell text-right tabular">{formatNumber(d.totalMissions)}</td>
-                    <td className="table-cell text-right tabular">{formatKm(d.totalKilometers)}</td>
-                    <td className="table-cell"><ScoreBadge score={d.performanceScore} ratingClass={d.ratingClass} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+        <VehicleProfitabilityPanel
+          vehicles={allVehicles.data?.content ?? []}
+          profitability={vehicleProfitability.data ?? []}
+          cities={profitabilityCities.map((c) => ({ id: c.id, name: c.name }))}
+          isLoading={allVehicles.isLoading || vehicleProfitability.isLoading}
+        />
       </div>
 
       <ClientListDrawer open={clientListOpen} onClose={() => setClientListOpen(false)} />

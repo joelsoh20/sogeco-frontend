@@ -12,13 +12,15 @@ const STYLES: Record<RatingClass, string> = {
 /**
  * Score de performance sur 100.
  *
- * Un score absent n'est pas un zero : c'est le cas d'un chauffeur avec
- * moins de trois missions dans le mois, pour lequel le backend refuse
- * volontairement de calculer une note (RG-9.8).
+ * Un score absent n'est pas un zero : c'est le cas d'un chauffeur sans
+ * aucune note saisie pour le mois, pour lequel le backend refuse
+ * volontairement de calculer une moyenne (RG-9.8). Peut arriver en
+ * null ou absent du JSON (Jackson omet les champs null cote backend),
+ * d'ou le == plutot que === ci-dessous.
  */
-export function ScoreBadge({ score, ratingClass }: { score: number | null; ratingClass: RatingClass }) {
+export function ScoreBadge({ score, ratingClass }: { score: number | null | undefined; ratingClass: RatingClass }) {
   const { t } = useTranslation();
-  if (score === null) {
+  if (score == null) {
     return <span className="text-xs text-slate-400 dark:text-slate-500">{t('status.ratingClass.insufficientActivity')}</span>;
   }
 

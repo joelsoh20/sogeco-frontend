@@ -171,7 +171,7 @@ export function DriverDetailPanel({ driverId }: { driverId: number }) {
         {canSeeSalary && <DetailRow label={t('driverDetail.currentBonus')} value={formatFcfa(driver.currentBonus)} />}
       </div>
 
-      {driver.performanceScore === null && (
+      {driver.performanceScore == null && (
         <div className="rounded-lg bg-slate-50 px-3.5 py-3 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-400">
           {t('driverDetail.noScore')}
         </div>

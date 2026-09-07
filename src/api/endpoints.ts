@@ -163,6 +163,9 @@ export const fuelApi = {
   tankLevels: (cityId?: number) =>
     api.get<TankLevel[]>(`${V1}/fuel-logs/tank-levels`, { params: { cityId } }).then((r) => r.data),
 
+  tankLevel: (vehicleId: number) =>
+    api.get<TankLevel>(`${V1}/fuel-logs/tank-levels/${vehicleId}`).then((r) => r.data),
+
   weeklyRefuel: (from?: string, to?: string, cityId?: number) =>
     api.get<WeeklyRefuel[]>(`${V1}/fuel-logs/weekly-refuel`, { params: { from, to, cityId } })
        .then((r) => r.data),

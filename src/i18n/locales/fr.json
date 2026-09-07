@@ -146,6 +146,13 @@
       "ANOMALIE": "Anomalie",
       "ANNULE": "Annulé"
     },
+    "ratingClass": {
+      "EXCELLENT": "Excellent",
+      "BON": "Bon",
+      "MOYEN": "Moyen",
+      "FAIBLE": "Faible",
+      "insufficientActivity": "Pas encore noté"
+    },
     "cancellationReason": {
       "PANNE": "Panne",
       "ANNULATION_CLIENT": "Annulation client",
@@ -411,13 +418,14 @@
     "subtitle": "Suivez la consommation, les coûts et les performances de vos véhicules",
     "allCities": "Toutes les villes",
     "statTotalCost": "Coût total carburant",
-    "statLitersConsumed": "Litres consommés",
+    "statLitersThisMonth": "Litres consommés ce mois",
+    "statLitersLastMonth": "Litres consommés le mois dernier",
     "statAvgConsumption": "Consommation moyenne",
     "statAvgCostPerKm": "Coût moyen / km",
     "statAnomalies": "Anomalies détectées",
     "trendTitle": "Consommation (6 derniers mois, Litres)",
     "costBreakdownTitle": "Répartition des coûts par camion",
-    "emptyMonthTitle": "Aucun plein enregistré ce mois",
+    "emptyMonthTitle": "Aucun plein enregistré ces 30 derniers jours",
     "emptyMonthAction": "Les coûts apparaîtront ici dès la première saisie de ravitaillement.",
     "fuelAlerts": "Alertes carburant",
     "searchPlaceholder": "Rechercher un camion, un chauffeur, une station…",
@@ -495,7 +503,11 @@
     "colTotalCost": "Coût total",
     "colAvgCost": "Coût moyen",
     "colReturnRate": "Taux de retour",
-    "intervention": "Intervention"
+    "intervention": "Intervention",
+    "vehicleBreakdown": "Passages au garage par camion",
+    "vehicleBreakdownHint": "Nombre de passages et carburant consommé sur place pour les essais, sur la période affichée",
+    "colGarageVisits": "Passages au garage",
+    "colTestFuel": "Carburant essais"
   },
 
   "missionsPage": {
@@ -531,10 +543,19 @@
     "expensesByCity": "Charges par ville",
     "emptyCityExpenses": "Aucun camion affecté à une ville",
     "colVehicles": "Camions",
-    "top5Drivers": "Top 5 Chauffeurs (Performance)",
     "statsByCity": "Statistiques par ville",
     "statBestDriver": "Meilleur chauffeur",
-    "amountsInFcfa": "montants en FCFA"
+    "amountsInFcfa": "montants en FCFA",
+    "vehicleProfitability": "Rentabilité par camion",
+    "vehicleProfitabilityHint": "Marge nette (chiffre d'affaires moins coûts directs et maintenance) sur l'année sélectionnée",
+    "wholeFleet": "Toute la flotte",
+    "categoryCamion": "Camions (porteur, fourgon, semi-remorque…)",
+    "categoryTricycle": "Tricycles",
+    "categoryCamionnette": "Camionnettes & voitures de livraison",
+    "mostProfitable": "Les plus rentables",
+    "leastProfitable": "Les moins rentables",
+    "emptyProfitability": "Aucun camion dans cette catégorie sur la période",
+    "revenueShort": "de CA"
   },
 
   "settingsPage": {
@@ -643,6 +664,8 @@
     "errorCodePlaceholder": "Remonté par le boîtier",
     "garage": "Garage (optionnel)",
     "odometer": "Kilométrage (optionnel)",
+    "testFuelLiters": "Carburant consommé au garage pour les essais (optionnel)",
+    "testFuelLitersHint": "Carburant utilisé sur place pour tester le camion (essais routiers), hors ravitaillement classique.",
     "nextInterventionDate": "Prochaine intervention — date (optionnel)",
     "nextInterventionKm": "Prochaine intervention — km (optionnel)",
     "items": "Pièces / prestations (optionnel)",
@@ -1020,7 +1043,7 @@
     "originAgency": "Agence de départ",
     "destinationAgency": "Agence d’arrivée",
     "originQuartierOptional": "Quartier ou marché de départ (optionnel)",
-    "destinationQuartierDeliveryOptional": "Quartier ou marché de livraison (optionnel)",
+    "destinationQuartierDelivery": "Quartier de livraison (optionnel)",
     "destinationQuartierArrivalOptional": "Quartier ou marché d’arrivée (optionnel)",
     "chooseOriginCityFirst": "Choisissez d’abord une ville de départ",
     "chooseDestinationCityFirst": "Choisissez d’abord une ville de destination",
@@ -1031,10 +1054,6 @@
     "estimatedDistance": "Distance estimée",
     "estimatedFuel": "Carburant estimé",
     "insufficientFuelWarning": "Carburant actuellement estimé insuffisant pour l'aller-retour : environ {{available}} L disponibles pour {{needed}} L nécessaires. Prévoyez un ravitaillement en route.",
-    "departureAddressOptional": "Adresse de départ (optionnel)",
-    "addressPrecisionOptional": "Précision d’adresse (optionnel)",
-    "destinationAddressOptional": "Adresse de destination (optionnel)",
-    "addressPlaceholder": "Numéro, repère…",
     "plannedStartOptional": "Départ prévu (optionnel)",
     "plannedStartHint": "Pour planifier à l'avance. La date qui fait foi reste celle du bouton « Démarrer ».",
     "plannedArrivalOptional": "Arrivée prévue (optionnel)",
@@ -1138,6 +1157,7 @@
   "maintenanceDetail": {
     "statusUpdated": "Statut mis à jour.",
     "garage": "Garage",
+    "testFuelLiters": "Carburant consommé (essais)",
     "errorCode": "Code défaut",
     "workshopReturn": "Retour atelier",
     "workshopReturnValue": "Oui — même camion, même type récemment",
@@ -1172,6 +1192,11 @@
   "vehicleFuelDetail": {
     "notFound": "Camion introuvable",
     "fuelLevel": "Niveau carburant",
+    "fuelLevelEstimated": "Estimé",
+    "fuelLevelEstimatedTooltip": "Pas de jauge sur ce camion : niveau estimé à partir des derniers pleins et de la distance parcourue depuis (suivi GPS).",
+    "fuelLevelApproximate": "Estimation approximative",
+    "fuelLevelApproximateTooltip": "Pas de jauge, et pas encore assez de pleins sur ce camion pour connaître sa propre consommation : niveau approché à partir de la consommation moyenne des camions similaires. Se précisera avec les prochains pleins.",
+    "tankCapacityMissing": "Capacité du réservoir non renseignée sur la fiche du camion : ajoutez-la pour afficher un pourcentage.",
     "periodCost": "Coût carburant (période)",
     "periodLiters": "Litres consommés (période)",
     "averageConsumption": "Consommation moyenne",
@@ -1254,7 +1279,7 @@
     "expiresIn": "Expire dans {{count}} j",
     "validFor": "Valide {{count}} j",
     "currentBonus": "Prime actuelle",
-    "noScore": "Aucun score calculé : ce chauffeur n'a pas atteint le minimum de missions requis pour une évaluation fiable.",
+    "noScore": "Aucun score calculé : aucune note n'a encore été saisie pour ce chauffeur ce mois-ci.",
     "performanceTrend": "Évolution de la performance",
     "actions": "Actions",
     "recentAlerts": "Alertes récentes",

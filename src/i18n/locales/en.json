@@ -149,6 +149,13 @@
       "ANOMALIE": "Anomaly",
       "ANNULE": "Cancelled"
     },
+    "ratingClass": {
+      "EXCELLENT": "Excellent",
+      "BON": "Good",
+      "MOYEN": "Average",
+      "FAIBLE": "Poor",
+      "insufficientActivity": "Not rated yet"
+    },
     "cancellationReason": {
       "PANNE": "Breakdown",
       "ANNULATION_CLIENT": "Client cancellation",
@@ -414,13 +421,14 @@
     "subtitle": "Track consumption, costs and performance of your vehicles",
     "allCities": "All cities",
     "statTotalCost": "Total fuel cost",
-    "statLitersConsumed": "Liters consumed",
+    "statLitersThisMonth": "Liters consumed this month",
+    "statLitersLastMonth": "Liters consumed last month",
     "statAvgConsumption": "Average consumption",
     "statAvgCostPerKm": "Average cost / km",
     "statAnomalies": "Anomalies detected",
     "trendTitle": "Consumption (last 6 months, Liters)",
     "costBreakdownTitle": "Cost breakdown by vehicle",
-    "emptyMonthTitle": "No fuel log recorded this month",
+    "emptyMonthTitle": "No fuel log recorded in the last 30 days",
     "emptyMonthAction": "Costs will appear here as soon as the first refuel is entered.",
     "fuelAlerts": "Fuel alerts",
     "searchPlaceholder": "Search a vehicle, driver, station…",
@@ -498,7 +506,11 @@
     "colTotalCost": "Total cost",
     "colAvgCost": "Average cost",
     "colReturnRate": "Return rate",
-    "intervention": "Intervention"
+    "intervention": "Intervention",
+    "vehicleBreakdown": "Garage visits by truck",
+    "vehicleBreakdownHint": "Number of visits and fuel consumed on site for test drives, over the displayed period",
+    "colGarageVisits": "Garage visits",
+    "colTestFuel": "Test-drive fuel"
   },
 
   "missionsPage": {
@@ -534,10 +546,19 @@
     "expensesByCity": "Expenses by city",
     "emptyCityExpenses": "No vehicle assigned to a city",
     "colVehicles": "Vehicles",
-    "top5Drivers": "Top 5 Drivers (Performance)",
     "statsByCity": "Statistics by city",
     "statBestDriver": "Best driver",
-    "amountsInFcfa": "amounts in FCFA"
+    "amountsInFcfa": "amounts in FCFA",
+    "vehicleProfitability": "Truck profitability",
+    "vehicleProfitabilityHint": "Net margin (revenue minus direct costs and maintenance) over the selected year",
+    "wholeFleet": "Whole fleet",
+    "categoryCamion": "Trucks (rigid, box, semi-trailer…)",
+    "categoryTricycle": "Tricycles",
+    "categoryCamionnette": "Vans & delivery cars",
+    "mostProfitable": "Most profitable",
+    "leastProfitable": "Least profitable",
+    "emptyProfitability": "No truck in this category for the period",
+    "revenueShort": "revenue"
   },
 
   "settingsPage": {
@@ -646,6 +667,8 @@
     "errorCodePlaceholder": "Reported by the onboard unit",
     "garage": "Garage (optional)",
     "odometer": "Odometer (optional)",
+    "testFuelLiters": "Fuel consumed at the garage for test drives (optional)",
+    "testFuelLitersHint": "Fuel used on site to test-drive the truck, separate from regular refueling.",
     "nextInterventionDate": "Next intervention — date (optional)",
     "nextInterventionKm": "Next intervention — km (optional)",
     "items": "Parts / services (optional)",
@@ -1023,7 +1046,7 @@
     "originAgency": "Origin agency",
     "destinationAgency": "Destination agency",
     "originQuartierOptional": "Departure neighborhood or market (optional)",
-    "destinationQuartierDeliveryOptional": "Delivery neighborhood or market (optional)",
+    "destinationQuartierDelivery": "Delivery neighborhood (optional)",
     "destinationQuartierArrivalOptional": "Arrival neighborhood or market (optional)",
     "chooseOriginCityFirst": "Choose an origin city first",
     "chooseDestinationCityFirst": "Choose a destination city first",
@@ -1034,10 +1057,6 @@
     "estimatedDistance": "Estimated distance",
     "estimatedFuel": "Estimated fuel",
     "insufficientFuelWarning": "Currently estimated fuel is insufficient for the round trip: about {{available}} L available for {{needed}} L needed. Plan a refuel along the way.",
-    "departureAddressOptional": "Departure address (optional)",
-    "addressPrecisionOptional": "Address detail (optional)",
-    "destinationAddressOptional": "Destination address (optional)",
-    "addressPlaceholder": "Number, landmark…",
     "plannedStartOptional": "Planned departure (optional)",
     "plannedStartHint": "To plan ahead. The authoritative time remains the one set by the \"Start\" button.",
     "plannedArrivalOptional": "Planned arrival (optional)",
@@ -1141,6 +1160,7 @@
   "maintenanceDetail": {
     "statusUpdated": "Status updated.",
     "garage": "Garage",
+    "testFuelLiters": "Fuel consumed (test drives)",
     "errorCode": "Error code",
     "workshopReturn": "Repeat visit",
     "workshopReturnValue": "Yes — same vehicle, same type recently",
@@ -1175,6 +1195,11 @@
   "vehicleFuelDetail": {
     "notFound": "Vehicle not found",
     "fuelLevel": "Fuel level",
+    "fuelLevelEstimated": "Estimated",
+    "fuelLevelEstimatedTooltip": "No gauge on this truck: level estimated from the latest fill-ups and the distance driven since (GPS tracking).",
+    "fuelLevelApproximate": "Rough estimate",
+    "fuelLevelApproximateTooltip": "No gauge, and not enough fill-ups on this truck yet to know its own consumption: level approximated from the average consumption of similar trucks. Will get more accurate with the next fill-ups.",
+    "tankCapacityMissing": "Tank capacity not set on this truck's profile: add it to display a percentage.",
     "periodCost": "Fuel cost (period)",
     "periodLiters": "Liters consumed (period)",
     "averageConsumption": "Average consumption",
@@ -1257,7 +1282,7 @@
     "expiresIn": "Expires in {{count}} d",
     "validFor": "Valid {{count}} d",
     "currentBonus": "Current bonus",
-    "noScore": "No score calculated: this driver hasn't reached the minimum number of missions required for a reliable evaluation.",
+    "noScore": "No score calculated: no rating has been entered for this driver this month yet.",
     "performanceTrend": "Performance trend",
     "actions": "Actions",
     "recentAlerts": "Recent alerts",

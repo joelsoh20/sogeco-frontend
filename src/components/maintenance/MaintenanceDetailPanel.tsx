@@ -10,7 +10,7 @@ import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
 import { useAuthStore } from '@/store/authStore';
 import { canEditRecord } from '@/lib/editWindow';
-import { formatDate, formatFcfa, formatKm } from '@/lib/utils';
+import { formatDate, formatFcfa, formatKm, formatLiters, toLocalDateString } from '@/lib/utils';
 import { MaintenanceCategoryBadge, MaintenanceStatusBadge } from './MaintenanceBadges';
 import { EditMaintenanceDrawer } from './EditMaintenanceDrawer';
 import type { MaintenanceLog } from '@/types/api';
@@ -26,7 +26,7 @@ export function MaintenanceDetailPanel({ log }: { log: MaintenanceLog }) {
 
   const changeStatus = useMutation({
     mutationFn: (status: string) =>
-      maintenanceApi.changeStatus(log.id, status, status === 'TERMINEE' ? new Date().toISOString().slice(0, 10) : undefined),
+      maintenanceApi.changeStatus(log.id, status, status === 'TERMINEE' ? toLocalDateString(new Date()) : undefined),
     onSuccess: () => {
       toast.success(t('maintenanceDetail.statusUpdated'));
       queryClient.invalidateQueries({ queryKey: ['maintenance'] });
@@ -79,6 +79,9 @@ export function MaintenanceDetailPanel({ log }: { log: MaintenanceLog }) {
         <DetailRow label={t('compliancePage.colDate')} value={formatDate(log.interventionDate)} />
         <DetailRow label={t('maintenanceDetail.garage')} value={log.garageName ?? '—'} />
         <DetailRow label={t('vehicleDetail.mileage')} value={formatKm(log.odometerKm)} />
+        {log.testFuelLiters != null && (
+          <DetailRow label={t('maintenanceDetail.testFuelLiters')} value={formatLiters(log.testFuelLiters)} />
+        )}
         {log.errorCode && <DetailRow label={t('maintenanceDetail.errorCode')} value={log.errorCode} />}
         {log.isRecurrence && (
           <DetailRow label={t('maintenanceDetail.workshopReturn')} value={<span className="text-amber-600 dark:text-amber-400">{t('maintenanceDetail.workshopReturnValue')}</span>} />

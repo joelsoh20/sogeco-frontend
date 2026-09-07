@@ -50,8 +50,9 @@ export function formatKm(value: number | null | undefined): string {
   return value === null || value === undefined ? '—' : `${formatNumber(value)} km`;
 }
 
+/** Les litres sont saisis et stockes au centieme pres (NUMERIC(8,2)) : on affiche la valeur exacte, sans arrondir. */
 export function formatLiters(value: number | null | undefined): string {
-  return value === null || value === undefined ? '—' : `${formatNumber(value)} L`;
+  return value === null || value === undefined ? '—' : `${formatNumber(value, 2)} L`;
 }
 
 export function formatConsumption(value: number | null | undefined): string {
@@ -91,4 +92,18 @@ export function formatDate(iso: string | null | undefined): string {
   return new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit', month: '2-digit', year: 'numeric',
   }).format(new Date(iso));
+}
+
+/**
+ * Date locale (annee-mois-jour du fuseau du navigateur) au format ISO
+ * YYYY-MM-DD, sans passer par toISOString() : celle-ci convertit d'abord
+ * en UTC, ce qui decale la date d'un jour pour tout fuseau en avance sur
+ * UTC (dont Africa/Douala, UTC+1) — un `new Date(annee, mois, 1)` cree a
+ * minuit local peut ainsi ressortir comme la veille apres conversion.
+ */
+export function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

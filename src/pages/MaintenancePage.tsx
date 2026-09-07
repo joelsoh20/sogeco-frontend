@@ -18,7 +18,7 @@ import { MaintenanceDetailPanel } from '@/components/maintenance/MaintenanceDeta
 import { MaintenanceCityStatsDrawer } from '@/components/maintenance/MaintenanceCityStatsDrawer';
 import { maintenanceApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
-import { formatDate, formatFcfa, formatFcfaCompact, formatPercent } from '@/lib/utils';
+import { formatDate, formatFcfa, formatFcfaCompact, formatLiters, formatPercent } from '@/lib/utils';
 import type { MaintenanceCategory, MaintenanceStatus } from '@/types/api';
 
 const PAGE_SIZE = 20;
@@ -271,6 +271,35 @@ export function MaintenancePage() {
                     <td className={`table-cell text-right tabular ${garage.recurrenceRate > 20 ? 'text-red-600 dark:text-red-400' : ''}`}>
                       {formatPercent(garage.recurrenceRate)}
                     </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {stats.data && stats.data.repartitionParCamion?.length > 0 && (
+          <div className="card overflow-hidden">
+            <div className="border-b border-surface-border px-5 py-4 dark:border-slate-800">
+              <h2 className="font-semibold text-slate-900 dark:text-slate-100">{t('maintenancePage.vehicleBreakdown')}</h2>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                {t('maintenancePage.vehicleBreakdownHint')}
+              </p>
+            </div>
+            <table className="w-full">
+              <thead className="bg-slate-50 dark:bg-slate-800/50">
+                <tr>
+                  <th className="table-header">{t('compliancePage.colVehicle')}</th>
+                  <th className="table-header text-right">{t('maintenancePage.colGarageVisits')}</th>
+                  <th className="table-header text-right">{t('maintenancePage.colTestFuel')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-surface-border dark:divide-slate-800">
+                {stats.data.repartitionParCamion.map((row) => (
+                  <tr key={row.vehicleId}>
+                    <td className="table-cell font-medium">{row.registrationNumber}</td>
+                    <td className="table-cell text-right tabular">{row.passagesGarage}</td>
+                    <td className="table-cell text-right tabular">{formatLiters(row.carburantEssaiLitres)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -108,6 +108,19 @@ export function FuelPage() {
   const selectedBreakdown = stats.data?.repartitionParCamion.find((r) => r.vehicleId === selectedVehicleId);
   const selectedVehicleLabel = allLogs.find((l) => l.vehicleId === selectedVehicleId)?.registrationNumber;
 
+  // consommationSixMois est independant de la periode affichee par les autres cartes
+  // (toujours les 6 derniers mois calendaires pleins, cote backend) : on y retrouve
+  // directement le mois en cours et le mois precedent, sans nouvel appel.
+  const now = new Date();
+  const monthKey = (offset: number) => {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+  };
+  const litersForMonth = (offset: number) =>
+    stats.data?.consommationSixMois.find((m) => m.month.startsWith(monthKey(offset)))?.litres ?? 0;
+  const litersThisMonth = litersForMonth(0);
+  const litersLastMonth = litersForMonth(-1);
+
   return (
     <PageShell
       title={t('fuelPage.title')}
@@ -131,7 +144,6 @@ export function FuelPage() {
 
           <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
             <StatCard label={t('fuelPage.statTotalCost')} value={formatFcfaCompact(stats.data?.coutTotal)} icon={Fuel} accent="amber" />
-            <StatCard label={t('fuelPage.statLitersConsumed')} value={formatLiters(stats.data?.litresConsommes)} icon={Gauge} accent="slate" />
             <StatCard label={t('fuelPage.statAvgConsumption')} value={formatConsumption(stats.data?.consommationMoyenne)} lowerIsBetter accent="blue" />
             <StatCard
               label={t('fuelPage.statAvgCostPerKm')}
@@ -146,6 +158,8 @@ export function FuelPage() {
               icon={AlertTriangle}
               accent={(stats.data?.nombreAnomalies ?? 0) > 0 ? 'red' : 'slate'}
             />
+            <StatCard label={t('fuelPage.statLitersThisMonth')} value={formatLiters(litersThisMonth)} icon={Gauge} accent="blue" />
+            <StatCard label={t('fuelPage.statLitersLastMonth')} value={formatLiters(litersLastMonth)} icon={Gauge} accent="slate" />
           </StatGrid>
 
           <div className="card-padded">
@@ -250,7 +264,7 @@ export function FuelPage() {
                 { header: t('compliancePage.colVehicle'), accessor: (l) => <span className="font-medium">{l.registrationNumber}</span> },
                 { header: t('driversPage.colDriver'), accessor: (l) => l.driverName ?? '—' },
                 { header: t('fuelPage.colStation'), accessor: (l) => l.stationName ?? '—' },
-                { header: t('fuelPage.colLiters'), accessor: (l) => `${formatNumber(l.quantityLiters)} L`, align: 'right' },
+                { header: t('fuelPage.colLiters'), accessor: (l) => formatLiters(l.quantityLiters), align: 'right' },
                 { header: t('compliancePage.colCost'), accessor: (l) => formatFcfa(l.totalCost), align: 'right' },
                 { header: t('fuelPage.colOdometerBefore'), accessor: (l) => formatKm(l.odometerBefore), align: 'right' },
                 { header: t('fuelPage.colOdometerAfter'), accessor: (l) => formatKm(l.odometerAfter), align: 'right' },
@@ -295,7 +309,7 @@ export function FuelPage() {
                       onClick={() => setSelectedVehicleId(row.vehicleId)}
                     >
                       <td className="table-cell font-medium">{row.registrationNumber}</td>
-                      <td className="table-cell text-right tabular">{formatNumber(row.litres)} L</td>
+                      <td className="table-cell text-right tabular">{formatLiters(row.litres)}</td>
                       <td className="table-cell text-right tabular">{formatFcfa(row.cout)}</td>
                       <td className="table-cell text-right tabular">{formatConsumption(row.consommationMoyenne)}</td>
                       <td className="table-cell text-right tabular">{formatNumber(row.partPourcent, 1)} %</td>

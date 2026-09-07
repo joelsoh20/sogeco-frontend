@@ -18,7 +18,7 @@ import { DriverDetailPanel } from '@/components/drivers/DriverDetailPanel';
 import { CreateDriverDrawer } from '@/components/drivers/CreateDriverDrawer';
 import { adminApi, alertApi, driverApi, fuelApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
-import { formatConsumption, formatKm, formatNumber } from '@/lib/utils';
+import { formatConsumption, formatKm, formatNumber, toLocalDateString } from '@/lib/utils';
 
 const STATUS_KEYS: Record<string, string> = {
   ACTIF: 'driversPage.statusActive',
@@ -32,10 +32,10 @@ const CITY_STATS_NAMES = ['Douala', 'Yaoundé', 'Bafoussam'];
 
 function firstOfMonth(): string {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  return toLocalDateString(new Date(now.getFullYear(), now.getMonth(), 1));
 }
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalDateString(new Date());
 }
 
 /** Meme six chiffres que le tableau de bord flotte, restreints a une seule ville. */

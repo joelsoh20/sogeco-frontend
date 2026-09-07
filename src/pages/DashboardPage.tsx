@@ -132,7 +132,7 @@ export function DashboardPage() {
                 label={t('dashboard.fuelCost')}
                 value={formatFcfaCompact(fuel.data?.coutTotal)}
                 icon={Fuel}
-                hint={t('dashboard.litersConsumed', { count: formatNumber(fuel.data?.litresConsommes) })}
+                hint={t('dashboard.litersConsumed', { count: formatNumber(fuel.data?.litresConsommes, 2) })}
                 accent="amber"
               />
               <StatCard

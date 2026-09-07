@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { adminApi, clientApi, driverApi, fuelApi, geocodingApi, missionApi, quartierApi, serviceTypeApi, vehicleApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
-import { formatConsumption, formatKm } from '@/lib/utils';
+import { formatConsumption, formatKm, formatLiters, formatNumber } from '@/lib/utils';
 import { MissionRouteMap, type RoutePoint } from './MissionRouteMap';
 import type { City, CreateMissionRequest, MissionDetail } from '@/types/api';
 
@@ -35,8 +35,6 @@ interface FormValues {
   destinationCityId: string;
   originQuartierId: string;
   destinationQuartierId: string;
-  departureAddress: string;
-  destinationAddress: string;
   plannedStart: string;
   plannedArrival: string;
   cargoDescription: string;
@@ -320,8 +318,6 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       destinationCityId: '',
       originQuartierId: '',
       destinationQuartierId: '',
-      departureAddress: '',
-      destinationAddress: '',
       plannedStart: toLocalInput(mission.plannedStart),
       plannedArrival: toLocalInput(mission.plannedArrival),
       cargoDescription: mission.cargoDescription ?? '',
@@ -359,8 +355,6 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       destinationCityId: values.destinationCityId ? Number(values.destinationCityId) : undefined,
       originQuartierId: values.originQuartierId ? Number(values.originQuartierId) : undefined,
       destinationQuartierId: values.destinationQuartierId ? Number(values.destinationQuartierId) : undefined,
-      departureAddress: values.departureAddress || undefined,
-      destinationAddress: values.destinationAddress || undefined,
       plannedStart: toInstant(values.plannedStart),
       plannedArrival: toInstant(values.plannedArrival),
       cargoDescription: values.cargoDescription || undefined,
@@ -478,7 +472,10 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
                   className="input"
                   {...register('originCityId', {
                     required: t('missionForm.requiredForTrip'),
-                    onChange: () => setValue('vehicleId', ''),
+                    onChange: () => {
+                      setValue('vehicleId', '');
+                      if (!destinationCityId) setMapTarget('destination');
+                    },
                   })}
                 >
                   <option value="">{t('common.selectPlaceholder')}</option>
@@ -511,7 +508,13 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <label className="label">{t('missionForm.originAgency')}</label>
-                <select className="input" {...register('agencyId', { required: t('missionForm.requiredForTrip') })}>
+                <select
+                  className="input"
+                  {...register('agencyId', {
+                    required: t('missionForm.requiredForTrip'),
+                    onChange: () => { if (!destinationAgencyId) setMapTarget('destination'); },
+                  })}
+                >
                   <option value="">{t('common.selectPlaceholder')}</option>
                   {agencies.data?.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
@@ -545,7 +548,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
                 )}
               </div>
               <div>
-                <label className="label">{t('missionForm.destinationQuartierDeliveryOptional')}</label>
+                <label className="label">{t('missionForm.destinationQuartierDelivery')}</label>
                 <select
                   className="input disabled:opacity-60"
                   disabled={!destinationCityId}
@@ -627,7 +630,10 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
                 <select
                   className="input disabled:opacity-60"
                   disabled={!originCityId}
-                  {...register('agencyId', { required: t('missionForm.requiredForLocal') })}
+                  {...register('agencyId', {
+                    required: t('missionForm.requiredForLocal'),
+                    onChange: () => { if (!destinationAgencyId) setMapTarget('destination'); },
+                  })}
                 >
                   <option value="">{originCityId ? t('common.selectPlaceholder') : t('missionAutomationForm.chooseCityFirst')}</option>
                   {agenciesForLocalCity.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -710,7 +716,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
                     <span className="font-semibold tabular text-slate-900 dark:text-slate-100">
                       {formatConsumption(estimate.data.distanceKm
                         ? (estimate.data.estimatedFuelLiters / estimate.data.distanceKm) * 100
-                        : null)} · {estimate.data.estimatedFuelLiters.toFixed(0)} L
+                        : null)} · {formatLiters(estimate.data.estimatedFuelLiters)}
                     </span>
                   </div>
                 )}
@@ -728,29 +734,12 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
             <AlertTriangle size={15} className="mt-0.5 shrink-0" />
             <span>
               {t('missionForm.insufficientFuelWarning', {
-                available: vehicleTankLevel!.estimatedFuelLiters!.toFixed(0),
-                needed: roundTripFuelNeeded!.toFixed(0),
+                available: formatNumber(vehicleTankLevel!.estimatedFuelLiters!, 2),
+                needed: formatNumber(roundTripFuelNeeded!, 2),
               })}
             </span>
           </div>
         )}
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="label">{t('missionForm.departureAddressOptional')}</label>
-            <input className="input" {...register('departureAddress')} />
-          </div>
-          <div>
-            <label className="label">
-              {isVoyageHorsVille ? t('missionForm.addressPrecisionOptional') : t('missionForm.destinationAddressOptional')}
-            </label>
-            <input
-              className="input"
-              placeholder={isVoyageHorsVille ? t('missionForm.addressPlaceholder') : undefined}
-              {...register('destinationAddress')}
-            />
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>

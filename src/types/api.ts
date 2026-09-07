@@ -539,9 +539,15 @@ export interface FuelStats {
   }[];
 }
 
-export type TankLevelSource = 'TELEMATIQUE' | 'ESTIMATION_DISTANCE' | 'INDISPONIBLE';
+export type TankLevelSource = 'TELEMATIQUE' | 'ESTIMATION_DISTANCE' | 'ESTIMATION_APPROXIMATIVE' | 'INDISPONIBLE';
 
-/** Niveau de reservoir estime par camion — telematique si disponible, sinon estimation plein-a-plein. */
+/**
+ * Niveau de reservoir estime par camion — telematique si disponible ;
+ * sinon estimation plein-a-plein propre au camion (ESTIMATION_DISTANCE) ;
+ * sinon, faute d'historique propre, estimation approximative basee sur
+ * la consommation moyenne des camions de meme carrosserie
+ * (ESTIMATION_APPROXIMATIVE).
+ */
 export interface TankLevel {
   vehicleId: number;
   registrationNumber: string;
@@ -695,6 +701,7 @@ export interface MaintenanceLog {
   interventionDate: string;
   completionDate: string | null;
   odometerKm: number | null;
+  testFuelLiters: number | null;
   partsCost: number;
   laborCost: number;
   totalCost: number;
@@ -733,6 +740,7 @@ export interface MaintenanceRequest {
   interventionDate: string;
   completionDate?: string;
   odometerKm?: number;
+  testFuelLiters?: number;
   isBreakdown?: boolean;
   errorCode?: string;
   nextInterventionDate?: string;
@@ -762,6 +770,12 @@ export interface MaintenanceStats {
     averageCost: number;
     recurrences: number;
     recurrenceRate: number;
+  }[];
+  repartitionParCamion: {
+    vehicleId: number;
+    registrationNumber: string;
+    passagesGarage: number;
+    carburantEssaiLitres: number;
   }[];
   tendanceCouts: {
     date: string;
