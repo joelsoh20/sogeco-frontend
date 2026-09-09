@@ -288,6 +288,7 @@
     "tabClaims": "Claims",
     "tabCartesBleues": "Blue cards",
     "tabCartesGrises": "Registration cards",
+    "tabCartesRoses": "Pink cards",
     "tabLicenses": "Transport licenses",
 
     "claimTypeCollision": "Collision",
@@ -316,6 +317,7 @@
     "declareClaim": "Declare a claim",
     "newCarteBleue": "New blue card",
     "newCarteGrise": "New registration card",
+    "newCarteRose": "New pink card",
     "newLicense": "New transport license",
 
     "emptyPoliciesTitle": "No policy recorded",
@@ -328,6 +330,8 @@
     "emptyCartesBleuesAction": "Add a vehicle's blue card to start tracking.",
     "emptyCartesGrisesTitle": "No registration card recorded",
     "emptyCartesGrisesAction": "Add a vehicle's registration card to start tracking.",
+    "emptyCartesRosesTitle": "No pink card recorded",
+    "emptyCartesRosesAction": "Add a vehicle's pink card to start tracking.",
     "emptyLicensesTitle": "No transport license recorded",
     "emptyLicensesAction": "Add the license covering the whole fleet.",
 
@@ -335,7 +339,7 @@
     "colInsurer": "Insurer",
     "colVehicle": "Vehicle",
     "colDueDate": "Due date",
-    "colPremium": "Premium",
+    "colPremium": "Price",
     "colStatus": "Status",
     "colDate": "Date",
     "colCenter": "Center",
@@ -558,7 +562,12 @@
     "mostProfitable": "Most profitable",
     "leastProfitable": "Least profitable",
     "emptyProfitability": "No truck in this category for the period",
-    "revenueShort": "revenue"
+    "revenueShort": "revenue",
+    "costRanking": "Most / least costly vehicles",
+    "costRankingHint": "Fuel, upkeep and maintenance combined — total for the selected year",
+    "mostCostly": "Most costly",
+    "leastCostly": "Least costly",
+    "thisMonthShort": "this month"
   },
 
   "settingsPage": {
@@ -719,9 +728,8 @@
     "suspiciousQuantityDefaultHint": "(usual capacity for this type of vehicle)",
     "suspiciousQuantityCheck": "Check the entry before validating.",
     "odometerReading": "Odometer reading",
+    "odometerReadingHint": "Used as a reference to check the mileage is progressing, and as a fallback to compute distance traveled if GPS tracking is unavailable for this trip.",
     "lastKnownOdometer": "Last known odometer reading for this vehicle: {{km}} km",
-    "fullTank": "Full tank",
-    "fullTankHint": "Used to track the tank level. Consumption is computed for every refuel, full or partial.",
     "receiptNumber": "Receipt No. (optional)",
     "createSubmit": "Save refuel",
     "createSuccess": "Refuel recorded on {{registration}}.",
@@ -834,6 +842,23 @@
     "success": "Registration card recorded.",
     "editTitle": "Edit registration card",
     "editSuccess": "Registration card updated."
+  },
+
+  "carteRoseForm": {
+    "title": "New pink card",
+    "subtitle": "CEMAC insurance certificate specific to a vehicle",
+    "insuredName": "Insured name and address",
+    "insuredAddressOptional": "Insured address (optional)",
+    "issuingBureauName": "Issuing bureau name",
+    "issuingBureauAddressOptional": "Issuing bureau address (optional)",
+    "vehicleMakeType": "Vehicle make and type",
+    "vehicleCategory": "Vehicle category",
+    "validFrom": "Valid from",
+    "validTo": "Valid to (optional)",
+    "validToHint": "Automatically computed (+1 year) if left blank",
+    "success": "Pink card recorded.",
+    "editTitle": "Edit pink card",
+    "editSuccess": "Pink card updated."
   },
 
   "carteBleueForm": {
@@ -1344,7 +1369,19 @@
     "emptyTitle": "No deadline in the next 90 days",
     "emptyAction": "Insurance, technical inspections and licenses are all up to date.",
     "overdueBy": "Overdue by {{count}} d",
-    "dueIn": "In {{count}} d"
+    "dueIn": "In {{count}} d",
+    "itemClickHint": "Click to update this document"
+  },
+
+  "missingDocuments": {
+    "title": "Missing documents",
+    "subtitle": "{{count}} document(s) never recorded for an active vehicle",
+    "add": "Add",
+    "categoryAssurance": "Insurance",
+    "categoryInspection": "Technical inspection",
+    "categoryCarteBleue": "Blue card",
+    "categoryCarteGrise": "Registration card",
+    "categoryCarteRose": "Pink card"
   },
 
   "policyForm": {
@@ -1356,6 +1393,7 @@
     "category": "Category",
     "startDate": "Start",
     "endDate": "End",
+    "price": "Price (FCFA)",
     "createSubmit": "Create policy",
     "success": "Insurance policy created.",
     "editTitle": "Edit insurance policy",

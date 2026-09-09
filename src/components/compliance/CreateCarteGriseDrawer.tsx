@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -28,8 +28,15 @@ interface FormValues {
   notes: string;
 }
 
+interface CreateCarteGriseDrawerProps {
+  open: boolean;
+  onClose: () => void;
+  /** Camion pre-selectionne — ouverture depuis le panneau des documents manquants. */
+  initialVehicleId?: number;
+}
+
 /** Perime 10 ans apres la delivrance (compliance.carte_grise_validity_years) — laisser vide calcule la date automatiquement. */
-export function CreateCarteGriseDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CreateCarteGriseDrawer({ open, onClose, initialVehicleId }: CreateCarteGriseDrawerProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +48,16 @@ export function CreateCarteGriseDrawer({ open, onClose }: { open: boolean; onClo
   });
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormValues>();
+
+  // Reinitialise a chaque ouverture : ce drawer reste monte en permanence
+  // (juste masque), un simple defaultValues ne serait donc pris en compte
+  // qu'a la toute premiere ouverture.
+  useEffect(() => {
+    if (open) {
+      reset({ vehicleId: initialVehicleId ? String(initialVehicleId) : '' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialVehicleId]);
 
   const create = useMutation({
     mutationFn: (payload: CarteGriseRequest) => complianceApi.createCarteGrise(payload),

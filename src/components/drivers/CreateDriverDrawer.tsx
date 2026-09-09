@@ -15,7 +15,6 @@ interface FormValues {
   firstName: string;
   lastName: string;
   phone: string;
-  hireDate: string;
   jobTitle: string;
   licenseNumber: string;
   licenseCategory: string;
@@ -86,7 +85,6 @@ export function CreateDriverDrawer({ open, onClose }: CreateDriverDrawerProps) {
       firstName: values.firstName,
       lastName: values.lastName,
       phone: values.phone || undefined,
-      hireDate: values.hireDate,
       jobTitle: values.jobTitle || undefined,
       licenseNumber: values.licenseNumber || undefined,
       licenseCategory: values.licenseCategory || undefined,
@@ -185,16 +183,9 @@ export function CreateDriverDrawer({ open, onClose }: CreateDriverDrawerProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="label">{t('driverForm.phoneOptional')}</label>
-            <input className="input" {...register('phone')} />
-          </div>
-          <div>
-            <label className="label">{t('driverForm.hireDate')}</label>
-            <input type="date" className="input" {...register('hireDate', { required: t('common.requiredField') })} />
-            {errors.hireDate && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.hireDate.message}</p>}
-          </div>
+        <div>
+          <label className="label">{t('driverForm.phoneOptional')}</label>
+          <input className="input" {...register('phone')} />
         </div>
 
         <div>

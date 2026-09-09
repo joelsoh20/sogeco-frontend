@@ -20,7 +20,6 @@ interface FormValues {
   quantityLiters: string;
   unitPrice: string;
   odometerAfter: string;
-  fullTank: boolean;
   receiptNumber: string;
 }
 
@@ -50,7 +49,7 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
   const stations = useQuery({ queryKey: ['partners', 'stations'], queryFn: () => partnerApi.active('STATION_SERVICE'), enabled: open });
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
-    defaultValues: { fuelDatetime: nowLocal(), fullTank: true },
+    defaultValues: { fuelDatetime: nowLocal() },
   });
 
   const selectedVehicleId = watch('vehicleId');
@@ -74,7 +73,7 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
     onSuccess: (log) => {
       toast.success(t('fuelForm.createSuccess', { registration: log.registrationNumber }));
       queryClient.invalidateQueries({ queryKey: ['fuel'] });
-      reset({ fuelDatetime: nowLocal(), fullTank: true });
+      reset({ fuelDatetime: nowLocal() });
       onClose();
     },
     onError: (e) => setError(errorMessage(e)),
@@ -94,14 +93,13 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
       // deja affiche a titre indicatif sous le champ "Km après" ci-dessous —
       // demander de le retaper serait une redondance pure.
       odometerAfter: Number(values.odometerAfter),
-      fullTank: values.fullTank,
       receiptNumber: values.receiptNumber || undefined,
     });
   };
 
   const handleClose = () => {
     setError(null);
-    reset({ fuelDatetime: nowLocal(), fullTank: true });
+    reset({ fuelDatetime: nowLocal() });
     onClose();
   };
 
@@ -185,21 +183,18 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
           <input type="number" className="input" {...register('odometerAfter', { required: t('common.requiredField') })} />
           {errors.odometerAfter ? (
             <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.odometerAfter.message}</p>
-          ) : selectedVehicle?.currentKilometers != null && (
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {t('fuelForm.lastKnownOdometer', { km: formatNumber(selectedVehicle.currentKilometers) })}
-            </p>
+          ) : (
+            <>
+              {selectedVehicle?.currentKilometers != null && (
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  {t('fuelForm.lastKnownOdometer', { km: formatNumber(selectedVehicle.currentKilometers) })}
+                </p>
+              )}
+              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+                {t('fuelForm.odometerReadingHint')}
+              </p>
+            </>
           )}
-        </div>
-
-        <div className="rounded-lg border border-surface-border p-3 dark:border-slate-700">
-          <label className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300">
-            <input type="checkbox" className="rounded" {...register('fullTank')} />
-            {t('fuelForm.fullTank')}
-          </label>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            {t('fuelForm.fullTankHint')}
-          </p>
         </div>
 
         <div>

@@ -21,7 +21,6 @@ interface FormValues {
   unitPrice: string;
   odometerBefore: string;
   odometerAfter: string;
-  fullTank: boolean;
   receiptNumber: string;
 }
 
@@ -70,7 +69,6 @@ export function EditFuelLogDrawer({ open, onClose, log }: EditFuelLogDrawerProps
         unitPrice: log.unitPrice.toString(),
         odometerBefore: log.odometerBefore?.toString() ?? '',
         odometerAfter: log.odometerAfter.toString(),
-        fullTank: log.fullTank,
         receiptNumber: log.receiptNumber ?? '',
       });
     }
@@ -98,7 +96,6 @@ export function EditFuelLogDrawer({ open, onClose, log }: EditFuelLogDrawerProps
       unitPrice: Number(values.unitPrice),
       odometerBefore: values.odometerBefore ? Number(values.odometerBefore) : undefined,
       odometerAfter: Number(values.odometerAfter),
-      fullTank: values.fullTank,
       receiptNumber: values.receiptNumber || undefined,
     });
   };
@@ -188,16 +185,6 @@ export function EditFuelLogDrawer({ open, onClose, log }: EditFuelLogDrawerProps
             <input type="number" className="input" {...register('odometerAfter', { required: t('common.requiredField') })} />
             {errors.odometerAfter && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.odometerAfter.message}</p>}
           </div>
-        </div>
-
-        <div className="rounded-lg border border-surface-border p-3 dark:border-slate-700">
-          <label className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300">
-            <input type="checkbox" className="rounded" {...register('fullTank')} />
-            {t('fuelForm.fullTank')}
-          </label>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            {t('fuelForm.fullTankHint')}
-          </p>
         </div>
 
         <div>

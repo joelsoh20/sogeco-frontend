@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { ShieldCheck, Wrench, IdCard, CreditCard, Car, FileBadge } from 'lucide-react';
+import { ShieldCheck, Wrench, IdCard, CreditCard, Car, FileBadge, Loader2, Stamp } from 'lucide-react';
 import type { DeadlineItem } from '@/types/compliance';
 import { DeadlineBadge } from '@/components/ui/DeadlineBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -11,6 +11,7 @@ const CATEGORY_ICON: Record<DeadlineItem['category'], typeof ShieldCheck> = {
   PERMIS: IdCard,
   CARTE_BLEUE: CreditCard,
   CARTE_GRISE: Car,
+  CARTE_ROSE: Stamp,
   LICENCE_TRANSPORT: FileBadge,
 };
 
@@ -20,7 +21,15 @@ const CATEGORY_ICON: Record<DeadlineItem['category'], typeof ShieldCheck> = {
  * concu pour produire — trois sources sans table commune, combinees
  * ici sans que leurs modeles n'aient eu a fusionner.
  */
-export function UnifiedSchedule({ items }: { items: DeadlineItem[] }) {
+interface UnifiedScheduleProps {
+  items: DeadlineItem[];
+  /** Ouvre le formulaire de mise a jour du document concerne par la ligne. */
+  onItemClick?: (item: DeadlineItem) => void;
+  /** Cle (categorie-entityId-dueDate) de la ligne en cours de resolution, pour l'indicateur de chargement. */
+  resolvingKey?: string | null;
+}
+
+export function UnifiedSchedule({ items, onItemClick, resolvingKey }: UnifiedScheduleProps) {
   const { t } = useTranslation();
 
   if (items.length === 0) {
@@ -42,11 +51,17 @@ export function UnifiedSchedule({ items }: { items: DeadlineItem[] }) {
       <ul className="divide-y divide-surface-border">
         {items.map((item) => {
           const Icon = CATEGORY_ICON[item.category];
+          const key = `${item.category}-${item.entityId}-${item.dueDate}`;
+          const resolving = resolvingKey === key;
           return (
-            <li key={`${item.category}-${item.entityId}-${item.dueDate}`}
-                className="flex items-center gap-3 px-5 py-3.5">
+            <li key={key}
+                onClick={onItemClick && !resolvingKey ? () => onItemClick(item) : undefined}
+                title={onItemClick ? t('unifiedSchedule.itemClickHint') : undefined}
+                className={`flex items-center gap-3 px-5 py-3.5 ${
+                  onItemClick ? 'cursor-pointer transition-colors hover:bg-slate-50' : ''
+                } ${resolvingKey && !resolving ? 'opacity-60' : ''}`}>
               <div className="rounded-lg bg-slate-50 p-2 text-slate-400">
-                <Icon size={16} />
+                {resolving ? <Loader2 size={16} className="animate-spin" /> : <Icon size={16} />}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-slate-800">{item.entityLabel}</p>

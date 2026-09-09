@@ -106,7 +106,7 @@ export interface CreateDriverRequest {
   lastName: string;
   phone?: string;
   birthDate?: string;
-  hireDate: string;
+  hireDate?: string;
   jobTitle?: string;
   licenseNumber?: string;
   licenseCategory?: string;

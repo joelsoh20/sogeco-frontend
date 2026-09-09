@@ -21,6 +21,7 @@ interface FormValues {
   vehicleRegistration: string;
   startDate: string;
   endDate: string;
+  premiumAmount: string;
   notes: string;
 }
 
@@ -53,6 +54,7 @@ export function EditPolicyDrawer({ open, onClose, policy }: EditPolicyDrawerProp
         vehicleRegistration: policy.vehicles[0] ?? '',
         startDate: policy.startDate,
         endDate: policy.endDate,
+        premiumAmount: policy.premiumAmount != null ? String(policy.premiumAmount) : '',
         notes: policy.notes ?? '',
       });
     }
@@ -79,6 +81,7 @@ export function EditPolicyDrawer({ open, onClose, policy }: EditPolicyDrawerProp
       vehicleRegistration: values.vehicleRegistration || undefined,
       startDate: values.startDate,
       endDate: values.endDate,
+      premiumAmount: values.premiumAmount ? Number(values.premiumAmount) : undefined,
       notes: values.notes || undefined,
     });
   };
@@ -138,6 +141,11 @@ export function EditPolicyDrawer({ open, onClose, policy }: EditPolicyDrawerProp
             <label className="label">{t('policyForm.endDate')}</label>
             <input type="date" className="input" {...register('endDate', { required: t('common.requiredField') })} />
           </div>
+        </div>
+
+        <div>
+          <label className="label">{t('policyForm.price')}</label>
+          <input type="number" className="input" {...register('premiumAmount')} />
         </div>
 
         <div>

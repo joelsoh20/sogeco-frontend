@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,14 @@ interface FormValues {
   cost: string;
 }
 
-export function CreateInspectionDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+interface CreateInspectionDrawerProps {
+  open: boolean;
+  onClose: () => void;
+  /** Camion pre-selectionne — ouverture depuis le panneau des documents manquants. */
+  initialVehicleId?: number;
+}
+
+export function CreateInspectionDrawer({ open, onClose, initialVehicleId }: CreateInspectionDrawerProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +48,16 @@ export function CreateInspectionDrawer({ open, onClose }: { open: boolean; onClo
     defaultValues: { result: 'CONFORME' },
   });
   const result = watch('result');
+
+  // Reinitialise a chaque ouverture : ce drawer reste monte en permanence
+  // (juste masque), un simple defaultValues ne serait donc pris en compte
+  // qu'a la toute premiere ouverture.
+  useEffect(() => {
+    if (open) {
+      reset({ result: 'CONFORME', vehicleId: initialVehicleId ? String(initialVehicleId) : '' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialVehicleId]);
 
   const create = useMutation({
     mutationFn: (payload: TechnicalInspectionRequest) => complianceApi.createInspection(payload),

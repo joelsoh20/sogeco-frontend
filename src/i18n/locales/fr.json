@@ -285,6 +285,7 @@
     "tabClaims": "Sinistres",
     "tabCartesBleues": "Cartes bleues",
     "tabCartesGrises": "Cartes grises",
+    "tabCartesRoses": "Cartes roses",
     "tabLicenses": "Licences de transport",
 
     "claimTypeCollision": "Collision",
@@ -313,6 +314,7 @@
     "declareClaim": "Déclarer un sinistre",
     "newCarteBleue": "Nouvelle carte bleue",
     "newCarteGrise": "Nouvelle carte grise",
+    "newCarteRose": "Nouvelle carte rose",
     "newLicense": "Nouvelle licence de transport",
 
     "emptyPoliciesTitle": "Aucune police enregistrée",
@@ -325,6 +327,8 @@
     "emptyCartesBleuesAction": "Ajoutez la carte bleue d’un camion pour commencer le suivi.",
     "emptyCartesGrisesTitle": "Aucune carte grise enregistrée",
     "emptyCartesGrisesAction": "Ajoutez la carte grise d’un camion pour commencer le suivi.",
+    "emptyCartesRosesTitle": "Aucune carte rose enregistrée",
+    "emptyCartesRosesAction": "Ajoutez la carte rose d’un camion pour commencer le suivi.",
     "emptyLicensesTitle": "Aucune licence de transport enregistrée",
     "emptyLicensesAction": "Ajoutez la licence qui couvre l’ensemble de la flotte.",
 
@@ -332,7 +336,7 @@
     "colInsurer": "Assureur",
     "colVehicle": "Camion",
     "colDueDate": "Échéance",
-    "colPremium": "Prime",
+    "colPremium": "Prix",
     "colStatus": "Statut",
     "colDate": "Date",
     "colCenter": "Centre",
@@ -555,7 +559,12 @@
     "mostProfitable": "Les plus rentables",
     "leastProfitable": "Les moins rentables",
     "emptyProfitability": "Aucun camion dans cette catégorie sur la période",
-    "revenueShort": "de CA"
+    "revenueShort": "de CA",
+    "costRanking": "Camions les plus / moins coûteux",
+    "costRankingHint": "Carburant, entretien et maintenance cumulés — total sur l'année sélectionnée",
+    "mostCostly": "Les plus coûteux",
+    "leastCostly": "Les moins coûteux",
+    "thisMonthShort": "ce mois"
   },
 
   "settingsPage": {
@@ -716,9 +725,8 @@
     "suspiciousQuantityDefaultHint": "(capacité habituelle pour ce type de camion)",
     "suspiciousQuantityCheck": "Vérifiez la saisie avant de valider.",
     "odometerReading": "Kilométrage au compteur",
+    "odometerReadingHint": "Sert de repère pour vérifier la progression du kilométrage, et de secours pour calculer la distance parcourue si le suivi GPS est indisponible sur ce trajet.",
     "lastKnownOdometer": "Dernier kilométrage connu de ce camion : {{km}} km",
-    "fullTank": "Plein complet",
-    "fullTankHint": "Utilisé pour le suivi du niveau du réservoir. La consommation est calculée pour chaque plein, complet ou partiel.",
     "receiptNumber": "N° de reçu (optionnel)",
     "createSubmit": "Enregistrer le plein",
     "createSuccess": "Plein enregistré sur {{registration}}.",
@@ -831,6 +839,23 @@
     "success": "Carte grise enregistrée.",
     "editTitle": "Modifier la carte grise",
     "editSuccess": "Carte grise modifiée."
+  },
+
+  "carteRoseForm": {
+    "title": "Nouvelle carte rose",
+    "subtitle": "Attestation d’assurance CEMAC propre à un camion",
+    "insuredName": "Nom et adresse de l’assuré",
+    "insuredAddressOptional": "Adresse de l’assuré (optionnel)",
+    "issuingBureauName": "Nom du bureau émetteur",
+    "issuingBureauAddressOptional": "Adresse du bureau émetteur (optionnel)",
+    "vehicleMakeType": "Marque et type du véhicule",
+    "vehicleCategory": "Catégorie du véhicule",
+    "validFrom": "Valable du",
+    "validTo": "Valable au (optionnel)",
+    "validToHint": "Calculée automatiquement (+1 an) si laissée vide",
+    "success": "Carte rose enregistrée.",
+    "editTitle": "Modifier la carte rose",
+    "editSuccess": "Carte rose modifiée."
   },
 
   "carteBleueForm": {
@@ -1341,7 +1366,19 @@
     "emptyTitle": "Aucune échéance dans les 90 prochains jours",
     "emptyAction": "Assurances, visites techniques et permis sont tous à jour.",
     "overdueBy": "Dépassée de {{count}} j",
-    "dueIn": "Dans {{count}} j"
+    "dueIn": "Dans {{count}} j",
+    "itemClickHint": "Cliquer pour mettre à jour ce document"
+  },
+
+  "missingDocuments": {
+    "title": "Documents manquants",
+    "subtitle": "{{count}} document(s) jamais enregistré(s) pour un camion actif",
+    "add": "Ajouter",
+    "categoryAssurance": "Assurance",
+    "categoryInspection": "Visite technique",
+    "categoryCarteBleue": "Carte bleue",
+    "categoryCarteGrise": "Carte grise",
+    "categoryCarteRose": "Carte rose"
   },
 
   "policyForm": {
@@ -1353,6 +1390,7 @@
     "category": "Catégorie",
     "startDate": "Début",
     "endDate": "Fin",
+    "price": "Prix (FCFA)",
     "createSubmit": "Créer la police",
     "success": "Police d’assurance créée.",
     "editTitle": "Modifier la police d'assurance",

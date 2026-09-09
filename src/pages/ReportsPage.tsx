@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { VehicleExpenseChart } from '@/components/reports/VehicleExpenseChart';
 import { CityExpenseChart } from '@/components/reports/CityExpenseChart';
 import { VehicleProfitabilityPanel } from '@/components/reports/VehicleProfitabilityPanel';
+import { VehicleCostRankingPanel } from '@/components/reports/VehicleCostRankingPanel';
 import { ClientListDrawer } from '@/components/clients/ClientListDrawer';
 import { reportApi } from '@/api/compliance';
 import { adminApi, driverApi, vehicleApi } from '@/api/endpoints';
@@ -210,6 +211,12 @@ export function ReportsPage() {
             </>
           )}
         </section>
+
+        <VehicleCostRankingPanel
+          vehicles={vehicles}
+          cities={profitabilityCities.map((c) => ({ id: c.id, name: c.name }))}
+          isLoading={vehicleExpenses.isLoading}
+        />
 
         <VehicleProfitabilityPanel
           vehicles={allVehicles.data?.content ?? []}

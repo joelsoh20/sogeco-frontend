@@ -172,6 +172,44 @@ export interface CarteGriseRequest {
   notes?: string;
 }
 
+/** Carte rose CEMAC (attestation d'assurance automobile) — un document par camion. */
+export interface CarteRose {
+  id: number;
+  vehicleId: number;
+  vehicleRegistrationNumber: string;
+  insurerId: number;
+  insurerName: string;
+  insuredName: string;
+  insuredAddress: string | null;
+  issuingBureauName: string;
+  issuingBureauAddress: string | null;
+  registrationNumber: string;
+  vehicleMakeType: string;
+  vehicleCategory: string;
+  validFrom: string;
+  validTo: string;
+  daysUntilExpiry: number;
+  cost: number | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface CarteRoseRequest {
+  vehicleId: number;
+  insurerId: number;
+  insuredName: string;
+  insuredAddress?: string;
+  issuingBureauName: string;
+  issuingBureauAddress?: string;
+  registrationNumber: string;
+  vehicleMakeType: string;
+  vehicleCategory: string;
+  validFrom: string;
+  validTo?: string;
+  cost?: number;
+  notes?: string;
+}
+
 /** Pas de vehicleId : couvre toute la flotte, jamais un camion en particulier. */
 export interface TransportLicense {
   id: number;
@@ -211,13 +249,20 @@ export interface ComplianceStats {
 }
 
 export interface DeadlineItem {
-  category: 'ASSURANCE' | 'VISITE_TECHNIQUE' | 'PERMIS' | 'CARTE_BLEUE' | 'CARTE_GRISE' | 'LICENCE_TRANSPORT';
+  category: 'ASSURANCE' | 'VISITE_TECHNIQUE' | 'PERMIS' | 'CARTE_BLEUE' | 'CARTE_GRISE' | 'CARTE_ROSE' | 'LICENCE_TRANSPORT';
   entityId: number;
   entityLabel: string;
   documentLabel: string;
   dueDate: string;
   daysRemaining: number;
   status: DocumentStatus;
+}
+
+/** Camion actif n'ayant jamais eu de document de ce type — distinct de DeadlineItem, qui ne liste que des documents deja saisis. */
+export interface MissingDocumentItem {
+  category: 'ASSURANCE' | 'VISITE_TECHNIQUE' | 'CARTE_BLEUE' | 'CARTE_GRISE' | 'CARTE_ROSE';
+  vehicleId: number;
+  registrationNumber: string;
 }
 
 // -------------------------------------------------------------- Rapports

@@ -2,9 +2,11 @@ import { api } from './client';
 import type { PageResponse } from '@/types/api';
 import type {
   AgencyProfitability, CarteBleue, CarteBleueRequest, CarteGrise, CarteGriseRequest,
+  CarteRose, CarteRoseRequest,
   CityExpenseSummary, Claim, ClaimRequest,
   ClientProfitability, ComplianceStats, CorridorProfitability, CostBreakdown, DeadlineItem,
   ExecutiveDashboard, FleetPerformancePoint, GeneratedReport, InsurancePolicy, InsurancePolicyRequest,
+  MissingDocumentItem,
   MonthlyFinancialPoint, OperationalDashboard, ReportFormat, ReportType, TechnicalInspection,
   TechnicalInspectionRequest, TransportLicense, TransportLicenseRequest, VehicleExpenseSummary,
   VehicleProfitability,
@@ -19,9 +21,15 @@ export const complianceApi = {
   schedule: (daysAhead = 90) =>
     api.get<DeadlineItem[]>(`${V1}/compliance/schedule`, { params: { daysAhead } }).then((r) => r.data),
 
+  missingDocuments: () =>
+    api.get<MissingDocumentItem[]>(`${V1}/compliance/missing-documents`).then((r) => r.data),
+
   policies: (page = 0, size = 20) =>
     api.get<PageResponse<InsurancePolicy>>(`${V1}/insurance-policies`, { params: { page, size } })
        .then((r) => r.data),
+
+  getPolicy: (id: number) =>
+    api.get<InsurancePolicy>(`${V1}/insurance-policies/${id}`).then((r) => r.data),
 
   createPolicy: (payload: InsurancePolicyRequest) =>
     api.post<InsurancePolicy>(`${V1}/insurance-policies`, payload).then((r) => r.data),
@@ -35,6 +43,12 @@ export const complianceApi = {
     api.get<PageResponse<TechnicalInspection>>(`${V1}/technical-inspections`, { params: { page, size } })
        .then((r) => r.data),
 
+  getInspection: (id: number) =>
+    api.get<TechnicalInspection>(`${V1}/technical-inspections/${id}`).then((r) => r.data),
+
+  inspectionsForVehicle: (vehicleId: number) =>
+    api.get<TechnicalInspection[]>(`${V1}/technical-inspections/vehicle/${vehicleId}`).then((r) => r.data),
+
   createInspection: (payload: TechnicalInspectionRequest) =>
     api.post<TechnicalInspection>(`${V1}/technical-inspections`, payload).then((r) => r.data),
 
@@ -46,6 +60,9 @@ export const complianceApi = {
 
   claims: (page = 0, size = 20) =>
     api.get<PageResponse<Claim>>(`${V1}/claims`, { params: { page, size } }).then((r) => r.data),
+
+  getClaim: (id: number) =>
+    api.get<Claim>(`${V1}/claims/${id}`).then((r) => r.data),
 
   createClaim: (payload: ClaimRequest) =>
     api.post<Claim>(`${V1}/claims`, payload).then((r) => r.data),
@@ -62,6 +79,12 @@ export const complianceApi = {
   cartesBleues: (page = 0, size = 20) =>
     api.get<PageResponse<CarteBleue>>(`${V1}/cartes-bleues`, { params: { page, size } }).then((r) => r.data),
 
+  getCarteBleue: (id: number) =>
+    api.get<CarteBleue>(`${V1}/cartes-bleues/${id}`).then((r) => r.data),
+
+  cartesBleuesForVehicle: (vehicleId: number) =>
+    api.get<CarteBleue[]>(`${V1}/cartes-bleues/vehicle/${vehicleId}`).then((r) => r.data),
+
   createCarteBleue: (payload: CarteBleueRequest) =>
     api.post<CarteBleue>(`${V1}/cartes-bleues`, payload).then((r) => r.data),
 
@@ -70,6 +93,12 @@ export const complianceApi = {
 
   cartesGrises: (page = 0, size = 20) =>
     api.get<PageResponse<CarteGrise>>(`${V1}/cartes-grises`, { params: { page, size } }).then((r) => r.data),
+
+  getCarteGrise: (id: number) =>
+    api.get<CarteGrise>(`${V1}/cartes-grises/${id}`).then((r) => r.data),
+
+  cartesGrisesForVehicle: (vehicleId: number) =>
+    api.get<CarteGrise[]>(`${V1}/cartes-grises/vehicle/${vehicleId}`).then((r) => r.data),
 
   createCarteGrise: (payload: CarteGriseRequest) =>
     api.post<CarteGrise>(`${V1}/cartes-grises`, payload).then((r) => r.data),
@@ -80,9 +109,30 @@ export const complianceApi = {
   mineCartesGrises: () =>
     api.get<CarteGrise[]>(`${V1}/cartes-grises/mine`).then((r) => r.data),
 
+  cartesRoses: (page = 0, size = 20) =>
+    api.get<PageResponse<CarteRose>>(`${V1}/cartes-roses`, { params: { page, size } }).then((r) => r.data),
+
+  getCarteRose: (id: number) =>
+    api.get<CarteRose>(`${V1}/cartes-roses/${id}`).then((r) => r.data),
+
+  cartesRosesForVehicle: (vehicleId: number) =>
+    api.get<CarteRose[]>(`${V1}/cartes-roses/vehicle/${vehicleId}`).then((r) => r.data),
+
+  createCarteRose: (payload: CarteRoseRequest) =>
+    api.post<CarteRose>(`${V1}/cartes-roses`, payload).then((r) => r.data),
+
+  updateCarteRose: (id: number, payload: CarteRoseRequest) =>
+    api.put<CarteRose>(`${V1}/cartes-roses/${id}`, payload).then((r) => r.data),
+
+  mineCartesRoses: () =>
+    api.get<CarteRose[]>(`${V1}/cartes-roses/mine`).then((r) => r.data),
+
   transportLicenses: (page = 0, size = 20) =>
     api.get<PageResponse<TransportLicense>>(`${V1}/transport-licenses`, { params: { page, size } })
        .then((r) => r.data),
+
+  getTransportLicense: (id: number) =>
+    api.get<TransportLicense>(`${V1}/transport-licenses/${id}`).then((r) => r.data),
 
   createTransportLicense: (payload: TransportLicenseRequest) =>
     api.post<TransportLicense>(`${V1}/transport-licenses`, payload).then((r) => r.data),
