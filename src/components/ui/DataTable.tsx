@@ -23,6 +23,8 @@ interface DataTableProps<T> {
   totalElements?: number;
   /** Affiche des lignes en squelette a la place des donnees. */
   loading?: boolean;
+  /** Hauteur max du corps du tableau (ex. '420px') : au-dela, defilement interne plutot que d'allonger la page. */
+  maxBodyHeight?: string;
 }
 
 /**
@@ -36,16 +38,19 @@ interface DataTableProps<T> {
  * remplacer les anciennes de facon abrupte.
  */
 export function DataTable<T>({
-  columns, data, keyOf, onRowClick, page, totalPages, onPageChange, totalElements, loading,
+  columns, data, keyOf, onRowClick, page, totalPages, onPageChange, totalElements, loading, maxBodyHeight,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
   const showPagination = totalPages !== undefined && totalPages > 1 && onPageChange;
 
   return (
     <div className="card overflow-hidden">
-      <div className="overflow-x-auto">
+      <div
+        className={maxBodyHeight ? 'overflow-x-auto overflow-y-auto' : 'overflow-x-auto'}
+        style={maxBodyHeight ? { maxHeight: maxBodyHeight } : undefined}
+      >
         <table className="w-full">
-          <thead className="border-b border-surface-border bg-slate-50 dark:border-slate-800 dark:bg-slate-800/50">
+          <thead className="sticky top-0 z-10 border-b border-surface-border bg-slate-50 dark:border-slate-800 dark:bg-slate-800/50">
             <tr>
               {columns.map((col) => (
                 <th

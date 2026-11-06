@@ -176,6 +176,7 @@ export function ReportsPage() {
               <DataTable
                 data={vehicles}
                 keyOf={(v) => v.vehicleId}
+                maxBodyHeight="420px"
                 columns={[
                   { header: t('compliancePage.colVehicle'), accessor: (v) => <span className="font-medium">{v.registrationNumber}</span> },
                   { header: t('reportsPage.colCity'), accessor: (v) => v.cityName ?? '—' },

@@ -57,6 +57,7 @@ export function DashboardPage() {
     <PageShell
       title={t('dashboard.greeting', { name: firstName })}
       subtitle={t('dashboard.subtitle', { date: today })}
+      backgroundImage="/Bord.jpg"
     >
       {loading ? (
         <LoadingPanel label={t('dashboard.loadingIndicators')} />
