@@ -46,6 +46,7 @@ export function AlertsPage() {
     <PageShell
       title={t('alertsPage.title')}
       subtitle={t('alertsPage.subtitle')}
+      backgroundImage="/Alert.jpg"
     >
       <div className="space-y-6">
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

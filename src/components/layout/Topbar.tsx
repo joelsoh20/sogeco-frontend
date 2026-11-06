@@ -40,7 +40,7 @@ export function Topbar({ title, subtitle, alertCount = 0, onMenuClick }: TopbarP
   const roleLabel = user?.roles.map((role) => t(`roles.${role}`, role)).join(', ');
 
   return (
-    <header className="flex items-center justify-between gap-2 border-b border-surface-border bg-white px-4 py-3 transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900 sm:px-6 sm:py-4">
+    <header className="flex items-center justify-between gap-2 border-b border-surface-border bg-white/70 px-4 py-3 backdrop-blur-md backdrop-saturate-150 transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900/70 sm:px-6 sm:py-4">
       <div className="flex min-w-0 items-center gap-2">
         <button
           onClick={onMenuClick}
@@ -112,7 +112,7 @@ export function Topbar({ title, subtitle, alertCount = 0, onMenuClick }: TopbarP
                   animate="visible"
                   exit="exit"
                   style={{ transformOrigin: 'top right' }}
-                  className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-surface-border bg-white py-1 shadow-panel dark:border-slate-700 dark:bg-slate-800"
+                  className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-surface-border bg-white/80 py-1 shadow-panel backdrop-blur-lg dark:border-slate-700 dark:bg-slate-800/80"
                 >
                   <div className="border-b border-surface-border px-4 py-2.5 dark:border-slate-700">
                     <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">{user?.fullName}</p>

@@ -87,6 +87,7 @@ export function ReportsPage() {
     <PageShell
       title={t('reportsPage.title')}
       subtitle={t('reportsPage.subtitle')}
+      backgroundImage="/Rapport.jpg"
     >
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -198,23 +199,9 @@ export function ReportsPage() {
             <EmptyState icon={MapPin} title={t('reportsPage.emptyCityExpenses')} />
           ) : (
             <>
-              <div className="card-padded mb-4">
+              <div className="card-padded">
                 <CityExpenseChart cities={cities} />
               </div>
-              <DataTable
-                data={cities}
-                keyOf={(c) => c.cityId}
-                columns={[
-                  { header: t('reportsPage.colCity'), accessor: (c) => <span className="font-medium">{c.cityName}</span> },
-                  { header: t('reportsPage.colVehicles'), accessor: (c) => formatNumber(c.vehicleCount), align: 'right' },
-                  ...MONTH_LABELS.map((label, index) => ({
-                    header: label,
-                    accessor: (c: typeof cities[number]) => <span className="whitespace-nowrap">{formatFcfaCompactNumber(amountFor(c.monthly, index + 1))}</span>,
-                    align: 'right' as const,
-                  })),
-                  { header: t('reportsPage.colTotal'), accessor: (c) => <span className="whitespace-nowrap font-semibold">{formatFcfaCompactNumber(c.yearTotal)}</span>, align: 'right' },
-                ]}
-              />
             </>
           )}
         </section>

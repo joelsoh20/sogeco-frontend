@@ -532,7 +532,26 @@
     "colProgress": "Avancement"
   },
 
+  "alertNotifications": {
+    "prompt": "Activez les notifications pour être averti des nouvelles alertes, même lorsque cet onglet est en arrière-plan.",
+    "enable": "Activer",
+    "later": "Plus tard",
+    "critical": "Alerte critique",
+    "important": "Alerte importante",
+    "new": "Nouvelle alerte"
+  },
+
   "reportsPage": {
+    "vehiclesSelected_one": "{{count}} véhicule sélectionné",
+    "vehiclesSelected_other": "{{count}} véhicules sélectionnés",
+    "clearSelection": "Tout effacer",
+    "statsCompare": "Comparaison des véhicules",
+    "statsCompareMissions": "Missions par type (nombre)",
+    "rowMissions": "Missions terminées",
+    "rowDistance": "Distance",
+    "rowRevenue": "Recettes",
+    "rowMargin": "Marge des missions",
+    "rowPerKm": "Dépense par km",
     "statsTitle": "Statistiques par véhicule",
     "statsDescription": "Choisissez une période et un véhicule : dépenses dans chaque domaine, missions par type et bilan.",
     "statsExpenses": "Dépenses par domaine",

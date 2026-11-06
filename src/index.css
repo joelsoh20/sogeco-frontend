@@ -39,10 +39,16 @@
    * de l'interface qui s'assombrit pour la rejoindre, pas l'inverse.
    */
 
+  /*
+   * Glassmorphism : panneaux translucides + flou d'arriere-plan plutot
+   * que des aplats opaques. Choix delibere pour que l'image de fond
+   * d'une page (ex. Camions) transparaisse derriere chaque carte au
+   * lieu d'etre masquee par elle.
+   */
   .card {
-    @apply bg-surface rounded-xl border border-surface-border shadow-card
+    @apply rounded-xl border border-white/50 bg-white/55 shadow-card backdrop-blur-md backdrop-saturate-150
            transition-colors duration-200
-           dark:border-slate-800 dark:bg-slate-900 dark:shadow-none;
+           dark:border-slate-700/50 dark:bg-slate-900/55 dark:shadow-none;
   }
 
   .card-padded {
@@ -61,15 +67,15 @@
   }
 
   .btn-ghost {
-    @apply btn border border-surface-border bg-white text-slate-700 hover:bg-slate-50
-           dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800;
+    @apply btn border border-surface-border bg-white/70 text-slate-700 backdrop-blur-sm hover:bg-slate-50
+           dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800;
   }
 
   .input {
-    @apply w-full rounded-lg border border-surface-border bg-white px-3 py-2 text-sm
+    @apply w-full rounded-lg border border-surface-border bg-white/80 px-3 py-2 text-sm backdrop-blur-sm
            transition-colors duration-150 placeholder:text-slate-400 focus:border-accent
            focus:outline-none focus:ring-1 focus:ring-accent
-           dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
+           dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:placeholder:text-slate-500;
   }
 
   .label {

@@ -90,6 +90,7 @@ export function MissionsPage() {
     <PageShell
       title={t('missionsPage.title')}
       subtitle={t('missionsPage.subtitle')}
+      backgroundImage="/Mission.png"
     >
       <div className="space-y-6">
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">

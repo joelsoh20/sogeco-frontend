@@ -123,6 +123,7 @@ export function SettingsPage() {
     <PageShell
       title={t('settingsPage.title')}
       subtitle={t('settingsPage.subtitle')}
+      backgroundImage="/Parametre.png"
     >
       <div className="space-y-6">
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">

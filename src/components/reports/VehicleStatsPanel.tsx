@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Banknote, FileDown, Gauge, Route, TrendingUp, Truck, Wallet } from 'lucide-react';
+import { Banknote, ChevronDown, FileDown, Gauge, Route, TrendingUp, Truck, Wallet } from 'lucide-react';
 import { Spinner, LoadingPanel } from '@/components/ui/Spinner';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -9,7 +9,7 @@ import { reportApi } from '@/api/compliance';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
 import { formatFcfa, formatNumber } from '@/lib/utils';
-import type { ExpenseDomain, MissionTypeLine } from '@/types/compliance';
+import type { ExpenseDomain, MissionTypeLine, VehicleExpenseSection } from '@/types/compliance';
 
 const DOMAINS: ExpenseDomain[] = [
   'CARBURANT', 'MAINTENANCE', 'LAVERIE', 'ASSURANCE', 'VISITE_TECHNIQUE',
@@ -46,22 +46,27 @@ function share(part: number, total: number): string {
 export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
   const { t } = useTranslation();
   const [period, setPeriod] = useState(() => defaultPeriod(year));
-  const [vehicleId, setVehicleId] = useState('');
+  const [selected, setSelected] = useState<number[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   const invalidPeriod = !period.from || !period.to || period.to < period.from;
 
   const report = useQuery({
-    queryKey: ['reports', 'vehicle-expense-report', period.from, period.to, vehicleId],
-    queryFn: () => reportApi.vehicleExpenseReport(period.from, period.to, vehicleId ? Number(vehicleId) : undefined),
+    queryKey: ['reports', 'vehicle-expense-report', period.from, period.to, selected],
+    queryFn: () => reportApi.vehicleExpenseReport(period.from, period.to, selected),
     enabled: !invalidPeriod,
   });
 
   const data = report.data;
-  const section = data && vehicleId ? data.vehicles[0] : undefined;
+  const section = data && selected.length === 1 ? data.vehicles[0] : undefined;
+  const comparing = Boolean(data && selected.length >= 2);
 
-  // Un camion choisi : ses chiffres. Sinon : ceux de toute la flotte.
-  const view = data && (vehicleId
+  const toggle = (id: number) =>
+    setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
+
+  // Un camion choisi : ses chiffres. Plusieurs : comparaison. Aucun : ceux de toute la flotte.
+  const view = data && (selected.length === 1
     ? section && {
       expenses: section.expenses, total: section.totalExpenses, missionTypes: section.missionTypes,
       missionCount: section.missionCount, km: section.distanceKm, revenue: section.revenue,
@@ -77,7 +82,7 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
   const downloadPdf = async () => {
     setDownloading(true);
     try {
-      const blob = await reportApi.vehicleExpensesPdf(period.from, period.to, vehicleId ? Number(vehicleId) : undefined);
+      const blob = await reportApi.vehicleExpensesPdf(period.from, period.to, selected);
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -111,12 +116,33 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
           <input type="date" className="input" value={period.to}
             onChange={(e) => setPeriod((p) => ({ ...p, to: e.target.value }))} />
         </div>
-        <div>
+        <div className="relative">
           <label className="label">{t('reportsPage.pdfVehicle')}</label>
-          <select className="input" value={vehicleId} onChange={(e) => setVehicleId(e.target.value)}>
-            <option value="">{t('reportsPage.pdfAllVehicles')}</option>
-            {vehicles.map((v) => <option key={v.id} value={v.id}>{v.registrationNumber}</option>)}
-          </select>
+          <button type="button" className="input flex min-w-[14rem] items-center justify-between gap-2 text-left"
+            onClick={() => setPickerOpen((o) => !o)} aria-expanded={pickerOpen}>
+            <span className="truncate">
+              {selected.length === 0 ? t('reportsPage.pdfAllVehicles') : t('reportsPage.vehiclesSelected', { count: selected.length })}
+            </span>
+            <ChevronDown size={14} className="shrink-0 text-slate-400" />
+          </button>
+          {pickerOpen && (
+            <div className="absolute z-20 mt-1 w-64 rounded-lg border border-surface-border bg-white p-2 shadow-panel dark:border-slate-700 dark:bg-slate-900">
+              <div className="max-h-56 space-y-0.5 overflow-y-auto">
+                {vehicles.map((v) => (
+                  <label key={v.id} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <input type="checkbox" checked={selected.includes(v.id)} onChange={() => toggle(v.id)} />
+                    {v.registrationNumber}
+                  </label>
+                ))}
+              </div>
+              <div className="mt-2 flex justify-between border-t border-surface-border pt-2 text-xs dark:border-slate-800">
+                <button type="button" className="text-slate-500 hover:text-slate-700 dark:text-slate-400" onClick={() => setSelected([])}>
+                  {t('reportsPage.clearSelection')}
+                </button>
+                <button type="button" className="font-medium text-accent" onClick={() => setPickerOpen(false)}>OK</button>
+              </div>
+            </div>
+          )}
         </div>
         <button type="button" onClick={downloadPdf} disabled={downloading || invalidPeriod} className="btn-primary">
           {downloading ? <Spinner className="text-white" /> : <FileDown size={16} />}
@@ -132,7 +158,9 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
         <p className="text-sm text-red-600 dark:text-red-400">{errorMessage(report.error)}</p>
       )}
 
-      {view && (
+      {comparing && data && <ComparisonView sections={data.vehicles} />}
+
+      {!comparing && view && (
         <>
           <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <StatCard label={t('reportsPage.kpiTotalExpenses')} value={formatFcfa(view.total)} icon={Wallet} lowerIsBetter accent="amber" />
@@ -219,5 +247,112 @@ function MissionTypesTable({ lines, total, km, revenue }: { lines: MissionTypeLi
         </tr>
       </tbody>
     </table>
+  );
+}
+
+function totalCell(value: number, formatter: (n: number) => string) {
+  return <td className="tabular whitespace-nowrap py-2 pl-4 text-right font-medium">{formatter(value)}</td>;
+}
+
+/** Comparaison cote a cote : une colonne par vehicule, plus une colonne de total. */
+function ComparisonView({ sections }: { sections: VehicleExpenseSection[] }) {
+  const { t } = useTranslation();
+  const sum = (pick: (v: VehicleExpenseSection) => number) => sections.reduce((acc, v) => acc + pick(v), 0);
+  const typeLabels = [...new Set(sections.flatMap((v) => v.missionTypes.map((m) => m.typeLabel)))].sort();
+  const countFor = (v: VehicleExpenseSection, label: string) =>
+    v.missionTypes.find((m) => m.typeLabel === label)?.missionCount ?? 0;
+
+  const head = (
+    <tr className="text-xs text-slate-500 dark:text-slate-400">
+      <th className="py-1.5 pr-4 text-left font-medium" />
+      {sections.map((v) => (
+        <th key={v.vehicleId} className="whitespace-nowrap py-1.5 pl-4 text-right font-semibold text-slate-700 dark:text-slate-200">
+          {v.registrationNumber}
+        </th>
+      ))}
+      <th className="py-1.5 pl-4 text-right font-semibold">{t('reportsPage.colTotal')}</th>
+    </tr>
+  );
+  const rowClass = 'border-t border-surface-border dark:border-slate-800';
+  const strongClass = 'border-t-2 border-surface-border font-semibold dark:border-slate-700';
+  const labelClass = 'py-2 pr-4 text-slate-700 dark:text-slate-300';
+  const valueClass = 'tabular whitespace-nowrap py-2 pl-4 text-right';
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          {t('reportsPage.statsCompare')}
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>{head}</thead>
+            <tbody>
+              {DOMAINS.map((d) => (
+                <tr key={d} className={rowClass}>
+                  <td className={labelClass}>{t(`reportsPage.domain.${d}`)}</td>
+                  {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatFcfa(v.expenses[d] ?? 0)}</td>)}
+                  {totalCell(sum((v) => v.expenses[d] ?? 0), formatFcfa)}
+                </tr>
+              ))}
+              <tr className={strongClass}>
+                <td className="py-2 pr-4">{t('reportsPage.kpiTotalExpenses')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatFcfa(v.totalExpenses)}</td>)}
+                {totalCell(sum((v) => v.totalExpenses), formatFcfa)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.rowMissions')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{v.missionCount}</td>)}
+                {totalCell(sum((v) => v.missionCount), String)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.rowDistance')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatNumber(v.distanceKm)} km</td>)}
+                {totalCell(sum((v) => v.distanceKm), (n) => `${formatNumber(n)} km`)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.rowRevenue')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatFcfa(v.revenue)}</td>)}
+                {totalCell(sum((v) => v.revenue), formatFcfa)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.rowMargin')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatFcfa(v.missionMargin)}</td>)}
+                {totalCell(sum((v) => v.missionMargin), formatFcfa)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.rowPerKm')}</td>
+                {sections.map((v) => (
+                  <td key={v.vehicleId} className={valueClass}>{v.expensePerKm == null ? '—' : formatFcfa(v.expensePerKm)}</td>
+                ))}
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {typeLabels.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            {t('reportsPage.statsCompareMissions')}
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>{head}</thead>
+              <tbody>
+                {typeLabels.map((label) => (
+                  <tr key={label} className={rowClass}>
+                    <td className={labelClass}>{label}</td>
+                    {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{countFor(v, label)}</td>)}
+                    {totalCell(sum((v) => countFor(v, label)), String)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

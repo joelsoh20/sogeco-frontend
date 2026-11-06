@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatFcfa, formatFcfaCompact } from '@/lib/utils';
 import type { CityExpenseSummary } from '@/types/compliance';
 
@@ -27,16 +27,24 @@ export function CityExpenseChart({ cities }: { cities: CityExpenseSummary[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E4E8EF" />
         <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748B' }} />
         <YAxis tick={{ fontSize: 11, fill: '#64748B' }} tickFormatter={(v) => formatFcfaCompact(v)} />
         <Tooltip formatter={(value: number) => formatFcfa(value)} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
         {cities.map((c, index) => (
-          <Bar key={c.cityId} dataKey={c.cityName} fill={PALETTE[index % PALETTE.length]} radius={[4, 4, 0, 0]} />
+          <Line
+            key={c.cityId}
+            type="monotone"
+            dataKey={c.cityName}
+            stroke={PALETTE[index % PALETTE.length]}
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+          />
         ))}
-      </BarChart>
+      </LineChart>
     </ResponsiveContainer>
   );
 }

@@ -96,6 +96,7 @@ export function HomePage() {
     <PageShell
       title={t('homePage.greeting', { name: firstName || 'Admin' })}
       subtitle={t('homePage.subtitle', { date: dateLabel })}
+      backgroundImage="/Tableau.jpg"
     >
       <div className="space-y-6">
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">

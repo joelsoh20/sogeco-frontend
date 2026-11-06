@@ -46,6 +46,7 @@ export function VehiclesPage() {
     <PageShell
       title={t('vehiclesPage.title')}
       subtitle={t('vehiclesPage.subtitle')}
+      backgroundImage="/Camnion.jpg"
     >
       <div className="space-y-6">
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">

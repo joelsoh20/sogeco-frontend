@@ -83,7 +83,7 @@ export function Sidebar({ alertCount = 0, open = false, onClose }: SidebarProps)
           // GPS, z-[400]) — le menu mobile, une fois ouvert, doit toujours
           // recouvrir l'integralite de la page, jamais laisser un element
           // flottant par-dessus. Seuls les toasts (z-[600]) restent au-dessus.
-          'fixed inset-y-0 left-0 z-[460] flex w-64 shrink-0 flex-col bg-navy-900 text-slate-300',
+          'fixed inset-y-0 left-0 z-[460] flex w-64 shrink-0 flex-col bg-navy-900/90 text-slate-300 backdrop-blur-md',
           'transition-transform duration-200 ease-out lg:static lg:translate-x-0',
           open ? 'translate-x-0' : '-translate-x-full',
         )}

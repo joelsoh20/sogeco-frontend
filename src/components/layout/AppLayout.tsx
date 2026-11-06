@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Sidebar } from './Sidebar';
 import { ToastStack } from '@/components/ui/Toast';
+import { NotificationPrompt } from './NotificationPrompt';
+import { useAlertNotifications } from '@/hooks/useAlertNotifications';
 import { alertApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
 
@@ -27,6 +29,18 @@ export function AppLayout() {
     refetchInterval: 60_000,
   });
 
+  const { permission, requestPermission } = useAlertNotifications(canReadAlerts);
+
+  // Compteur dans le titre de l'onglet, comme "(3) WhatsApp" : visible onglet en arriere-plan.
+  const activeAlerts = alertStats?.totalActives ?? 0;
+  useEffect(() => {
+    const base = document.title.replace(/^\(\d+\)\s*/, '');
+    document.title = activeAlerts > 0 ? `(${activeAlerts}) ${base}` : base;
+    return () => {
+      document.title = base;
+    };
+  }, [activeAlerts]);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
@@ -35,6 +49,7 @@ export function AppLayout() {
         onClose={() => setSidebarOpen(false)}
       />
       <div className="flex flex-1 flex-col overflow-hidden">
+        {canReadAlerts && <NotificationPrompt permission={permission} onEnable={requestPermission} />}
         <Outlet
           context={{
             alertCount: alertStats?.totalActives ?? 0,

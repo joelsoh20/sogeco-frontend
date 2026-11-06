@@ -35,7 +35,7 @@ export function Drawer({ open, onClose, title, subtitle, children, wide = false 
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute inset-0 bg-slate-900/20 dark:bg-black/50"
+            className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm dark:bg-black/50"
             onClick={onClose}
           />
           <motion.div
@@ -43,7 +43,7 @@ export function Drawer({ open, onClose, title, subtitle, children, wide = false 
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`relative flex w-full flex-col bg-white shadow-panel dark:bg-slate-900 ${wide ? 'max-w-none md:w-3/4' : 'max-w-md'}`}
+            className={`relative flex w-full flex-col bg-white/85 shadow-panel backdrop-blur-xl backdrop-saturate-150 dark:bg-slate-900/85 ${wide ? 'max-w-none md:w-3/4' : 'max-w-md'}`}
           >
             <div className="flex items-start justify-between border-b border-surface-border px-6 py-4 dark:border-slate-800">
               <div className="min-w-0">

@@ -144,13 +144,13 @@ export const complianceApi = {
 
 export const reportApi = {
   /** Statistiques de depenses par domaine et missions par type : un camion (vehicleId) ou toute la flotte. */
-  vehicleExpenseReport: (from: string, to: string, vehicleId?: number) =>
-    api.get<VehicleExpenseReport>(`${V1}/reports/vehicle-expenses/report`, { params: { from, to, vehicleId } })
+  vehicleExpenseReport: (from: string, to: string, vehicleIds: number[] = []) =>
+    api.get<VehicleExpenseReport>(`${V1}/reports/vehicle-expenses/report`, { params: { from, to, vehicleIds: vehicleIds.join(',') || undefined } })
       .then((r) => r.data),
 
   /** Rapport PDF des depenses par camion et par domaine, avec le bilan des missions par type. */
-  vehicleExpensesPdf: (from: string, to: string, vehicleId?: number) =>
-    api.get<Blob>(`${V1}/reports/vehicle-expenses/pdf`, { params: { from, to, vehicleId }, responseType: 'blob' })
+  vehicleExpensesPdf: (from: string, to: string, vehicleIds: number[] = []) =>
+    api.get<Blob>(`${V1}/reports/vehicle-expenses/pdf`, { params: { from, to, vehicleIds: vehicleIds.join(',') || undefined }, responseType: 'blob' })
       .then((r) => r.data),
 
   vehicleExpenses: (year: number) =>

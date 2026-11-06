@@ -125,6 +125,7 @@ export function FuelPage() {
     <PageShell
       title={t('fuelPage.title')}
       subtitle={t('fuelPage.subtitle')}
+      backgroundImage="/Carburan.jpg"
     >
       {stats.isLoading ? (
         <LoadingPanel />

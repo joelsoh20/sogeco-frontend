@@ -1,0 +1,5 @@
+# Vérifie qu'aucun processus node ne tourne encore
+taskkill /F /IM node.exe
+
+111111WWW:IDN:68053059965558;IPN:51.21.253.245;COM:5009;APN:MTNWAP,,;RPT:30;SLP:600;HRT:4;TZN:1.0;
+http://13.53.244.90:8082/api/positions?deviceId=1

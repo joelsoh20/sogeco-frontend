@@ -82,6 +82,7 @@ export function MaintenancePage() {
     <PageShell
       title={t('maintenancePage.title')}
       subtitle={t('maintenancePage.subtitle')}
+      backgroundImage="/Maintenance.jpg"
     >
       <div className="space-y-6">
         <div className="flex justify-end">

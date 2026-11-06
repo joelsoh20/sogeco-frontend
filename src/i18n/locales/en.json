@@ -535,7 +535,26 @@
     "colProgress": "Progress"
   },
 
+  "alertNotifications": {
+    "prompt": "Turn on notifications to be told about new alerts, even when this tab is in the background.",
+    "enable": "Turn on",
+    "later": "Later",
+    "critical": "Critical alert",
+    "important": "Important alert",
+    "new": "New alert"
+  },
+
   "reportsPage": {
+    "vehiclesSelected_one": "{{count}} vehicle selected",
+    "vehiclesSelected_other": "{{count}} vehicles selected",
+    "clearSelection": "Clear all",
+    "statsCompare": "Vehicle comparison",
+    "statsCompareMissions": "Missions by type (count)",
+    "rowMissions": "Completed missions",
+    "rowDistance": "Distance",
+    "rowRevenue": "Revenue",
+    "rowMargin": "Mission margin",
+    "rowPerKm": "Expense per km",
     "statsTitle": "Statistics per vehicle",
     "statsDescription": "Pick a period and a vehicle: spending in each area, missions by type and summary.",
     "statsExpenses": "Expenses by area",
