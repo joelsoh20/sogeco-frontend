@@ -8,6 +8,7 @@ import { StatGrid } from '@/components/ui/StatGrid';
 import { DataTable } from '@/components/ui/DataTable';
 import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { VehicleStatsPanel } from '@/components/reports/VehicleStatsPanel';
 import { VehicleExpenseChart } from '@/components/reports/VehicleExpenseChart';
 import { CityExpenseChart } from '@/components/reports/CityExpenseChart';
 import { VehicleProfitabilityPanel } from '@/components/reports/VehicleProfitabilityPanel';
@@ -100,6 +101,12 @@ export function ReportsPage() {
             <Users size={15} />{t('reportsPage.clients')}
           </button>
         </div>
+
+        <VehicleStatsPanel
+          key={year}
+          year={year}
+          vehicles={(allVehicles.data?.content ?? []).map((v) => ({ id: v.id, registrationNumber: v.registrationNumber }))}
+        />
 
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label={t('reportsPage.statFleetTotal')} value={formatFcfaCompact(fleetTotal)} icon={Wallet} lowerIsBetter accent="amber" />

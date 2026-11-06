@@ -10,6 +10,7 @@ import type {
   MonthlyFinancialPoint, OperationalDashboard, ReportFormat, ReportType, TechnicalInspection,
   TechnicalInspectionRequest, TransportLicense, TransportLicenseRequest, VehicleExpenseSummary,
   VehicleProfitability,
+  VehicleExpenseReport,
 } from '@/types/compliance';
 
 const V1 = '/api/v1';
@@ -142,6 +143,16 @@ export const complianceApi = {
 };
 
 export const reportApi = {
+  /** Statistiques de depenses par domaine et missions par type : un camion (vehicleId) ou toute la flotte. */
+  vehicleExpenseReport: (from: string, to: string, vehicleId?: number) =>
+    api.get<VehicleExpenseReport>(`${V1}/reports/vehicle-expenses/report`, { params: { from, to, vehicleId } })
+      .then((r) => r.data),
+
+  /** Rapport PDF des depenses par camion et par domaine, avec le bilan des missions par type. */
+  vehicleExpensesPdf: (from: string, to: string, vehicleId?: number) =>
+    api.get<Blob>(`${V1}/reports/vehicle-expenses/pdf`, { params: { from, to, vehicleId }, responseType: 'blob' })
+      .then((r) => r.data),
+
   vehicleExpenses: (year: number) =>
     api.get<VehicleExpenseSummary[]>(`${V1}/reports/vehicle-expenses`, { params: { year } }).then((r) => r.data),
 

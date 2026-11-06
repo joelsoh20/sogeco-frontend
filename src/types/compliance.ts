@@ -435,3 +435,44 @@ export interface GeneratedReport {
   isScheduled: boolean;
   generatedAt: string;
 }
+
+// ---- Statistiques de depenses par camion (GET /reports/vehicle-expenses/report) ----
+
+export type ExpenseDomain =
+  | 'CARBURANT' | 'MAINTENANCE' | 'LAVERIE' | 'ASSURANCE' | 'VISITE_TECHNIQUE'
+  | 'PEAGES' | 'FRAIS_MISSION' | 'AUTRES_FRAIS_MISSION' | 'DEPENSES_DIVERSES';
+
+export interface MissionTypeLine {
+  typeLabel: string;
+  missionCount: number;
+  distanceKm: number;
+  revenue: number;
+  cost: number;
+}
+
+export interface VehicleExpenseSection {
+  vehicleId: number;
+  registrationNumber: string;
+  description: string;
+  cityName: string | null;
+  expenses: Record<ExpenseDomain, number>;
+  totalExpenses: number;
+  missionTypes: MissionTypeLine[];
+  missionCount: number;
+  distanceKm: number;
+  revenue: number;
+  missionMargin: number;
+  expensePerKm: number | null;
+}
+
+export interface VehicleExpenseReport {
+  from: string;
+  to: string;
+  fleetExpenses: Record<ExpenseDomain, number>;
+  fleetTotalExpenses: number;
+  fleetMissionTypes: MissionTypeLine[];
+  fleetMissionCount: number;
+  fleetRevenue: number;
+  fleetKm: number;
+  vehicles: VehicleExpenseSection[];
+}

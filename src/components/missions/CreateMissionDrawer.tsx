@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { AlertTriangle, MapPinned, Package, Route, Truck } from 'lucide-react';
 import { Drawer } from '@/components/ui/Drawer';
 import { Spinner } from '@/components/ui/Spinner';
-import { adminApi, clientApi, driverApi, fuelApi, geocodingApi, missionApi, quartierApi, serviceTypeApi, vehicleApi } from '@/api/endpoints';
+import { adminApi, driverApi, fuelApi, geocodingApi, missionApi, quartierApi, serviceTypeApi, vehicleApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
 import { formatConsumption, formatKm, formatLiters, formatNumber } from '@/lib/utils';
 import { MissionRouteMap, type RoutePoint } from './MissionRouteMap';
+import { SiteMapField } from './SiteMapField';
 import type { City, CreateMissionRequest } from '@/types/api';
 
 /** Premier candidat avec des coordonnees connues — site plus precis qu'une ville, quartier plus precis qu'une ville. */
@@ -25,7 +26,6 @@ function firstWithCoords(
 }
 
 interface FormValues {
-  clientId: string;
   serviceTypeId: string;
   vehicleId: string;
   driverId: string;
@@ -35,8 +35,6 @@ interface FormValues {
   destinationCityId: string;
   originQuartierId: string;
   destinationQuartierId: string;
-  plannedStart: string;
-  plannedArrival: string;
   cargoDescription: string;
   cargoWeightKg: string;
   missionFeeCost: string;
@@ -56,6 +54,11 @@ const RELIABLE_SOURCES = new Set(['CORRIDOR_REFERENCE', 'ROUTING_API']);
 const VOYAGE_HORS_VILLE_CODE = 'VOYAGE_HORS_VILLE';
 
 /** Villes ou l'entreprise a une implantation active — un mouvement en ville se fait dans l'une d'elles. */
+/** Regions desservies par un voyage hors ville, dans l'ordre d'affichage de la liste. */
+const VOYAGE_REGIONS = ['Ouest', 'Littoral', 'Centre', 'Nord-Ouest', 'Sud-Ouest', 'Sud', 'Est'];
+
+const normalizeName = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
 const ACTIVE_CITY_NAMES = ['Douala', 'Yaoundé', 'Bafoussam'];
 
 /**
@@ -83,7 +86,6 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const clients = useQuery({ queryKey: ['clients', 'active'], queryFn: clientApi.active, enabled: open });
   const serviceTypes = useQuery({ queryKey: ['service-types'], queryFn: serviceTypeApi.list, enabled: open });
   const vehicles = useQuery({ queryKey: ['vehicles', 'list-for-mission'], queryFn: () => vehicleApi.list(0, 100), enabled: open });
   const drivers = useQuery({ queryKey: ['drivers', 'list-for-mission'], queryFn: () => driverApi.list(0, 100), enabled: open });
@@ -125,19 +127,12 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
 
   const localCities = (cities.data ?? []).filter((c) => ACTIVE_CITY_NAMES.includes(c.name));
 
-  // Regroupement par region (Centre/Littoral/Ouest...) pour le voyage hors ville : plus de
-  // 50 villes dans une seule liste plate serait illisible. "Autres" recueille les villes
-  // sans region renseignee, plutot que de les faire disparaitre silencieusement.
-  const citiesByRegion = (() => {
-    const groups = new Map<string, City[]>();
-    for (const c of cities.data ?? []) {
-      const key = c.region ?? 'Autres';
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key)!.push(c);
-    }
-    return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
-  })();
-  const agenciesForLocalCity = (agencies.data ?? []).filter((a) => String(a.cityId) === originCityId);
+  // Voyage hors ville : la destination se choisit par le seul nom de la ville, regroupee par
+  // region (Ouest, Littoral, Centre, Nord-Ouest, Sud-Ouest, Sud, Est).
+  const citiesByRegion: [string, City[]][] = VOYAGE_REGIONS
+    .map((region): [string, City[]] => [region, (cities.data ?? []).filter((c) => c.region === region)])
+    .filter(([, list]) => list.length > 0);
+  const voyageCities = citiesByRegion.flatMap(([, list]) => list);
 
   // Le camion doit etre base dans la ville de depart — tant qu'elle n'est pas encore
   // choisie (le champ ville vient plus bas dans le formulaire), la flotte entiere reste
@@ -166,6 +161,10 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
     enabled: Boolean(destinationQuartierCityId),
   });
 
+  // Tous les quartiers du referentiel (Centre, Littoral, Ouest...) : affiches ensemble sur la carte,
+  // pour pouvoir en choisir un sans avoir d'abord selectionne sa ville.
+  const allQuartiers = useQuery({ queryKey: ['quartiers', 'all'], queryFn: () => quartierApi.active(), enabled: open });
+
   // Chaque camion a un chauffeur attitre (affectation standing) : le pre-selectionner evite
   // une double saisie, sans empecher de le changer si ce chauffeur n'est pas disponible.
   useEffect(() => {
@@ -184,8 +183,8 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
   const destAgencyObj = agencies.data?.find((a) => String(a.id) === destinationAgencyId);
   const originCityObj = cities.data?.find((c) => String(c.id) === originCityId);
   const destCityObj = cities.data?.find((c) => String(c.id) === destinationQuartierCityId);
-  const originQuartierObj = originQuartiers.data?.find((q) => String(q.id) === originQuartierId);
-  const destQuartierObj = destinationQuartiers.data?.find((q) => String(q.id) === destinationQuartierId);
+  const originQuartierObj = (allQuartiers.data ?? originQuartiers.data)?.find((q) => String(q.id) === originQuartierId);
+  const destQuartierObj = (allQuartiers.data ?? destinationQuartiers.data)?.find((q) => String(q.id) === destinationQuartierId);
 
   const originPoint = firstWithCoords(originQuartierObj, originAgencyObj, originCityObj);
   const destinationPoint = firstWithCoords(destQuartierObj, destAgencyObj, destCityObj);
@@ -205,10 +204,26 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
   };
 
   const pickQuartier = (quartierId: number, target: 'origin' | 'destination') => {
+    // La ville suit le quartier choisi (absent de la liste tout juste apres une creation a la volee :
+    // la ville a alors deja ete posee par l'appelant).
+    const quartier = allQuartiers.data?.find((q) => q.id === quartierId);
+    if (quartier) {
+      const cityValue = String(quartier.cityId);
+      if (isVoyageHorsVille) {
+        setValue(target === 'origin' ? 'originCityId' : 'destinationCityId', cityValue, { shouldValidate: true });
+      } else if (target === 'destination' && originCityId && originCityId !== cityValue) {
+        toast.error(t('missionForm.sameCityRequired'));
+        return;
+      } else {
+        setValue('originCityId', cityValue, { shouldValidate: true });
+      }
+    }
     if (target === 'origin') {
       setValue('originQuartierId', String(quartierId), { shouldValidate: true });
+      setValue('agencyId', '');
     } else {
       setValue('destinationQuartierId', String(quartierId), { shouldValidate: true });
+      setValue('destinationAgencyId', '');
     }
   };
 
@@ -222,9 +237,11 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
     }
     if (target === 'origin') {
       setValue('agencyId', String(siteId), { shouldValidate: true });
+      setValue('originQuartierId', '');
       if (!destinationAgencyId) setMapTarget('destination');
     } else {
       setValue('destinationAgencyId', String(siteId), { shouldValidate: true });
+      setValue('destinationQuartierId', '');
     }
   };
 
@@ -290,6 +307,23 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
     }
   };
 
+  /**
+   * Voyage hors ville : un clic sur la carte ne cree rien, il designe seulement la ville connue
+   * (parmi les regions desservies) la plus proche, retrouvee par geocodage inverse.
+   */
+  const handleVoyageMapClick = async (lat: number, lng: number) => {
+    const result = await geocodingApi.reverse(lat, lng);
+    const city = result
+      ? voyageCities.find((c) => normalizeName(c.name) === normalizeName(result.cityName))
+      : undefined;
+    if (!city) {
+      toast.error(t('missionForm.unknownCityPickFromList'));
+      return;
+    }
+    pickCity(city.id, mapTarget);
+    toast.success(t('missionForm.citySelected', { name: city.name }));
+  };
+
   const vehicleTankLevel = tankLevels.data?.find((t) => String(t.vehicleId) === vehicleId);
 
   const estimate = useQuery({
@@ -333,14 +367,9 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
     onError: (e) => setError(errorMessage(e)),
   });
 
-  /** Compose une date/heure locale (sans fuseau) en instant ISO, en fixant explicitement +01:00. */
-  const toInstant = (localDateTime: string) =>
-    localDateTime ? new Date(`${localDateTime}:00+01:00`).toISOString() : undefined;
-
   const onSubmit = (values: FormValues) => {
     setError(null);
     create.mutate({
-      clientId: values.clientId ? Number(values.clientId) : undefined,
       serviceTypeId: Number(values.serviceTypeId),
       vehicleId: Number(values.vehicleId),
       driverId: Number(values.driverId),
@@ -350,8 +379,7 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
       destinationCityId: values.destinationCityId ? Number(values.destinationCityId) : undefined,
       originQuartierId: values.originQuartierId ? Number(values.originQuartierId) : undefined,
       destinationQuartierId: values.destinationQuartierId ? Number(values.destinationQuartierId) : undefined,
-      plannedStart: toInstant(values.plannedStart),
-      plannedArrival: toInstant(values.plannedArrival),
+      // Dates reelles : fixees au demarrage et a la cloture de la mission.
       cargoDescription: values.cargoDescription || undefined,
       cargoWeightKg: values.cargoWeightKg ? Number(values.cargoWeightKg) : undefined,
       missionFeeCost: values.missionFeeCost ? Number(values.missionFeeCost) : undefined,
@@ -366,6 +394,7 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
 
   return (
     <Drawer
+      wide
       open={open}
       onClose={handleClose}
       title={t('missionForm.createTitle')}
@@ -389,21 +418,12 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
           <select className="input" {...register('serviceTypeId', { required: t('common.requiredField') })}>
             <option value="">{t('common.selectPlaceholder')}</option>
             {serviceTypes.data?.map((s) => (
-              <option key={s.id} value={s.id}>{s.label}{!s.billable ? ` ${t('missionForm.nonBillable')}` : ''}</option>
+              <option key={s.id} value={s.id}>{s.label}</option>
             ))}
           </select>
           {errors.serviceTypeId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.serviceTypeId.message}</p>}
         </div>
 
-        <div>
-          <label className="label">
-            {t('missionDetail.client')} {selectedServiceType?.billable && <span className="text-slate-400">{t('missionForm.clientBillableHint')}</span>}
-          </label>
-          <select className="input" {...register('clientId')}>
-            <option value="">{t('common.none')}</option>
-            {clients.data?.map((c) => <option key={c.id} value={c.id}>{c.companyName}</option>)}
-          </select>
-        </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
@@ -467,13 +487,9 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
                 origin={originPoint}
                 destination={destinationPoint}
                 routeGeometry={estimate.data?.routeGeometry}
-                pickableCities={cities.data ?? []}
+                pickableCities={voyageCities}
                 onPickCity={(cityId) => pickCity(cityId, mapTarget)}
-                pickableQuartiers={(mapTarget === 'origin' ? originQuartiers.data : destinationQuartiers.data) ?? []}
-                onPickQuartier={(quartierId) => pickQuartier(quartierId, mapTarget)}
-                pickableSites={agencies.data ?? []}
-                onPickSite={(siteId) => pickSite(siteId, mapTarget)}
-                onMapClick={handleMapClick}
+                onMapClick={handleVoyageMapClick}
               />
             </div>
 
@@ -512,64 +528,6 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
                 {errors.destinationCityId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.destinationCityId.message}</p>}
               </div>
             </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="label">{t('missionForm.originAgency')}</label>
-                <select
-                  className="input"
-                  {...register('agencyId', {
-                    required: t('missionForm.requiredForTrip'),
-                    onChange: () => { if (!destinationAgencyId) setMapTarget('destination'); },
-                  })}
-                >
-                  <option value="">{t('common.selectPlaceholder')}</option>
-                  {agencies.data?.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-                {errors.agencyId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.agencyId.message}</p>}
-              </div>
-              <div>
-                <label className="label">{t('missionForm.destinationAgency')}</label>
-                <select className="input" {...register('destinationAgencyId', { required: t('missionForm.requiredForTrip') })}>
-                  <option value="">{t('common.selectPlaceholder')}</option>
-                  {agencies.data?.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-                {errors.destinationAgencyId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.destinationAgencyId.message}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="label">{t('missionForm.originQuartierOptional')}</label>
-                <select
-                  className="input disabled:opacity-60"
-                  disabled={!originCityId}
-                  {...register('originQuartierId')}
-                >
-                  <option value="">{originCityId ? t('common.selectPlaceholder') : t('missionForm.chooseOriginCityFirst')}</option>
-                  {originQuartiers.data?.map((q) => <option key={q.id} value={q.id}>{q.name}</option>)}
-                </select>
-                {originCityId && !originQuartiers.isLoading && originQuartiers.data?.length === 0 && (
-                  <p className="mt-1 text-xs text-slate-400">{t('missionForm.noQuartierClickToAdd')}</p>
-                )}
-              </div>
-              <div>
-                <label className="label">{t('missionForm.destinationQuartierDelivery')}</label>
-                <select
-                  className="input disabled:opacity-60"
-                  disabled={!destinationCityId}
-                  {...register('destinationQuartierId')}
-                >
-                  <option value="">{destinationCityId ? t('common.selectPlaceholder') : t('missionForm.chooseDestinationCityFirst')}</option>
-                  {destinationQuartiers.data?.map((q) => <option key={q.id} value={q.id}>{q.name}</option>)}
-                </select>
-                {destinationCityId && !destinationQuartiers.isLoading && destinationQuartiers.data?.length === 0 && (
-                  <p className="mt-1 text-xs text-slate-400">
-                    {t('missionForm.noQuartierForCityClickToAdd')}
-                  </p>
-                )}
-              </div>
-            </div>
           </>
         ) : (
           <>
@@ -601,7 +559,7 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
                 routeGeometry={estimate.data?.routeGeometry}
                 pickableCities={localCities}
                 onPickCity={(cityId) => setValue('originCityId', String(cityId), { shouldValidate: true })}
-                pickableQuartiers={(mapTarget === 'origin' ? originQuartiers.data : destinationQuartiers.data) ?? []}
+                pickableQuartiers={allQuartiers.data ?? []}
                 onPickQuartier={(quartierId) => pickQuartier(quartierId, mapTarget)}
                 pickableSites={agencies.data ?? []}
                 onPickSite={(siteId) => pickSite(siteId, mapTarget)}
@@ -631,63 +589,26 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="label">{t('missionAutomationForm.departureSite')}</label>
-                <select
-                  className="input disabled:opacity-60"
-                  disabled={!originCityId}
-                  {...register('agencyId', {
-                    required: t('missionForm.requiredForLocal'),
-                    onChange: () => { if (!destinationAgencyId) setMapTarget('destination'); },
-                  })}
-                >
-                  <option value="">{originCityId ? t('common.selectPlaceholder') : t('missionAutomationForm.chooseCityFirst')}</option>
-                  {agenciesForLocalCity.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-                {errors.agencyId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.agencyId.message}</p>}
-              </div>
-              <div>
-                <label className="label">{t('missionDetail.arrivalSite')}</label>
-                <select
-                  className="input disabled:opacity-60"
-                  disabled={!originCityId}
-                  {...register('destinationAgencyId', { required: t('missionForm.requiredForLocal') })}
-                >
-                  <option value="">{originCityId ? t('common.selectPlaceholder') : t('missionAutomationForm.chooseCityFirst')}</option>
-                  {agenciesForLocalCity.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-                {errors.destinationAgencyId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.destinationAgencyId.message}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="label">{t('missionForm.originQuartierOptional')}</label>
-                <select
-                  className="input disabled:opacity-60"
-                  disabled={!originCityId}
-                  {...register('originQuartierId')}
-                >
-                  <option value="">{originCityId ? t('common.selectPlaceholder') : t('missionAutomationForm.chooseCityFirst')}</option>
-                  {originQuartiers.data?.map((q) => <option key={q.id} value={q.id}>{q.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="label">{t('missionForm.destinationQuartierArrivalOptional')}</label>
-                <select
-                  className="input disabled:opacity-60"
-                  disabled={!originCityId}
-                  {...register('destinationQuartierId')}
-                >
-                  <option value="">{originCityId ? t('common.selectPlaceholder') : t('missionAutomationForm.chooseCityFirst')}</option>
-                  {destinationQuartiers.data?.map((q) => <option key={q.id} value={q.id}>{q.name}</option>)}
-                </select>
-                {originCityId && !destinationQuartiers.isLoading && destinationQuartiers.data?.length === 0 && (
-                  <p className="mt-1 text-xs text-slate-400">
-                    {t('missionForm.noQuartierForCityClickToAdd')}
-                  </p>
-                )}
-              </div>
+              <SiteMapField
+                label={t('missionAutomationForm.departureSite')}
+                siteName={originAgencyObj?.name ?? originQuartierObj?.name}
+                active={mapTarget === 'origin'}
+                onActivate={() => setMapTarget('origin')}
+                onClear={() => { setValue('agencyId', ''); setValue('originQuartierId', '', { shouldValidate: true }); }}
+                error={errors.agencyId?.message}
+              />
+              <input type="hidden" {...register('agencyId', { validate: (_v, f) => Boolean(f.agencyId || f.originQuartierId) || t('missionForm.requiredForLocal') })} />
+              <input type="hidden" {...register('originQuartierId')} />
+              <SiteMapField
+                label={t('missionDetail.arrivalSite')}
+                siteName={destAgencyObj?.name ?? destQuartierObj?.name}
+                active={mapTarget === 'destination'}
+                onActivate={() => setMapTarget('destination')}
+                onClear={() => { setValue('destinationAgencyId', ''); setValue('destinationQuartierId', '', { shouldValidate: true }); }}
+                error={errors.destinationAgencyId?.message}
+              />
+              <input type="hidden" {...register('destinationAgencyId', { validate: (_v, f) => Boolean(f.destinationAgencyId || f.destinationQuartierId) || t('missionForm.requiredForLocal') })} />
+              <input type="hidden" {...register('destinationQuartierId')} />
             </div>
           </>
         )}
@@ -743,20 +664,6 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
             </span>
           </div>
         )}
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="label">{t('missionForm.plannedStartOptional')}</label>
-            <input type="datetime-local" className="input" {...register('plannedStart')} />
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {t('missionForm.plannedStartHint')}
-            </p>
-          </div>
-          <div>
-            <label className="label">{t('missionForm.plannedArrivalOptional')}</label>
-            <input type="datetime-local" className="input" {...register('plannedArrival')} />
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>

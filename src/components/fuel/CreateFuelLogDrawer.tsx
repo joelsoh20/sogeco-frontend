@@ -17,9 +17,8 @@ interface FormValues {
   driverId: string;
   partnerId: string;
   fuelDatetime: string;
-  quantityLiters: string;
+  totalCost: string;
   unitPrice: string;
-  odometerAfter: string;
   receiptNumber: string;
 }
 
@@ -53,7 +52,13 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
   });
 
   const selectedVehicleId = watch('vehicleId');
-  const quantityLiters = watch('quantityLiters');
+  // Litres deduits du budget (somme / prix au litre) : affiches a titre indicatif,
+  // et utilises pour l'alerte de quantite suspecte.
+  const totalCost = watch('totalCost');
+  const unitPrice = watch('unitPrice');
+  const estimatedLiters = Number(totalCost) > 0 && Number(unitPrice) > 0
+    ? Number(totalCost) / Number(unitPrice)
+    : null;
   const selectedVehicle = vehicles.data?.content.find((v) => String(v.id) === selectedVehicleId);
 
   // Le chauffeur du camion selectionne (affectation standing) se propose automatiquement —
@@ -66,7 +71,7 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
   const threshold = selectedVehicle
     ? suspiciousFuelThreshold(selectedVehicle.bodyType, selectedVehicle.tankCapacityLiters)
     : null;
-  const suspiciousQuantity = threshold !== null && quantityLiters !== '' && Number(quantityLiters) > threshold;
+  const suspiciousQuantity = threshold !== null && estimatedLiters !== null && estimatedLiters > threshold;
 
   const create = useMutation({
     mutationFn: (payload: FuelLogRequest) => fuelApi.create(payload),
@@ -86,13 +91,10 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
       driverId: values.driverId ? Number(values.driverId) : undefined,
       partnerId: values.partnerId ? Number(values.partnerId) : undefined,
       fuelDatetime: new Date(values.fuelDatetime).toISOString(),
-      quantityLiters: Number(values.quantityLiters),
+      totalCost: Number(values.totalCost),
       unitPrice: Number(values.unitPrice),
-      // Pas de "Km avant" saisi : le backend reprend automatiquement le
-      // dernier kilometrage connu du camion (FuelService.create), qui est
-      // deja affiche a titre indicatif sous le champ "Km après" ci-dessous —
-      // demander de le retaper serait une redondance pure.
-      odometerAfter: Number(values.odometerAfter),
+      // Pas de kilometrage saisi : le backend le reprend du suivi Traccar
+      // (kilometrage cumule du camion, FuelService.create).
       receiptNumber: values.receiptNumber || undefined,
     });
   };
@@ -151,23 +153,29 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label className="label">{t('fuelForm.quantity')}</label>
-            <input type="number" step="0.01" className="input" {...register('quantityLiters', { required: t('common.requiredField') })} />
-            {errors.quantityLiters && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.quantityLiters.message}</p>}
+            <label className="label">{t('fuelForm.amount')}</label>
+            <input type="number" step="1" min="0" className="input" {...register('totalCost', { required: t('common.requiredField') })} />
+            {errors.totalCost && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.totalCost.message}</p>}
           </div>
           <div>
             <label className="label">{t('fuelForm.unitPrice')}</label>
-            <input type="number" step="0.01" className="input" {...register('unitPrice', { required: t('common.requiredField') })} />
+            <input type="number" step="0.01" min="0" className="input" {...register('unitPrice', { required: t('common.requiredField') })} />
             {errors.unitPrice && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.unitPrice.message}</p>}
           </div>
         </div>
+
+        {estimatedLiters !== null && (
+          <p className="-mt-2 text-xs text-slate-500 dark:text-slate-400">
+            {t('fuelForm.estimatedLiters', { liters: formatNumber(estimatedLiters, 2) })}
+          </p>
+        )}
 
         {suspiciousQuantity && (
           <div className="flex items-start gap-2.5 rounded-lg bg-amber-50 px-3.5 py-3 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
             <AlertTriangle size={16} className="mt-0.5 shrink-0" />
             <span>
               {t('fuelForm.suspiciousQuantity', {
-                liters: formatNumber(Number(quantityLiters), 2),
+                liters: formatNumber(estimatedLiters ?? 0, 2),
                 bodyType: selectedVehicle ? t(`vehicle.bodyType.${selectedVehicle.bodyType}`).toLowerCase() : '',
               })}
               {selectedVehicle?.tankCapacityLiters
@@ -177,25 +185,6 @@ export function CreateFuelLogDrawer({ open, onClose }: CreateFuelLogDrawerProps)
             </span>
           </div>
         )}
-
-        <div>
-          <label className="label">{t('fuelForm.odometerReading')}</label>
-          <input type="number" className="input" {...register('odometerAfter', { required: t('common.requiredField') })} />
-          {errors.odometerAfter ? (
-            <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.odometerAfter.message}</p>
-          ) : (
-            <>
-              {selectedVehicle?.currentKilometers != null && (
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {t('fuelForm.lastKnownOdometer', { km: formatNumber(selectedVehicle.currentKilometers) })}
-                </p>
-              )}
-              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-                {t('fuelForm.odometerReadingHint')}
-              </p>
-            </>
-          )}
-        </div>
 
         <div>
           <label className="label">{t('fuelForm.receiptNumber')}</label>

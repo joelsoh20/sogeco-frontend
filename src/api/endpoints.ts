@@ -306,8 +306,9 @@ export const adminApi = {
 };
 
 export const quartierApi = {
-  active: (cityId: number) =>
-    api.get<Quartier[]>(`${V1}/quartiers/active`, { params: { cityId } }).then((r) => r.data),
+  /** Sans cityId : tous les quartiers actifs (Centre, Littoral, Ouest...), pour la carte de mission. */
+  active: (cityId?: number) =>
+    api.get<Quartier[]>(`${V1}/quartiers/active`, { params: cityId ? { cityId } : undefined }).then((r) => r.data),
 
   create: (payload: CreateQuartierRequest) =>
     api.post<Quartier>(`${V1}/quartiers`, payload).then((r) => r.data),

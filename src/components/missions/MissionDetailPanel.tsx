@@ -152,8 +152,10 @@ export function MissionDetailPanel({ missionId }: { missionId: number }) {
             value={`${mission.cargoDescription ?? '—'} · ${mission.cargoWeightKg ? `${formatNumber(mission.cargoWeightKg)} kg` : ''}${mission.cargoVolumeM3 ? ` / ${formatNumber(mission.cargoVolumeM3)} m³` : ''}`}
           />
         )}
-        <DetailRow label={t('missionDetail.plannedDeparture')} value={formatDateTime(mission.plannedStart)} />
-        {mission.plannedArrival && <DetailRow label={t('missionDetail.plannedArrival')} value={formatDateTime(mission.plannedArrival)} />}
+        {mission.actualStart && <DetailRow label={t('missionDetail.actualDeparture')} value={formatDateTime(mission.actualStart)} />}
+        {mission.actualEnd && <DetailRow label={t('missionDetail.actualArrival')} value={formatDateTime(mission.actualEnd)} />}
+        {mission.plannedStart && !mission.actualStart && <DetailRow label={t('missionDetail.plannedDeparture')} value={formatDateTime(mission.plannedStart)} />}
+        {mission.plannedArrival && !mission.actualEnd && <DetailRow label={t('missionDetail.plannedArrival')} value={formatDateTime(mission.plannedArrival)} />}
       </div>
 
       <div>

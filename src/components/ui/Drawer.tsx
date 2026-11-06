@@ -9,6 +9,8 @@ interface DrawerProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  /** Panneau elargi aux 3/4 de l'ecran (formulaires avec carte) ; plein ecran sur mobile. */
+  wide?: boolean;
 }
 
 /**
@@ -23,7 +25,7 @@ interface DrawerProps {
  * a justement pour role de retarder ce retrait jusqu'a la fin de
  * l'animation "exit".
  */
-export function Drawer({ open, onClose, title, subtitle, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, subtitle, children, wide = false }: DrawerProps) {
   return (
     <AnimatePresence>
       {open && (
@@ -41,7 +43,7 @@ export function Drawer({ open, onClose, title, subtitle, children }: DrawerProps
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative flex w-full max-w-md flex-col bg-white shadow-panel dark:bg-slate-900"
+            className={`relative flex w-full flex-col bg-white shadow-panel dark:bg-slate-900 ${wide ? 'max-w-none md:w-3/4' : 'max-w-md'}`}
           >
             <div className="flex items-start justify-between border-b border-surface-border px-6 py-4 dark:border-slate-800">
               <div className="min-w-0">

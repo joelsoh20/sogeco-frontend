@@ -509,10 +509,9 @@ export interface FuelLogRequest {
   missionId?: number;
   partnerId?: number;
   fuelDatetime: string;
-  quantityLiters: number;
+  /** Somme depensee (FCFA) : on carbure au budget, les litres sont deduits cote backend. */
+  totalCost: number;
   unitPrice: number;
-  odometerBefore?: number;
-  odometerAfter: number;
   fullTank?: boolean;
   receiptNumber?: string;
 }
