@@ -151,7 +151,15 @@ export const reportApi = {
   /** Rapport PDF des depenses par camion et par domaine, avec le bilan des missions par type. */
   vehicleExpensesPdf: (from: string, to: string, vehicleIds: number[] = []) =>
     api.get<Blob>(`${V1}/reports/vehicle-expenses/pdf`, { params: { from, to, vehicleIds: vehicleIds.join(',') || undefined }, responseType: 'blob' })
-      .then((r) => r.data),
+      .then((r) => r.data)
+      .catch(async (e) => {
+        // Avec responseType blob, le corps de l'erreur est un Blob : on le relit pour que
+        // errorMessage affiche le vrai motif (droit manquant, periode invalide...).
+        if (e?.response?.data instanceof Blob) {
+          try { e.response.data = JSON.parse(await e.response.data.text()); } catch { /* corps non JSON */ }
+        }
+        throw e;
+      }),
 
   vehicleExpenses: (year: number) =>
     api.get<VehicleExpenseSummary[]>(`${V1}/reports/vehicle-expenses`, { params: { year } }).then((r) => r.data),

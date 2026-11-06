@@ -40,7 +40,7 @@ export function Topbar({ title, subtitle, alertCount = 0, onMenuClick }: TopbarP
   const roleLabel = user?.roles.map((role) => t(`roles.${role}`, role)).join(', ');
 
   return (
-    <header className="flex items-center justify-between gap-2 border-b border-surface-border bg-white/70 px-4 py-3 backdrop-blur-md backdrop-saturate-150 transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900/70 sm:px-6 sm:py-4">
+    <header className="relative z-40 flex items-center justify-between gap-2 border-b border-surface-border bg-white/70 px-4 py-3 backdrop-blur-md backdrop-saturate-150 transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900/70 sm:px-6 sm:py-4">
       <div className="flex min-w-0 items-center gap-2">
         <button
           onClick={onMenuClick}
