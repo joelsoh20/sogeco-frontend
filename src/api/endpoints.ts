@@ -52,6 +52,12 @@ export const vehicleApi = {
 
   delete: (id: number) => api.delete(`${V1}/vehicles/${id}`),
 
+  declareBreakdown: (id: number) =>
+    api.post<VehicleDetail>(`${V1}/vehicles/${id}/breakdown`).then((r) => r.data),
+
+  backInService: (id: number) =>
+    api.delete<VehicleDetail>(`${V1}/vehicles/${id}/breakdown`).then((r) => r.data),
+
   assignmentHistory: (vehicleId: number) =>
     api.get<Assignment[]>(`${V1}/vehicles/${vehicleId}/assignments`).then((r) => r.data),
 

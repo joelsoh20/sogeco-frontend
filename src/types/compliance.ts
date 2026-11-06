@@ -463,6 +463,8 @@ export interface VehicleExpenseSection {
   revenue: number;
   missionMargin: number;
   expensePerKm: number | null;
+  testFuelLiters: number;
+  downtimeDays: number;
 }
 
 export interface VehicleExpenseReport {
@@ -474,5 +476,7 @@ export interface VehicleExpenseReport {
   fleetMissionCount: number;
   fleetRevenue: number;
   fleetKm: number;
+  fleetTestFuelLiters: number;
+  fleetDowntimeDays: number;
   vehicles: VehicleExpenseSection[];
 }

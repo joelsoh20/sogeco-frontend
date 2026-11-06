@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Activity, AlertOctagon, CalendarClock, MapPin, Search, Wrench } from 'lucide-react';
+import { Activity, AlertOctagon, AlertTriangle, CalendarClock, MapPin, Search, Wrench } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -13,6 +13,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { MaintenanceCategoryBadge, MaintenanceStatusBadge, CATEGORIES, STATUSES } from '@/components/maintenance/MaintenanceBadges';
 import { MaintenanceCategoryDonut } from '@/components/maintenance/MaintenanceCategoryDonut';
 import { MaintenanceCostTrendChart } from '@/components/maintenance/MaintenanceCostTrendChart';
+import { BrokenVehicles, DeclareBreakdownDrawer } from '@/components/maintenance/BreakdownSection';
 import { CreateMaintenanceDrawer } from '@/components/maintenance/CreateMaintenanceDrawer';
 import { MaintenanceDetailPanel } from '@/components/maintenance/MaintenanceDetailPanel';
 import { MaintenanceCityStatsDrawer } from '@/components/maintenance/MaintenanceCityStatsDrawer';
@@ -29,6 +30,7 @@ export function MaintenancePage() {
   const [page, setPage] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [declareOpen, setDeclareOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<MaintenanceStatus | ''>('');
   const [categoryFilter, setCategoryFilter] = useState<MaintenanceCategory | ''>('');
@@ -85,12 +87,20 @@ export function MaintenancePage() {
       backgroundImage="/Maintenance.jpg"
     >
       <div className="space-y-6">
-        <div className="flex justify-end">
+        <div className="flex flex-wrap justify-end gap-2">
+          {canCreate && (
+            <button onClick={() => setDeclareOpen(true)} className="btn-ghost border-red-300 text-red-700 dark:border-red-500/30 dark:text-red-400">
+              <AlertTriangle size={16} />
+              {t('maintenancePage.declareBreakdown')}
+            </button>
+          )}
           <button onClick={() => setCityStatsOpen(true)} className="btn-ghost">
             <MapPin size={16} />
             {t('maintenancePage.statsByCity')}
           </button>
         </div>
+
+        <BrokenVehicles canManage={canCreate} onRepair={() => setCreateOpen(true)} />
 
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           <StatCard label={t('maintenancePage.statTotalCost')} value={formatFcfaCompact(stats.data?.coutTotal)} icon={Wrench} accent="amber" />
@@ -318,6 +328,7 @@ export function MaintenancePage() {
         {detail.isLoading ? <LoadingPanel /> : detail.data && <MaintenanceDetailPanel log={detail.data} />}
       </Drawer>
 
+      <DeclareBreakdownDrawer open={declareOpen} onClose={() => setDeclareOpen(false)} onDeclared={() => setCreateOpen(true)} />
       <CreateMaintenanceDrawer open={createOpen} onClose={() => setCreateOpen(false)} />
       <MaintenanceCityStatsDrawer open={cityStatsOpen} onClose={() => setCityStatsOpen(false)} />
     </PageShell>

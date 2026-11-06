@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Banknote, ChevronDown, FileDown, Gauge, Route, TrendingUp, Truck, Wallet } from 'lucide-react';
+import { Banknote, ChevronDown, FileDown, Fuel, Gauge, Route, TrendingUp, Truck, Wallet, Wrench } from 'lucide-react';
 import { Spinner, LoadingPanel } from '@/components/ui/Spinner';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
 import { reportApi } from '@/api/compliance';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
-import { formatFcfa, formatNumber } from '@/lib/utils';
+import { formatFcfa, formatLiters, formatNumber } from '@/lib/utils';
 import type { ExpenseDomain, MissionTypeLine, VehicleExpenseSection } from '@/types/compliance';
 
 const DOMAINS: ExpenseDomain[] = [
@@ -70,13 +70,14 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
     ? section && {
       expenses: section.expenses, total: section.totalExpenses, missionTypes: section.missionTypes,
       missionCount: section.missionCount, km: section.distanceKm, revenue: section.revenue,
-      margin: section.missionMargin, perKm: section.expensePerKm,
+      margin: section.missionMargin, perKm: section.expensePerKm, testFuel: section.testFuelLiters, downtime: section.downtimeDays,
     }
     : {
       expenses: data.fleetExpenses, total: data.fleetTotalExpenses, missionTypes: data.fleetMissionTypes,
       missionCount: data.fleetMissionCount, km: data.fleetKm, revenue: data.fleetRevenue,
       margin: data.vehicles.reduce((sum, v) => sum + v.missionMargin, 0),
       perKm: data.fleetKm > 0 ? data.fleetTotalExpenses / data.fleetKm : null,
+      testFuel: data.fleetTestFuelLiters, downtime: data.fleetDowntimeDays,
     });
 
   const downloadPdf = async () => {
@@ -168,6 +169,8 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
             <StatCard label={t('reportsPage.kpiRevenue')} value={formatFcfa(view.revenue)} icon={Banknote} accent="green" />
             <StatCard label={t('reportsPage.kpiDistance')} value={`${formatNumber(view.km)} km`} icon={Route} accent="slate" />
             <StatCard label={t('reportsPage.kpiExpensePerKm')} value={view.perKm == null ? '—' : formatFcfa(view.perKm)} icon={Gauge} lowerIsBetter accent="slate" />
+            <StatCard label={t('reportsPage.kpiDowntime')} value={`${formatNumber(view.downtime)} ${t('reportsPage.daysUnit')}`} icon={Wrench} lowerIsBetter accent="red" />
+            <StatCard label={t('reportsPage.kpiTestFuel')} value={formatLiters(view.testFuel)} icon={Fuel} accent="slate" />
             <StatCard label={t('reportsPage.kpiMargin')} value={formatFcfa(view.margin)} icon={TrendingUp} accent={view.margin < 0 ? 'red' : 'green'} />
           </StatGrid>
 
@@ -309,6 +312,16 @@ function ComparisonView({ sections }: { sections: VehicleExpenseSection[] }) {
                 <td className={labelClass}>{t('reportsPage.rowDistance')}</td>
                 {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatNumber(v.distanceKm)} km</td>)}
                 {totalCell(sum((v) => v.distanceKm), (n) => `${formatNumber(n)} km`)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.kpiDowntime')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{v.downtimeDays} {t('reportsPage.daysUnit')}</td>)}
+                {totalCell(sum((v) => v.downtimeDays), (n) => `${n} ${t('reportsPage.daysUnit')}`)}
+              </tr>
+              <tr className={rowClass}>
+                <td className={labelClass}>{t('reportsPage.kpiTestFuel')}</td>
+                {sections.map((v) => <td key={v.vehicleId} className={valueClass}>{formatLiters(v.testFuelLiters)}</td>)}
+                {totalCell(sum((v) => v.testFuelLiters), formatLiters)}
               </tr>
               <tr className={rowClass}>
                 <td className={labelClass}>{t('reportsPage.rowRevenue')}</td>

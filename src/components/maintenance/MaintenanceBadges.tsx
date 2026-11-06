@@ -56,3 +56,6 @@ export function MaintenanceStatusBadge({ status }: { status: MaintenanceStatus }
     </span>
   );
 }
+
+/** Reparations qui exigent un camion declare en panne (RG-7.11). */
+export const REPAIR_CATEGORIES: MaintenanceCategory[] = ['REPARATION_MECANIQUE', 'PNEUMATIQUE', 'ELECTRICITE'];

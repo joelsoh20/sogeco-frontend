@@ -745,6 +745,8 @@ export interface MaintenanceRequest {
   nextInterventionDate?: string;
   nextInterventionKm?: number;
   items?: MaintenanceItemRequest[];
+  /** Temps passe en panne, en jours (reparations). */
+  downtimeDays?: number;
 }
 
 export interface MaintenanceStats {
