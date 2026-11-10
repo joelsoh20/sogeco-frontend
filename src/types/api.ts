@@ -892,6 +892,14 @@ export interface CreateQuartierRequest {
 }
 
 /** Lieu connu le plus proche d'un point clique sur la carte (geocodage inverse). */
+export interface PlaceSuggestion {
+  label: string;
+  placeName: string;
+  cityName: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface ReverseGeocodeResult {
   placeName: string;
   cityName: string;

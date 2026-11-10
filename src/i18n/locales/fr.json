@@ -252,6 +252,7 @@
   },
 
   "alertsPage": {
+    "markAllRead": "Tout marquer comme lu",
     "title": "Alertes & Centre de contrôle",
     "subtitle": "Surveillance en temps réel de votre flotte — alertes et notifications",
     "levelAll": "Toutes",
@@ -556,6 +557,8 @@
     "vehiclesSelected_other": "{{count}} véhicules sélectionnés",
     "clearSelection": "Tout effacer",
     "daysUnit": "j",
+    "missionsReport": "Rapport des missions",
+    "preset": { "thisWeek": "Cette semaine", "lastWeek": "Semaine dernière", "thisMonth": "Ce mois" },
     "kpiDowntime": "Temps en panne",
     "kpiTestFuel": "Carburant d’essai (garage)",
     "statsCompare": "Comparaison des véhicules",
@@ -1121,6 +1124,11 @@
   },
 
   "missionForm": {
+    "searchPlace": "Rechercher un lieu (ex. Bonabéri, marché Mboppi)",
+    "searching": "Recherche…",
+    "noSearchResult": "Aucun lieu trouvé : vérifiez l’orthographe ou choisissez sur la carte.",
+    "pickOnMap": "Choisir sur la carte",
+    "hideMap": "Masquer la carte",
     "createTitle": "Nouvelle mission",
     "editTitle": "Modifier la mission",
     "tripForDriver": "Voyage pour {{name}}",

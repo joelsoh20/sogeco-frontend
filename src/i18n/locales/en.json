@@ -255,6 +255,7 @@
   },
 
   "alertsPage": {
+    "markAllRead": "Mark all as read",
     "title": "Alerts & Control Center",
     "subtitle": "Real-time monitoring of your fleet — alerts and notifications",
     "levelAll": "All",
@@ -559,6 +560,8 @@
     "vehiclesSelected_other": "{{count}} vehicles selected",
     "clearSelection": "Clear all",
     "daysUnit": "d",
+    "missionsReport": "Missions report",
+    "preset": { "thisWeek": "This week", "lastWeek": "Last week", "thisMonth": "This month" },
     "kpiDowntime": "Time broken down",
     "kpiTestFuel": "Garage test fuel",
     "statsCompare": "Vehicle comparison",
@@ -1124,6 +1127,11 @@
   },
 
   "missionForm": {
+    "searchPlace": "Search a place (e.g. Bonaberi, Mboppi market)",
+    "searching": "Searching…",
+    "noSearchResult": "No place found: check the spelling or pick it on the map.",
+    "pickOnMap": "Pick on the map",
+    "hideMap": "Hide the map",
     "createTitle": "New mission",
     "editTitle": "Edit mission",
     "tripForDriver": "Trip for {{name}}",

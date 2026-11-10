@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
+import { allowedPagesFor } from '@/lib/roleAccess';
 import { SPRING_SNAPPY } from '@/lib/motion';
 
 interface NavItem {
@@ -62,6 +63,8 @@ export function Sidebar({ alertCount = 0, open = false, onClose }: SidebarProps)
   const { t } = useTranslation();
   const hasAnyPermission = useAuthStore((state) => state.hasAnyPermission);
   const hasRole = useAuthStore((state) => state.hasRole);
+  const userRoles = useAuthStore((state) => state.user?.roles);
+  const allowedPages = allowedPagesFor(userRoles);
 
   return (
     <>
@@ -107,6 +110,9 @@ export function Sidebar({ alertCount = 0, open = false, onClose }: SidebarProps)
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
           {NAVIGATION.map((item) => {
+            if (allowedPages && !allowedPages.includes(item.to)) {
+              return null;
+            }
             // Une entree dont l'utilisateur n'a pas les droits n'est pas
             // affichee grisee : elle n'existe pas pour lui.
             if (item.permissions && !hasAnyPermission(...item.permissions)) {

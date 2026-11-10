@@ -6,7 +6,7 @@ import type {
   Driver, DriverSemesterRanking, DriverStats, FuelLog, FuelLogRequest, FuelStats, LivePosition, MaintenanceCityStats,
   MaintenanceLog, MaintenanceRequest, MaintenanceStats, Mission, MissionAutomation, MissionCancelRequest,
   MissionCompleteRequest, MissionDetail, MissionDetourRequest, MissionEstimate, MissionStats, PageResponse, Quartier,
-  ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
+  PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
   Vehicle, VehicleDetail, VehicleStats, WeeklyRefuel,
 } from '@/types/api';
 import type {
@@ -189,6 +189,13 @@ export const alertApi = {
 
   acknowledge: (id: number) => api.post<Alert>(`${V1}/alerts/${id}/acknowledge`).then((r) => r.data),
 
+  /** Alertes ouvertes non consultees par l'utilisateur : compteur de la cloche. */
+  unreadCount: () => api.get<{ count: number }>(`${V1}/alerts/unread-count`).then((r) => r.data.count),
+
+  markRead: (id: number) => api.post(`${V1}/alerts/${id}/read`),
+
+  markAllRead: () => api.post(`${V1}/alerts/read-all`),
+
   resolve: (id: number, note: string) =>
     api.post<Alert>(`${V1}/alerts/${id}/resolve`, { note }).then((r) => r.data),
 };
@@ -321,6 +328,10 @@ export const quartierApi = {
 };
 
 export const geocodingApi = {
+  /** Propositions de lieux du Cameroun pour un texte saisi (autocompletion). */
+  search: (q: string) =>
+    api.get<PlaceSuggestion[]>(`${V1}/geocoding/search`, { params: { q } }).then((r) => r.data),
+
   /** null si aucun lieu connu pres de ce point (204). */
   reverse: (lat: number, lng: number) =>
     api.get<ReverseGeocodeResult>(`${V1}/geocoding/reverse`, { params: { lat, lng } })

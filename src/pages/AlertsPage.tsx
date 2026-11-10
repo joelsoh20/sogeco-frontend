@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, CheckCircle2, Clock, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, CheckCheck, CheckCircle2, Clock, ShieldAlert } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -38,6 +38,14 @@ export function AlertsPage() {
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['alerts'] });
 
+  // Ouvrir une alerte la marque comme consultee : elle sort du compteur de la cloche.
+  const markRead = useMutation({ mutationFn: (id: number) => alertApi.markRead(id), onSuccess: refresh });
+  const markAllRead = useMutation({ mutationFn: () => alertApi.markAllRead(), onSuccess: refresh });
+  const openAlert = (alert: Alert) => {
+    setSelected(alert);
+    markRead.mutate(alert.id);
+  };
+
   // Nouvelle alerte diffusee : rafraichit la liste sans que
   // l'utilisateur ait a recharger la page.
   useStompSubscription('/topic/alerts', () => refresh());
@@ -49,6 +57,13 @@ export function AlertsPage() {
       backgroundImage="/Alert.jpg"
     >
       <div className="space-y-6">
+        <div className="flex justify-end">
+          <button type="button" onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending} className="btn-ghost">
+            <CheckCheck size={16} />
+            {t('alertsPage.markAllRead')}
+          </button>
+        </div>
+
         <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label={t('alertsPage.statCritical')} value={String(stats.data?.critiques ?? '—')} icon={ShieldAlert} accent="red" />
           <StatCard label={t('alertsPage.statImportant')} value={String(stats.data?.importantes ?? '—')} icon={AlertTriangle} accent="amber" />
@@ -90,7 +105,7 @@ export function AlertsPage() {
           <DataTable
             data={list.data.content}
             keyOf={(a) => a.id}
-            onRowClick={setSelected}
+            onRowClick={openAlert}
             page={list.data.page}
             totalPages={list.data.totalPages}
             totalElements={list.data.totalElements}

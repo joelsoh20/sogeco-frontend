@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useAuthStore } from '@/store/authStore';
+import { allowedPagesFor, landingPathFor } from '@/lib/roleAccess';
 
 /**
  * Garde de route.
@@ -10,11 +11,17 @@ import { useAuthStore } from '@/store/authStore';
  * autorises. Les deux sont complementaires.
  */
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { accessToken } = useAuthStore();
+  const { accessToken, user } = useAuthStore();
   const location = useLocation();
 
   if (!accessToken) {
     return <Navigate to="/connexion" state={{ from: location }} replace />;
+  }
+
+  // Compte restreint (comptable) : toute autre page renvoie vers sa page d'arrivee.
+  const allowed = allowedPagesFor(user?.roles);
+  if (allowed && !allowed.includes(location.pathname)) {
+    return <Navigate to={landingPathFor(user?.roles)} replace />;
   }
 
   return <>{children}</>;

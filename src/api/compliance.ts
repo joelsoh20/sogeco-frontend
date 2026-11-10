@@ -161,6 +161,17 @@ export const reportApi = {
         throw e;
       }),
 
+  /** Rapport PDF des missions terminees des camions choisis (ou de toute la flotte) sur une periode. */
+  missionsPdf: (from: string, to: string, vehicleIds: number[] = []) =>
+    api.get<Blob>(`${V1}/reports/missions/pdf`, { params: { from, to, vehicleIds: vehicleIds.join(',') || undefined }, responseType: 'blob' })
+      .then((r) => r.data)
+      .catch(async (e) => {
+        if (e?.response?.data instanceof Blob) {
+          try { e.response.data = JSON.parse(await e.response.data.text()); } catch { /* corps non JSON */ }
+        }
+        throw e;
+      }),
+
   vehicleExpenses: (year: number) =>
     api.get<VehicleExpenseSummary[]>(`${V1}/reports/vehicle-expenses`, { params: { year } }).then((r) => r.data),
 

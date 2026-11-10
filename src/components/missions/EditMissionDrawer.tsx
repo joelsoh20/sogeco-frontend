@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, MapPinned, Route, Save, Truck } from 'lucide-react';
+import { AlertTriangle, MapPin, MapPinned, Route, Save, Truck } from 'lucide-react';
 import { Drawer } from '@/components/ui/Drawer';
 import { Spinner } from '@/components/ui/Spinner';
 import { adminApi, driverApi, fuelApi, geocodingApi, missionApi, quartierApi, serviceTypeApi, vehicleApi } from '@/api/endpoints';
@@ -10,8 +10,8 @@ import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
 import { formatConsumption, formatKm, formatLiters, formatNumber } from '@/lib/utils';
 import { MissionRouteMap, type RoutePoint } from './MissionRouteMap';
-import { SiteMapField } from './SiteMapField';
-import type { City, CreateMissionRequest, MissionDetail } from '@/types/api';
+import { PlaceSearchField } from './PlaceSearchField';
+import type { PlaceSuggestion, City, CreateMissionRequest, MissionDetail } from '@/types/api';
 
 /** Premier candidat avec des coordonnees connues — site plus precis qu'une ville, quartier plus precis qu'une ville. */
 function firstWithCoords(
@@ -80,6 +80,8 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
   // Quelle ville un clic sur la carte renseigne — bascule automatiquement vers "destination"
   // une fois le depart choisi, sans empecher de revenir en arriere manuellement.
   const [mapTarget, setMapTarget] = useState<'origin' | 'destination'>('origin');
+  // La carte reste disponible en secours (bouton « Choisir sur la carte »), masquee par defaut.
+  const [showMap, setShowMap] = useState(false);
 
   const selectedServiceTypeId = watch('serviceTypeId');
   const selectedServiceType = serviceTypes.data?.find((s) => String(s.id) === selectedServiceTypeId);
@@ -230,7 +232,14 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       toast.error(t('missionForm.noKnownPlace'));
       return;
     }
+    await applyPlace(result, mapTarget);
+  };
 
+  /** Pose un lieu (clic sur la carte ou proposition de la recherche) : ville et quartier trouves ou crees. */
+  const applyPlace = async (
+    result: { placeName: string; cityName: string; latitude: number; longitude: number },
+    target: 'origin' | 'destination',
+  ) => {
     let city = cities.data?.find((c) => c.name.toLowerCase() === result.cityName.toLowerCase());
     if (!city) {
       try {
@@ -246,7 +255,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
     }
 
     if (isVoyageHorsVille) {
-      pickCity(city.id, mapTarget);
+      pickCity(city.id, target);
     } else {
       setValue('originCityId', String(city.id), { shouldValidate: true });
     }
@@ -259,7 +268,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
     const cityQuartiers = await quartierApi.active(city.id);
     const matched = cityQuartiers.find((q) => q.name.toLowerCase() === result.placeName.toLowerCase());
     if (matched) {
-      pickQuartier(matched.id, mapTarget);
+      pickQuartier(matched.id, target);
       toast.success(t('missionForm.cityQuartierSelected', { city: city.name, quartier: matched.name }));
       return;
     }
@@ -271,7 +280,7 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
         coordinates: `${result.latitude}, ${result.longitude}`,
       });
       queryClient.invalidateQueries({ queryKey: ['quartiers'] });
-      pickQuartier(created.id, mapTarget);
+      pickQuartier(created.id, target);
       toast.success(t('missionForm.cityQuartierAdded', { city: city.name, quartier: created.name }));
     } catch (e) {
       toast.error(errorMessage(e));
@@ -308,6 +317,22 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       return;
     }
     pickCity(city.id, mapTarget);
+    toast.success(t('missionForm.citySelected', { name: city.name }));
+  };
+
+  /** Proposition choisie dans la recherche : lieu complet (mission locale) ou ville seule (voyage hors ville). */
+  const handleSearchPick = async (place: PlaceSuggestion, target: 'origin' | 'destination') => {
+    if (!isVoyageHorsVille) {
+      await applyPlace(place, target);
+      if (target === 'origin' && !destinationAgencyId && !destinationQuartierId) setMapTarget('destination');
+      return;
+    }
+    const city = voyageCities.find((c) => normalizeName(c.name) === normalizeName(place.cityName));
+    if (!city) {
+      toast.error(t('missionForm.unknownCityPickFromList'));
+      return;
+    }
+    pickCity(city.id, target);
     toast.success(t('missionForm.citySelected', { name: city.name }));
   };
 
@@ -440,37 +465,54 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
 
         {isVoyageHorsVille ? (
           <>
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {t('missionForm.mapHintInterCity')}
-                </p>
-                <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setMapTarget('origin')}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'origin' ? 'bg-white text-emerald-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
-                  >
-                    {t('deliveryTimeline.departure')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMapTarget('destination')}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'destination' ? 'bg-white text-red-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
-                  >
-                    {t('missionForm.destination')}
-                  </button>
-                </div>
-              </div>
-              <MissionRouteMap
-                origin={originPoint}
-                destination={destinationPoint}
-                routeGeometry={estimate.data?.routeGeometry}
-                pickableCities={voyageCities}
-                onPickCity={(cityId) => pickCity(cityId, mapTarget)}
-                onMapClick={handleVoyageMapClick}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <PlaceSearchField
+                label={t('missionForm.originCity')}
+                value={cities.data?.find((c) => String(c.id) === originCityId)?.name}
+                onSelect={(p) => handleSearchPick(p, 'origin')}
+                onClear={() => setValue('originCityId', '', { shouldValidate: true })}
+              />
+              <PlaceSearchField
+                label={t('missionForm.destinationCity')}
+                value={cities.data?.find((c) => String(c.id) === destinationCityId)?.name}
+                onSelect={(p) => handleSearchPick(p, 'destination')}
+                onClear={() => setValue('destinationCityId', '', { shouldValidate: true })}
               />
             </div>
+            <MapToggle showMap={showMap} onToggle={() => setShowMap((v) => !v)} />
+            {showMap && (
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('missionForm.mapHintInterCity')}
+                  </p>
+                  <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setMapTarget('origin')}
+                      className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'origin' ? 'bg-white text-emerald-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
+                    >
+                      {t('deliveryTimeline.departure')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMapTarget('destination')}
+                      className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'destination' ? 'bg-white text-red-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
+                    >
+                      {t('missionForm.destination')}
+                    </button>
+                  </div>
+                </div>
+                <MissionRouteMap
+                  origin={originPoint}
+                  destination={destinationPoint}
+                  routeGeometry={estimate.data?.routeGeometry}
+                  pickableCities={voyageCities}
+                  onPickCity={(cityId) => pickCity(cityId, mapTarget)}
+                  onMapClick={handleVoyageMapClick}
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
@@ -514,41 +556,64 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
           </>
         ) : (
           <>
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {t('missionForm.mapHintLocal')}
-                </p>
-                <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setMapTarget('origin')}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'origin' ? 'bg-white text-emerald-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
-                  >
-                    {t('deliveryTimeline.departure')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMapTarget('destination')}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'destination' ? 'bg-white text-red-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
-                  >
-                    {t('missionForm.destination')}
-                  </button>
-                </div>
-              </div>
-              <MissionRouteMap
-                origin={originPoint}
-                destination={destinationPoint}
-                routeGeometry={estimate.data?.routeGeometry}
-                pickableCities={localCities}
-                onPickCity={(cityId) => setValue('originCityId', String(cityId), { shouldValidate: true })}
-                pickableQuartiers={allQuartiers.data ?? []}
-                onPickQuartier={(quartierId) => pickQuartier(quartierId, mapTarget)}
-                pickableSites={agencies.data ?? []}
-                onPickSite={(siteId) => pickSite(siteId, mapTarget)}
-                onMapClick={handleMapClick}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <PlaceSearchField
+                label={t('missionAutomationForm.departureSite')}
+                value={originAgencyObj?.name ?? originQuartierObj?.name}
+                onSelect={(p) => handleSearchPick(p, 'origin')}
+                onClear={() => { setValue('agencyId', ''); setValue('originQuartierId', '', { shouldValidate: true }); }}
+                error={errors.agencyId?.message}
               />
+              <input type="hidden" {...register('agencyId', { validate: (_v, f) => Boolean(f.agencyId || f.originQuartierId) || t('missionForm.requiredForLocal') })} />
+              <input type="hidden" {...register('originQuartierId')} />
+              <PlaceSearchField
+                label={t('missionDetail.arrivalSite')}
+                value={destAgencyObj?.name ?? destQuartierObj?.name}
+                onSelect={(p) => handleSearchPick(p, 'destination')}
+                onClear={() => { setValue('destinationAgencyId', ''); setValue('destinationQuartierId', '', { shouldValidate: true }); }}
+                error={errors.destinationAgencyId?.message}
+              />
+              <input type="hidden" {...register('destinationAgencyId', { validate: (_v, f) => Boolean(f.destinationAgencyId || f.destinationQuartierId) || t('missionForm.requiredForLocal') })} />
+              <input type="hidden" {...register('destinationQuartierId')} />
             </div>
+            <MapToggle showMap={showMap} onToggle={() => setShowMap((v) => !v)} />
+            {showMap && (
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('missionForm.mapHintLocal')}
+                  </p>
+                  <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setMapTarget('origin')}
+                      className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'origin' ? 'bg-white text-emerald-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
+                    >
+                      {t('deliveryTimeline.departure')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMapTarget('destination')}
+                      className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${mapTarget === 'destination' ? 'bg-white text-red-600 shadow-sm dark:bg-slate-700' : 'text-slate-500'}`}
+                    >
+                      {t('missionForm.destination')}
+                    </button>
+                  </div>
+                </div>
+                <MissionRouteMap
+                  origin={originPoint}
+                  destination={destinationPoint}
+                  routeGeometry={estimate.data?.routeGeometry}
+                  pickableCities={localCities}
+                  onPickCity={(cityId) => setValue('originCityId', String(cityId), { shouldValidate: true })}
+                  pickableQuartiers={allQuartiers.data ?? []}
+                  onPickQuartier={(quartierId) => pickQuartier(quartierId, mapTarget)}
+                  pickableSites={agencies.data ?? []}
+                  onPickSite={(siteId) => pickSite(siteId, mapTarget)}
+                  onMapClick={handleMapClick}
+                />
+              </div>
+            )}
 
             <div>
               <label className="label">{t('missionAutomationForm.city')}</label>
@@ -571,28 +636,6 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
               {errors.originCityId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.originCityId.message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <SiteMapField
-                label={t('missionAutomationForm.departureSite')}
-                siteName={originAgencyObj?.name ?? originQuartierObj?.name}
-                active={mapTarget === 'origin'}
-                onActivate={() => setMapTarget('origin')}
-                onClear={() => { setValue('agencyId', ''); setValue('originQuartierId', '', { shouldValidate: true }); }}
-                error={errors.agencyId?.message}
-              />
-              <input type="hidden" {...register('agencyId', { validate: (_v, f) => Boolean(f.agencyId || f.originQuartierId) || t('missionForm.requiredForLocal') })} />
-              <input type="hidden" {...register('originQuartierId')} />
-              <SiteMapField
-                label={t('missionDetail.arrivalSite')}
-                siteName={destAgencyObj?.name ?? destQuartierObj?.name}
-                active={mapTarget === 'destination'}
-                onActivate={() => setMapTarget('destination')}
-                onClear={() => { setValue('destinationAgencyId', ''); setValue('destinationQuartierId', '', { shouldValidate: true }); }}
-                error={errors.destinationAgencyId?.message}
-              />
-              <input type="hidden" {...register('destinationAgencyId', { validate: (_v, f) => Boolean(f.destinationAgencyId || f.destinationQuartierId) || t('missionForm.requiredForLocal') })} />
-              <input type="hidden" {...register('destinationQuartierId')} />
-            </div>
           </>
         )}
 
@@ -689,5 +732,15 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
         </button>
       </form>
     </Drawer>
+  );
+}
+
+function MapToggle({ showMap, onToggle }: { showMap: boolean; onToggle: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <button type="button" onClick={onToggle} className="btn-ghost py-1 text-xs">
+      <MapPin size={14} />
+      {showMap ? t('missionForm.hideMap') : t('missionForm.pickOnMap')}
+    </button>
   );
 }

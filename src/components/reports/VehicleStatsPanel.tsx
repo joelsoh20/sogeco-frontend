@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Banknote, ChevronDown, FileDown, Fuel, Gauge, Route, TrendingUp, Truck, Wallet, Wrench } from 'lucide-react';
+import { Banknote, ChevronDown, ClipboardList, FileDown, Fuel, Gauge, Route, TrendingUp, Truck, Wallet, Wrench } from 'lucide-react';
 import { Spinner, LoadingPanel } from '@/components/ui/Spinner';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -33,6 +33,29 @@ function defaultPeriod(year: number): { from: string; to: string } {
   return { from: `${year}-01-01`, to: isoDate(end) };
 }
 
+/** Lundi de la semaine contenant d (semaine commencant le lundi). */
+function mondayOf(d: Date): Date {
+  const m = new Date(d);
+  m.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return m;
+}
+
+type PeriodPreset = 'thisWeek' | 'lastWeek' | 'thisMonth';
+
+function presetPeriod(preset: PeriodPreset): { from: string; to: string } {
+  const today = new Date();
+  if (preset === 'thisMonth') {
+    return { from: isoDate(new Date(today.getFullYear(), today.getMonth(), 1)), to: isoDate(today) };
+  }
+  const monday = mondayOf(today);
+  if (preset === 'thisWeek') return { from: isoDate(monday), to: isoDate(today) };
+  const lastMonday = new Date(monday);
+  lastMonday.setDate(monday.getDate() - 7);
+  const lastSunday = new Date(monday);
+  lastSunday.setDate(monday.getDate() - 1);
+  return { from: isoDate(lastMonday), to: isoDate(lastSunday) };
+}
+
 function share(part: number, total: number): string {
   return total === 0 ? '—' : `${formatNumber((part * 100) / total, 1)} %`;
 }
@@ -49,6 +72,7 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
   const [selected, setSelected] = useState<number[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [downloadingMissions, setDownloadingMissions] = useState(false);
 
   const invalidPeriod = !period.from || !period.to || period.to < period.from;
 
@@ -79,6 +103,28 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
       perKm: data.fleetKm > 0 ? data.fleetTotalExpenses / data.fleetKm : null,
       testFuel: data.fleetTestFuelLiters, downtime: data.fleetDowntimeDays,
     });
+
+  const saveBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadMissionsPdf = async () => {
+    setDownloadingMissions(true);
+    try {
+      saveBlob(await reportApi.missionsPdf(period.from, period.to, selected), `missions_${period.from}_${period.to}.pdf`);
+    } catch (e) {
+      toast.error(errorMessage(e) || t('reportsPage.pdfError'));
+    } finally {
+      setDownloadingMissions(false);
+    }
+  };
 
   const downloadPdf = async () => {
     setDownloading(true);
@@ -145,6 +191,18 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
             </div>
           )}
         </div>
+        <div className="flex gap-1.5 self-end pb-0.5">
+          {(['thisWeek', 'lastWeek', 'thisMonth'] as PeriodPreset[]).map((p) => (
+            <button key={p} type="button" onClick={() => setPeriod(presetPeriod(p))}
+              className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+              {t(`reportsPage.preset.${p}`)}
+            </button>
+          ))}
+        </div>
+        <button type="button" onClick={downloadMissionsPdf} disabled={downloadingMissions || invalidPeriod} className="btn-ghost">
+          {downloadingMissions ? <Spinner /> : <ClipboardList size={16} />}
+          {t('reportsPage.missionsReport')}
+        </button>
         <button type="button" onClick={downloadPdf} disabled={downloading || invalidPeriod} className="btn-primary">
           {downloading ? <Spinner className="text-white" /> : <FileDown size={16} />}
           {t('reportsPage.pdfDownload')}

@@ -22,9 +22,10 @@ export function AppLayout() {
   const canReadAlerts = useAuthStore((state) => state.hasPermission('ALERT_READ'));
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { data: alertStats } = useQuery({
-    queryKey: ['alerts', 'stats-badge'],
-    queryFn: () => alertApi.stats(),
+  // Compteur de la cloche : alertes ouvertes que l'utilisateur n'a pas encore consultees.
+  const { data: unreadAlerts } = useQuery({
+    queryKey: ['alerts', 'unread-count'],
+    queryFn: () => alertApi.unreadCount(),
     enabled: canReadAlerts,
     refetchInterval: 60_000,
   });
@@ -32,7 +33,7 @@ export function AppLayout() {
   const { permission, requestPermission } = useAlertNotifications(canReadAlerts);
 
   // Compteur dans le titre de l'onglet, comme "(3) WhatsApp" : visible onglet en arriere-plan.
-  const activeAlerts = alertStats?.totalActives ?? 0;
+  const activeAlerts = unreadAlerts ?? 0;
   useEffect(() => {
     const base = document.title.replace(/^\(\d+\)\s*/, '');
     document.title = activeAlerts > 0 ? `(${activeAlerts}) ${base}` : base;
@@ -44,7 +45,7 @@ export function AppLayout() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
-        alertCount={alertStats?.totalActives ?? 0}
+        alertCount={activeAlerts}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -52,7 +53,7 @@ export function AppLayout() {
         {canReadAlerts && <NotificationPrompt permission={permission} onEnable={requestPermission} />}
         <Outlet
           context={{
-            alertCount: alertStats?.totalActives ?? 0,
+            alertCount: activeAlerts,
             onMenuClick: () => setSidebarOpen(true),
           }}
         />
