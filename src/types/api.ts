@@ -224,9 +224,30 @@ export interface SnappedTrack {
   keptPoints: number;
   snappingAvailable: boolean;
   gapCount: number;
-  segments: { kind: 'SNAPPED' | 'ESTIMATED' | 'RAW'; points: [number, number][] }[];
+  segments: {
+    kind: 'SNAPPED' | 'ESTIMATED' | 'RAW';
+    points: [number, number][];
+    /** Le camion etait a points[index] a l'instant at : sert a dater l'itineraire pour le rejouage. */
+    anchors: { index: number; at: string }[];
+  }[];
   start: { at: string; latitude: number; longitude: number } | null;
   end: { at: string; latitude: number; longitude: number } | null;
+}
+
+/** Releve GPS brut (GET /tracking/vehicles/{id}/history). */
+export interface TrackHistoryPoint {
+  at: string;
+  latitude: number;
+  longitude: number;
+  speedKmh: number | null;
+  heading: number | null;
+  ignitionOn: boolean | null;
+}
+
+export interface TrackHistory {
+  vehicleId: number;
+  positionCount: number;
+  points: TrackHistoryPoint[];
 }
 
 export type MotionKind = 'EN_MOUVEMENT' | 'STATIONNE' | 'GARE' | 'HORS_LIGNE' | 'INCONNU';

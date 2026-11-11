@@ -722,7 +722,12 @@
   "trackingPage": {
     "subtitle": "Suivez la position et le statut de tous vos camions en temps réel",
     "searchPlaceholder": "Rechercher un camion, chauffeur…",
-    "noResults": "Aucun camion ni chauffeur ne correspond à « {{query}} »."
+    "noResults": "Aucun camion ni chauffeur ne correspond à « {{query}} ».",
+    "mapProviderOsm": "OpenStreetMap",
+    "mapProviderGoogle": "Google Maps",
+    "googleMapsStaticHint": "Vue Google Maps statique : positions en temps réel disponibles uniquement en mode OpenStreetMap.",
+    "googleMapsMissingKeyTitle": "Clé Google Maps non configurée",
+    "googleMapsMissingKeyHint": "Ajoutez VITE_GOOGLE_MAPS_EMBED_KEY dans la configuration pour activer ce mode."
   },
 
   "vehiclesPage": {
@@ -1092,6 +1097,25 @@
   },
 
   "trackHistory": {
+    "replay": {
+      "mode": "Type de tracé",
+      "modeRoad": "Sur les routes",
+      "modeRaw": "Points GPS",
+      "play": "Lecture",
+      "pause": "Pause",
+      "restart": "Revenir au début",
+      "speed": "Vitesse",
+      "timeline": "Heure du trajet",
+      "currentSpeed": "Vitesse",
+      "state": "État",
+      "moving": "En mouvement",
+      "stopped": "À l’arrêt",
+      "ignition": "Contact",
+      "ignitionOn": "Mis",
+      "ignitionOff": "Coupé",
+      "stops": "Arrêts de plus de 5 minutes",
+      "noStops": "Aucun arrêt de plus de 5 minutes ce jour-là."
+    },
     "open": "Historique sur les routes",
     "title": "Historique du camion",
     "day": "Jour",

@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import { Search, X } from 'lucide-react';
+import { Map as MapIcon, Globe, Search, X } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { MapLegend } from '@/components/tracking/MapLegend';
 import { VehiclePanel } from '@/components/tracking/VehiclePanel';
 import { FleetMap } from '@/components/tracking/FleetMap';
+import { GoogleEmbedMap } from '@/components/tracking/GoogleEmbedMap';
 import { trackingApi } from '@/api/endpoints';
 import { useStompSubscription } from '@/hooks/useWebSocket';
 import { fadeInUp } from '@/lib/motion';
@@ -15,6 +16,8 @@ import type { LivePosition } from '@/types/api';
 /** Centre approximatif de Douala. */
 const DOUALA_CENTER = { lat: 4.0511, lng: 9.7679 };
 const OFFLINE_THRESHOLD_MS = 30 * 60 * 1000;
+type MapProvider = 'osm' | 'google';
+const MAP_PROVIDER_KEY = 'trackingPage.mapProvider';
 
 /**
  * Carte de suivi en temps reel.
@@ -30,6 +33,14 @@ export function TrackingPage() {
   const [selected, setSelected] = useState<number | null>(null);
   const [search, setSearch] = useState('');
   const [committedSearch, setCommittedSearch] = useState('');
+  const [mapProvider, setMapProvider] = useState<MapProvider>(
+    () => (localStorage.getItem(MAP_PROVIDER_KEY) === 'google' ? 'google' : 'osm'),
+  );
+
+  const changeMapProvider = (provider: MapProvider) => {
+    setMapProvider(provider);
+    localStorage.setItem(MAP_PROVIDER_KEY, provider);
+  };
 
   const { data: initial } = useQuery({
     queryKey: ['tracking', 'current'],
@@ -95,50 +106,90 @@ export function TrackingPage() {
   return (
     <PageShell title={t('nav.map')} subtitle={t('trackingPage.subtitle')} flush>
       <div className="relative h-full">
-        <FleetMap
-          positions={list}
-          center={DOUALA_CENTER}
-          zoom={12}
-          offlineThresholdMs={OFFLINE_THRESHOLD_MS}
-          onSelect={setSelected}
-          searchTerm={committedSearch}
-        />
+        {mapProvider === 'osm' ? (
+          <FleetMap
+            positions={list}
+            center={DOUALA_CENTER}
+            zoom={12}
+            offlineThresholdMs={OFFLINE_THRESHOLD_MS}
+            onSelect={setSelected}
+            searchTerm={committedSearch}
+          />
+        ) : (
+          <GoogleEmbedMap
+            center={selectedPosition ? { lat: selectedPosition.latitude, lng: selectedPosition.longitude } : DOUALA_CENTER}
+            zoom={selectedPosition ? 15 : 12}
+          />
+        )}
 
         {/* Barre superieure : recherche + legende, cote a cote en large, empilees en dessous de ~lg */}
         <div className="absolute inset-x-3 top-3 z-[400] flex flex-col items-stretch gap-2 sm:top-4 lg:inset-x-6 lg:top-6 lg:flex-row lg:flex-wrap lg:items-start lg:justify-between">
-          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="w-full lg:w-72">
-            <div className="flex items-center gap-2 rounded-xl border border-surface-border bg-white/90 px-3 py-2 shadow-card backdrop-blur-sm transition-colors focus-within:border-accent focus-within:ring-1 focus-within:ring-accent dark:border-slate-800 dark:bg-slate-900/90">
-              <Search size={16} className="shrink-0 text-slate-400 dark:text-slate-500" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('trackingPage.searchPlaceholder')}
-                className="flex-1 border-none bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  className="shrink-0 rounded-md p-0.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
-                >
-                  <X size={14} />
-                </button>
+          {mapProvider === 'osm' && (
+            <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="w-full lg:w-72">
+              <div className="flex items-center gap-2 rounded-xl border border-surface-border bg-white/90 px-3 py-2 shadow-card backdrop-blur-sm transition-colors focus-within:border-accent focus-within:ring-1 focus-within:ring-accent dark:border-slate-800 dark:bg-slate-900/90">
+                <Search size={16} className="shrink-0 text-slate-400 dark:text-slate-500" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={t('trackingPage.searchPlaceholder')}
+                  className="flex-1 border-none bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch('')}
+                    className="shrink-0 rounded-md p-0.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              {committedSearch.trim() && list.length === 0 && (
+                <p className="mt-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs text-slate-500 shadow-card backdrop-blur-sm dark:bg-slate-900/90 dark:text-slate-400">
+                  {t('trackingPage.noResults', { query: committedSearch })}
+                </p>
               )}
-            </div>
-            {committedSearch.trim() && list.length === 0 && (
-              <p className="mt-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs text-slate-500 shadow-card backdrop-blur-sm dark:bg-slate-900/90 dark:text-slate-400">
-                {t('trackingPage.noResults', { query: committedSearch })}
-              </p>
-            )}
-          </motion.div>
+            </motion.div>
+          )}
 
-          <MapLegend stats={stats} />
+          <div className="flex flex-wrap items-start gap-2">
+            <MapLegend stats={stats} />
+
+            <div className="flex items-center gap-0.5 rounded-xl border border-surface-border bg-white/90 p-1 shadow-card backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/90">
+              <button
+                type="button"
+                title={t('trackingPage.mapProviderOsm')}
+                onClick={() => changeMapProvider('osm')}
+                className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${mapProvider === 'osm' ? 'bg-accent text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'}`}
+              >
+                <MapIcon size={14} />
+                {t('trackingPage.mapProviderOsm')}
+              </button>
+              <button
+                type="button"
+                title={t('trackingPage.mapProviderGoogle')}
+                onClick={() => changeMapProvider('google')}
+                className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${mapProvider === 'google' ? 'bg-accent text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'}`}
+              >
+                <Globe size={14} />
+                {t('trackingPage.mapProviderGoogle')}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <VehiclePanel
-          position={selectedPosition}
-          motionState={selected ? motionStates?.find((m) => m.vehicleId === selected) ?? null : null}
-          onClose={() => setSelected(null)}
-        />
+        {mapProvider === 'google' && (
+          <div className="absolute bottom-3 left-3 z-[400] max-w-[calc(100vw-1.5rem)] rounded-xl border border-surface-border bg-white/90 px-3 py-2 text-xs text-slate-500 shadow-card backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-400 sm:bottom-6 sm:left-6">
+            {t('trackingPage.googleMapsStaticHint')}
+          </div>
+        )}
+
+        {mapProvider === 'osm' && (
+          <VehiclePanel
+            position={selectedPosition}
+            motionState={selected ? motionStates?.find((m) => m.vehicleId === selected) ?? null : null}
+            onClose={() => setSelected(null)}
+          />
+        )}
       </div>
     </PageShell>
   );

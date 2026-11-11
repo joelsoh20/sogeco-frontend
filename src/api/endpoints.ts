@@ -6,7 +6,7 @@ import type {
   Driver, DriverSemesterRanking, DriverStats, FuelLog, FuelLogRequest, FuelStats, LivePosition, MaintenanceCityStats,
   MaintenanceLog, MaintenanceRequest, MaintenanceStats, Mission, MissionAutomation, MissionCancelRequest,
   MissionCompleteRequest, MissionDetail, MissionDetourRequest, MissionEstimate, MissionStats, PageResponse, Quartier,
-  MotionState, OilSummary, SnappedTrack, PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
+  MotionState, OilSummary, SnappedTrack, TrackHistory, PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
   Vehicle, VehicleDetail, VehicleStats, WeeklyRefuel,
 } from '@/types/api';
 import type {
@@ -83,7 +83,7 @@ export const trackingApi = {
   motion: () => api.get<MotionState[]>(`${V1}/tracking/motion`).then((r) => r.data),
 
   history: (vehicleId: number, from?: string, to?: string) =>
-    api.get(`${V1}/tracking/vehicles/${vehicleId}/history`, { params: { from, to } })
+    api.get<TrackHistory>(`${V1}/tracking/vehicles/${vehicleId}/history`, { params: { from, to } })
        .then((r) => r.data),
 };
 

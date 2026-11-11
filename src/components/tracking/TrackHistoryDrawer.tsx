@@ -6,7 +6,7 @@ import { LoadingPanel } from '@/components/ui/Spinner';
 import { trackingApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
 import { toLocalDateString } from '@/lib/utils';
-import { TrackHistoryMap } from './TrackHistoryMap';
+import { TrackReplay } from './TrackReplay';
 
 interface TrackHistoryDrawerProps {
   open: boolean;
@@ -47,6 +47,17 @@ export function TrackHistoryDrawer({ open, onClose, vehicleId, registrationNumbe
     staleTime: 5 * 60 * 1000,
   });
 
+  // Releves bruts du jour : heure, vitesse et contact pour la lecture, et trace « Points GPS ».
+  const raw = useQuery({
+    queryKey: ['tracking', 'history-raw', vehicleId, day],
+    queryFn: () => {
+      const { from, to } = dayBounds(day);
+      return trackingApi.history(vehicleId, from, to);
+    },
+    enabled: open,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const yesterday = (() => {
     const d = new Date();
     d.setDate(d.getDate() - 1);
@@ -77,7 +88,7 @@ export function TrackHistoryDrawer({ open, onClose, vehicleId, registrationNumbe
 
         {data && data.positionCount > 0 && (
           <>
-            <TrackHistoryMap track={data} />
+            <TrackReplay track={data} points={raw.data?.points ?? []} />
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5"><span className="h-0.5 w-6 bg-blue-600" />{t('trackHistory.legendRoad')}</span>

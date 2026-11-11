@@ -725,7 +725,12 @@
   "trackingPage": {
     "subtitle": "Track the position and status of all your trucks in real time",
     "searchPlaceholder": "Search a truck, driver…",
-    "noResults": "No truck or driver matches “{{query}}”."
+    "noResults": "No truck or driver matches “{{query}}”.",
+    "mapProviderOsm": "OpenStreetMap",
+    "mapProviderGoogle": "Google Maps",
+    "googleMapsStaticHint": "Static Google Maps view: live positions are only available in OpenStreetMap mode.",
+    "googleMapsMissingKeyTitle": "Google Maps key not configured",
+    "googleMapsMissingKeyHint": "Add VITE_GOOGLE_MAPS_EMBED_KEY to the configuration to enable this mode."
   },
 
   "vehiclesPage": {
@@ -1095,6 +1100,25 @@
   },
 
   "trackHistory": {
+    "replay": {
+      "mode": "Track type",
+      "modeRoad": "On roads",
+      "modeRaw": "GPS points",
+      "play": "Play",
+      "pause": "Pause",
+      "restart": "Back to start",
+      "speed": "Speed",
+      "timeline": "Trip time",
+      "currentSpeed": "Speed",
+      "state": "Status",
+      "moving": "Moving",
+      "stopped": "Stopped",
+      "ignition": "Ignition",
+      "ignitionOn": "On",
+      "ignitionOff": "Off",
+      "stops": "Stops longer than 5 minutes",
+      "noStops": "No stop longer than 5 minutes that day."
+    },
     "open": "History on the roads",
     "title": "Truck history",
     "day": "Day",
