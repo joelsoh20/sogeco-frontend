@@ -1109,6 +1109,14 @@
   },
 
   "vehiclePanel": {
+    "motionShort": {
+      "EN_MOUVEMENT": "En mouvement",
+      "STATIONNE": "À l’arrêt",
+      "GARE": "À l’arrêt",
+      "HORS_LIGNE": "Hors ligne",
+      "INCONNU": "Sans GPS"
+    },
+    "fuelUnavailable": "Non disponible",
     "motionState": "État",
     "since": "Depuis",
     "lastSignalSince": "Dernier signal",

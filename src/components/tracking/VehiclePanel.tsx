@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
-import { History, Navigation, Phone, Truck, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { History, Phone, Truck, X } from 'lucide-react';
+import { fuelApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
 import { TrackHistoryDrawer } from './TrackHistoryDrawer';
 import type { LivePosition, MotionKind, MotionState } from '@/types/api';
@@ -50,21 +52,49 @@ function formatSince(iso: string): string {
     : `${d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} à ${time}`;
 }
 
+/** Seuil d'arret par defaut (km/h), comme le reglage serveur telematics.idle_speed_kmh. */
+const IDLE_SPEED_KMH = 3;
+
+function deriveMotion(position: LivePosition): MotionKind {
+  if (!position.gpsTracked) return 'INCONNU';
+  if (!position.recordedAt || Date.now() - new Date(position.recordedAt).getTime() > 30 * 60 * 1000) return 'HORS_LIGNE';
+  if ((position.speedKmh ?? 0) > IDLE_SPEED_KMH) return 'EN_MOUVEMENT';
+  return position.ignitionOn === false ? 'GARE' : 'STATIONNE';
+}
+
 export function VehiclePanel({ position, motionState, onClose }: VehiclePanelProps) {
   const { t } = useTranslation();
   const canSeeHistory = useAuthStore((state) => state.hasPermission('TRACKING_HISTORY_READ'));
   const [historyOpen, setHistoryOpen] = useState(false);
+
+  // Sans jauge physique (cas de la plupart des camions), le niveau est estime cote serveur
+  // (pleins + distance GPS), comme sur la fiche du camion.
+  const needsEstimate = position !== null && position.fuelLevelPercent == null;
+  const tankLevel = useQuery({
+    queryKey: ['fuel', 'tank-level', position?.vehicleId],
+    queryFn: () => fuelApi.tankLevel(position!.vehicleId),
+    enabled: needsEstimate,
+    staleTime: 60_000,
+  });
+  const estimate = needsEstimate && tankLevel.data?.source !== 'INDISPONIBLE' ? tankLevel.data : undefined;
+  const fuelText = position === null ? '' : position.fuelLevelPercent != null
+    ? `${formatNumber(position.fuelLevelPercent, 0)} %`
+    : estimate?.estimatedFuelPercent != null
+      ? `≈ ${formatNumber(estimate.estimatedFuelPercent, 0)} %`
+      : estimate?.estimatedFuelLiters != null
+        ? `≈ ${formatNumber(estimate.estimatedFuelLiters, 0)} L`
+        : null;
   return (
     <>
     <AnimatePresence>
-      {position && (
+      {position && !historyOpen && (
         <motion.div
           key={position.vehicleId}
           variants={fadeInUp}
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="absolute bottom-6 left-6 z-[400] w-80 overflow-hidden rounded-2xl border border-surface-border bg-white/95 shadow-panel backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-900/95"
+          className="absolute bottom-3 left-3 z-[400] max-h-[calc(100%-5.5rem)] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto overflow-x-hidden rounded-2xl border border-surface-border bg-white/95 shadow-panel backdrop-blur-sm transition-colors dark:border-slate-800 dark:bg-slate-900/95 sm:bottom-6 sm:left-6 sm:max-w-[calc(100vw-3rem)]"
         >
           <div className="flex items-start gap-3 border-b border-surface-border px-4 py-3.5 dark:border-slate-800">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent dark:bg-accent/15">
@@ -74,6 +104,14 @@ export function VehiclePanel({ position, motionState, onClose }: VehiclePanelPro
               <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{position.registrationNumber}</p>
               <div className="mt-1 flex flex-wrap items-center gap-1.5">
                 <VehicleStatusBadge status={position.status} />
+                {(() => {
+                  const kind = motionState?.state ?? deriveMotion(position);
+                  return (
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${MOTION_STYLE[kind]}`}>
+                      {t(`vehiclePanel.motionShort.${kind}`)}
+                    </span>
+                  );
+                })()}
                 {!position.gpsTracked && (
                   <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                     {t('vehiclePanel.approximatePosition')}
@@ -129,9 +167,10 @@ export function VehiclePanel({ position, motionState, onClose }: VehiclePanelPro
             />
             <DetailRow label={t('missionForm.destination')} value={position.destination ?? t('vehiclePanel.noMission')} />
             <DetailRow label={t('vehiclePanel.kmToday')} value={formatKm(position.dailyKm)} />
-            {position.fuelLevelPercent !== null && (
-              <DetailRow label={t('vehiclePanel.fuel')} value={`${formatNumber(position.fuelLevelPercent, 0)} %`} />
-            )}
+            <DetailRow
+              label={t('vehiclePanel.fuel')}
+              value={fuelText ?? <span className="text-slate-400">{t('vehiclePanel.fuelUnavailable')}</span>}
+            />
             <DetailRow
               label={t('vehiclePanel.lastPosition')}
               value={
@@ -149,15 +188,6 @@ export function VehiclePanel({ position, motionState, onClose }: VehiclePanelPro
                 {t('trackHistory.open')}
               </button>
             )}
-            <a
-              href={`https://www.google.com/maps?q=${position.latitude},${position.longitude}`}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-ghost w-full"
-            >
-              <Navigation size={15} />
-              {t('vehiclePanel.viewOnGoogleMaps')}
-            </a>
           </div>
         </motion.div>
       )}

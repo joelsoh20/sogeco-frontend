@@ -29,7 +29,7 @@ export function Drawer({ open, onClose, title, subtitle, children, wide = false 
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-30 flex justify-end">
+        <div className="fixed inset-0 z-[500] flex justify-end">
           <motion.div
             variants={backdropFade}
             initial="hidden"
