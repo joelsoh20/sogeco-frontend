@@ -77,6 +77,9 @@ function CityDriverStats({ cityId, cityName }: { cityId: number; cityName: strin
 export function DriversPage() {
   const { t } = useTranslation();
   const canCreate = useAuthStore((state) => state.hasPermission('DRIVER_CREATE'));
+  // Un gestionnaire n'a que les statistiques de sa ville : le serveur lui renvoie toujours celles-ci, quelle que soit
+  // la ville demandee (RG-13.4). Afficher les autres villes montrerait donc les chiffres de la sienne a tort.
+  const ownCityId = useAuthStore((state) => state.user?.cityId ?? null);
   const [page, setPage] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
@@ -99,7 +102,8 @@ export function DriversPage() {
     queryFn: () => driverApi.list(page, 20),
   });
   const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities });
-  const cityStatsTargets = (cities.data ?? []).filter((c) => CITY_STATS_NAMES.includes(c.name));
+  const cityStatsTargets = (cities.data ?? []).filter((c) => CITY_STATS_NAMES.includes(c.name)
+    && (ownCityId === null || c.id === ownCityId));
   const fuelEconomy = useQuery({
     queryKey: ['drivers', 'fuel-economy'],
     queryFn: () => driverApi.fuelEconomy(firstOfMonth(), today(), 5),

@@ -6,7 +6,7 @@ import type {
   Driver, DriverSemesterRanking, DriverStats, FuelLog, FuelLogRequest, FuelStats, LivePosition, MaintenanceCityStats,
   MaintenanceLog, MaintenanceRequest, MaintenanceStats, Mission, MissionAutomation, MissionCancelRequest,
   MissionCompleteRequest, MissionDetail, MissionDetourRequest, MissionEstimate, MissionStats, PageResponse, Quartier,
-  PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
+  MotionState, OilSummary, PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
   Vehicle, VehicleDetail, VehicleStats, WeeklyRefuel,
 } from '@/types/api';
 import type {
@@ -73,6 +73,9 @@ export const trackingApi = {
     api.get<LivePosition[]>(`${V1}/tracking/positions/current`).then((r) => r.data),
 
   stats: () => api.get<TrackingStats>(`${V1}/tracking/stats`).then((r) => r.data),
+
+  /** En mouvement / stationne / gare, et depuis quelle heure, pour chaque camion. */
+  motion: () => api.get<MotionState[]>(`${V1}/tracking/motion`).then((r) => r.data),
 
   history: (vehicleId: number, from?: string, to?: string) =>
     api.get(`${V1}/tracking/vehicles/${vehicleId}/history`, { params: { from, to } })
@@ -325,6 +328,25 @@ export const quartierApi = {
 
   create: (payload: CreateQuartierRequest) =>
     api.post<Quartier>(`${V1}/quartiers`, payload).then((r) => r.data),
+};
+
+/** Suivi du fut d'huile moteur : stock, achats, huile donnee aux camions. */
+export const oilApi = {
+  /** cityId : filtre de l'administrateur (un gestionnaire n'a que sa ville, imposee par le serveur). */
+  summary: (cityId?: number) =>
+    api.get<OilSummary>(`${V1}/oil/summary`, { params: { cityId } }).then((r) => r.data),
+
+  purchase: (payload: { purchaseDate: string; quantityLiters: number; note?: string; cityId?: number }) =>
+    api.post<OilSummary>(`${V1}/oil/purchases`, payload).then((r) => r.data),
+
+  updatePurchase: (id: number, payload: { purchaseDate: string; quantityLiters: number; note?: string; cityId?: number }) =>
+    api.put<OilSummary>(`${V1}/oil/purchases/${id}`, payload).then((r) => r.data),
+
+  distribute: (payload: { vehicleId: number; distributionDate: string; quantityLiters: number; recipientName?: string; note?: string }) =>
+    api.post<OilSummary>(`${V1}/oil/distributions`, payload).then((r) => r.data),
+
+  updateDistribution: (id: number, payload: { vehicleId: number; distributionDate: string; quantityLiters: number; recipientName?: string; note?: string }) =>
+    api.put<OilSummary>(`${V1}/oil/distributions/${id}`, payload).then((r) => r.data),
 };
 
 export const geocodingApi = {

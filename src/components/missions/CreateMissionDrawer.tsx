@@ -196,6 +196,7 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
     const city = cities.data?.find((c) => c.id === cityId);
     if (!city) return;
     if (target === 'origin') {
+      if (originCityId !== String(cityId)) setValue('vehicleId', '');
       setValue('originCityId', String(cityId), { shouldValidate: true });
       setValue('originQuartierId', '');
       if (!destinationCityId) setMapTarget('destination');
@@ -492,12 +493,14 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
                 value={cities.data?.find((c) => String(c.id) === originCityId)?.name}
                 onSelect={(p) => handleSearchPick(p, 'origin')}
                 onClear={() => setValue('originCityId', '', { shouldValidate: true })}
+                error={errors.originCityId?.message}
               />
               <PlaceSearchField
                 label={t('missionForm.destinationCity')}
                 value={cities.data?.find((c) => String(c.id) === destinationCityId)?.name}
                 onSelect={(p) => handleSearchPick(p, 'destination')}
                 onClear={() => setValue('destinationCityId', '', { shouldValidate: true })}
+                error={errors.destinationCityId?.message}
               />
             </div>
             <MapToggle showMap={showMap} onToggle={() => setShowMap((v) => !v)} />
@@ -535,41 +538,8 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="label">{t('missionForm.originCity')}</label>
-                <select
-                  className="input"
-                  {...register('originCityId', {
-                    required: t('missionForm.requiredForTrip'),
-                    onChange: () => {
-                      setValue('vehicleId', '');
-                      if (!destinationCityId) setMapTarget('destination');
-                    },
-                  })}
-                >
-                  <option value="">{t('common.selectPlaceholder')}</option>
-                  {citiesByRegion.map(([region, list]) => (
-                    <optgroup key={region} label={region}>
-                      {list.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </optgroup>
-                  ))}
-                </select>
-                {errors.originCityId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.originCityId.message}</p>}
-              </div>
-              <div>
-                <label className="label">{t('missionForm.destinationCity')}</label>
-                <select className="input" {...register('destinationCityId', { required: t('missionForm.requiredForTrip') })}>
-                  <option value="">{t('common.selectPlaceholder')}</option>
-                  {citiesByRegion.map(([region, list]) => (
-                    <optgroup key={region} label={region}>
-                      {list.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </optgroup>
-                  ))}
-                </select>
-                {errors.destinationCityId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.destinationCityId.message}</p>}
-              </div>
-            </div>
+            <input type="hidden" {...register('originCityId', { required: t('missionForm.requiredForTrip') })} />
+            <input type="hidden" {...register('destinationCityId', { required: t('missionForm.requiredForTrip') })} />
           </>
         ) : (
           <>

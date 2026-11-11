@@ -215,6 +215,19 @@ export interface LivePosition {
   gpsTracked: boolean;
 }
 
+export type MotionKind = 'EN_MOUVEMENT' | 'STATIONNE' | 'GARE' | 'HORS_LIGNE' | 'INCONNU';
+
+/** Etat de deplacement d'un camion et depuis quand (GET /tracking/motion). */
+export interface MotionState {
+  vehicleId: number;
+  registrationNumber: string;
+  state: MotionKind;
+  since: string | null;
+  /** Vrai : l'etat dure depuis AU MOINS `since` (l'historique de 7 jours ne montre pas de changement). */
+  openEnded: boolean;
+  lastSeen: string | null;
+}
+
 export interface TrackingStats {
   enMouvement: number;
   aLArret: number;
@@ -892,6 +905,37 @@ export interface CreateQuartierRequest {
 }
 
 /** Lieu connu le plus proche d'un point clique sur la carte (geocodage inverse). */
+export interface OilPurchaseEntry {
+  id: number;
+  date: string;
+  cityId: number;
+  cityName: string;
+  quantityLiters: number;
+  note: string | null;
+}
+
+export interface OilDistributionEntry {
+  id: number;
+  date: string;
+  vehicleId: number;
+  registrationNumber: string;
+  cityName: string | null;
+  recipientName: string | null;
+  quantityLiters: number;
+  note: string | null;
+}
+
+/** Stock du fut d'huile : d'une ville (gestionnaire) ou filtre/total pour l'administrateur. */
+export interface OilSummary {
+  cityId: number | null;
+  totalPurchased: number;
+  totalDistributed: number;
+  remaining: number;
+  byCity: { cityId: number; cityName: string; purchased: number; distributed: number; remaining: number }[];
+  purchases: OilPurchaseEntry[];
+  distributions: OilDistributionEntry[];
+}
+
 export interface PlaceSuggestion {
   label: string;
   placeName: string;

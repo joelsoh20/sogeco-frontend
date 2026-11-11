@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'motion/react';
 import { Navigation, Phone, Truck, X } from 'lucide-react';
-import type { LivePosition } from '@/types/api';
+import type { LivePosition, MotionKind, MotionState } from '@/types/api';
 import { VehicleStatusBadge } from '@/components/ui/StatusBadge';
 import { DetailRow } from '@/components/ui/Drawer';
 import { formatAge, formatKm, formatNumber } from '@/lib/utils';
@@ -9,6 +9,7 @@ import { fadeInUp } from '@/lib/motion';
 
 interface VehiclePanelProps {
   position: LivePosition | null;
+  motionState?: MotionState | null;
   onClose: () => void;
 }
 
@@ -20,7 +21,33 @@ interface VehiclePanelProps {
  * rendu conditionnel cote parent retirerait l'element avant que la
  * transition n'ait la moindre chance de s'executer.
  */
-export function VehiclePanel({ position, onClose }: VehiclePanelProps) {
+const MOTION_STYLE: Record<MotionKind, string> = {
+  EN_MOUVEMENT: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400',
+  STATIONNE: 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400',
+  GARE: 'bg-slate-100 text-slate-700 ring-slate-500/20 dark:bg-slate-700/40 dark:text-slate-300',
+  HORS_LIGNE: 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400',
+  INCONNU: 'bg-slate-50 text-slate-500 ring-slate-400/20 dark:bg-slate-800 dark:text-slate-400',
+};
+
+/** Duree lisible : « 45 min », « 2 h 15 », « 3 j 4 h ». */
+function formatDuration(minutes: number): string {
+  const m = Math.max(0, Math.round(minutes));
+  if (m < 1) return "moins d'une minute";
+  if (m < 60) return `${m} min`;
+  if (m < 1440) return `${Math.floor(m / 60)} h${m % 60 ? ` ${String(m % 60).padStart(2, '0')}` : ''}`;
+  return `${Math.floor(m / 1440)} j${Math.floor((m % 1440) / 60) ? ` ${Math.floor((m % 1440) / 60)} h` : ''}`;
+}
+
+/** Heure de debut : « 14:32 » le jour meme, « 09/11 à 14:32 » sinon. */
+function formatSince(iso: string): string {
+  const d = new Date(iso);
+  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return d.toDateString() === new Date().toDateString()
+    ? time
+    : `${d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} à ${time}`;
+}
+
+export function VehiclePanel({ position, motionState, onClose }: VehiclePanelProps) {
   const { t } = useTranslation();
   return (
     <AnimatePresence>
@@ -57,6 +84,31 @@ export function VehiclePanel({ position, onClose }: VehiclePanelProps) {
           </div>
 
           <div className="px-4 py-1.5">
+            {motionState && (
+              <>
+                <DetailRow
+                  label={t('vehiclePanel.motionState')}
+                  value={
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${MOTION_STYLE[motionState.state]}`}>
+                      {t(`vehiclePanel.motion.${motionState.state}`)}
+                    </span>
+                  }
+                />
+                {motionState.since && (
+                  <DetailRow
+                    label={t(motionState.state === 'HORS_LIGNE' ? 'vehiclePanel.lastSignalSince' : 'vehiclePanel.since')}
+                    value={
+                      <span>
+                        {motionState.openEnded ? t('vehiclePanel.atLeast') + ' ' : ''}{formatSince(motionState.since)}
+                        <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                          ({formatDuration((Date.now() - new Date(motionState.since).getTime()) / 60000)})
+                        </span>
+                      </span>
+                    }
+                  />
+                )}
+              </>
+            )}
             <DetailRow label={t('vehiclePanel.speed')} value={`${formatNumber(position.speedKmh, 0)} km/h`} />
             <DetailRow
               label={t('driversPage.colDriver')}

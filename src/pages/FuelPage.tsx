@@ -141,6 +141,13 @@ export function FuelPage() {
               <option value="">{t('fuelPage.allCities')}</option>
               {fuelCities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
+
+            {canCreate && (
+              <button onClick={() => setCreateOpen(true)} className="btn-primary ml-auto">
+                <Fuel size={16} />
+                {t('fuelPage.newFuelLog')}
+              </button>
+            )}
           </div>
 
           <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
@@ -234,13 +241,6 @@ export function FuelPage() {
               <option value="ANOMALIE">{t('fuelPage.statusAnomaly')}</option>
               <option value="ANNULE">{t('fuelPage.statusCancelled')}</option>
             </select>
-
-            {canCreate && (
-              <button onClick={() => setCreateOpen(true)} className="btn-primary ml-auto">
-                <Fuel size={16} />
-                {t('fuelPage.newFuelLog')}
-              </button>
-            )}
           </div>
 
           {list.isLoading ? (

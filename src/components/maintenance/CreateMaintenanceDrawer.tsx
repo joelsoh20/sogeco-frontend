@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,9 @@ export function CreateMaintenanceDrawer({ open, onClose }: CreateMaintenanceDraw
   const category = watch('category');
   const partChanged = watch('partChanged');
   const repair = isRepairCategory(category);
+  useEffect(() => {
+    if (category !== 'LAVERIE') setValue('laborCost', '');
+  }, [category, setValue]);
   const selectable = (vehicles.data?.content ?? [])
     .filter((v) => !repair || v.status === 'EN_PANNE' || v.status === 'EN_MAINTENANCE');
 

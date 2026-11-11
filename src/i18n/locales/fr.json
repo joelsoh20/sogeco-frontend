@@ -559,6 +559,9 @@
     "daysUnit": "j",
     "missionsReport": "Rapport des missions",
     "preset": { "thisWeek": "Cette semaine", "lastWeek": "Semaine dernière", "thisMonth": "Ce mois" },
+    "calendarButton": "Calendrier",
+    "oilCity": "Ville (rapport d’huile)",
+    "oilReport": "Rapport d’huile (Excel)",
     "kpiDowntime": "Temps en panne",
     "kpiTestFuel": "Carburant d’essai (garage)",
     "statsCompare": "Comparaison des véhicules",
@@ -736,6 +739,42 @@
     "colFuel": "Carburant"
   },
 
+  "oil": {
+    "editGiveTitle": "Modifier la sortie d’huile",
+    "distributionUpdated": "Sortie modifiée. Il reste {{remaining}}.",
+    "editPurchase": "Modifier l’achat d’huile",
+    "purchaseUpdated": "Achat modifié. Il reste {{remaining}}.",
+    "saveChanges": "Enregistrer les modifications",
+    "city": "Ville",
+    "allCities": "Toutes les villes",
+    "cityStock": "Stock de {{city}} : {{quantity}}",
+    "noCityStock": "Aucun stock d’huile enregistré à {{city}}.",
+    "followUpSubtitleCity": "Stock de {{city}}",
+    "giveButton": "Donner de l’huile",
+    "followUpButton": "Suivi d’huile",
+    "giveTitle": "Donner de l’huile à un camion",
+    "giveSubtitle": "Sortie du fût d’huile moteur",
+    "giveSubmit": "Enregistrer la sortie",
+    "given": "Huile enregistrée. Il reste {{remaining}} dans le fût.",
+    "followUpTitle": "Suivi du fût d’huile",
+    "followUpSubtitle": "Achats d’huile et stock restant",
+    "newPurchase": "Nouvel achat d’huile",
+    "purchaseDate": "Date de l’achat",
+    "purchaseNoteHint": "Ex. 8e fût",
+    "purchaseSubmit": "Enregistrer l’achat",
+    "purchased": "Achat enregistré. Il y a maintenant {{remaining}} dans le fût.",
+    "date": "Date",
+    "quantity": "Quantité (litres)",
+    "recipient": "Reçue par",
+    "recipientHint": "Chauffeur — repris du chauffeur du camion si vide",
+    "note": "Observation",
+    "stockRemaining": "Reste dans le fût",
+    "totalPurchased": "Total acheté",
+    "totalDistributed": "Total donné",
+    "recentPurchases": "Derniers achats",
+    "recentDistributions": "Dernières sorties"
+  },
+
   "maintenanceForm": {
     "repairNeedsBreakdown": "Une réparation ne s’ouvre que sur un camion déclaré en panne (fiche du camion → Déclarer en panne).",
     "createTitle": "Nouvelle intervention",
@@ -749,10 +788,11 @@
     "testFuelLiters": "Carburant consommé au garage pour les essais",
     "testFuelLitersHint": "Carburant utilisé sur place pour tester le camion (essais routiers), hors ravitaillement classique.",
     "laborCost": "Main-d’œuvre (FCFA)",
+    "laundryCost": "Coût du lavage (FCFA)",
     "partChanged": "Une pièce a été changée sur le camion",
     "partLabel": "Pièce changée",
     "partCost": "Prix de la pièce (FCFA)",
-    "laborOnlyHint": "Sans pièce changée, seule la main-d’œuvre est comptée.",
+    "laborOnlyHint": "Sans pièce changée, aucun coût n’est enregistré pour cette intervention.",
     "downtimeDays": "Temps passé en panne (jours)",
     "washing": "Lavage",
     "itemPart": "Pièce",
@@ -801,7 +841,7 @@
     "suspiciousQuantityTankHint": "(réservoir de {{liters}} L sur la fiche du camion)",
     "suspiciousQuantityDefaultHint": "(capacité habituelle pour ce type de camion)",
     "suspiciousQuantityCheck": "Vérifiez la saisie avant de valider.",
-    "receiptNumber": "N° de reçu (optionnel)",
+    "receiptNumber": "Numéro du bon",
     "createSubmit": "Enregistrer le plein",
     "createSuccess": "Plein enregistré sur {{registration}}.",
     "editSuccess": "Plein sur {{registration}} modifié."
@@ -1052,6 +1092,17 @@
   },
 
   "vehiclePanel": {
+    "motionState": "État",
+    "since": "Depuis",
+    "lastSignalSince": "Dernier signal",
+    "atLeast": "au moins",
+    "motion": {
+      "EN_MOUVEMENT": "En mouvement",
+      "STATIONNE": "Stationné (moteur allumé)",
+      "GARE": "Garé (moteur éteint)",
+      "HORS_LIGNE": "Hors ligne",
+      "INCONNU": "Sans boîtier GPS"
+    },
     "approximatePosition": "Position approximative",
     "speed": "Vitesse",
     "noMission": "Aucune mission",
@@ -1443,6 +1494,14 @@
     "overdueBy": "Dépassée de {{count}} j",
     "dueIn": "Dans {{count}} j",
     "itemClickHint": "Cliquer pour mettre à jour ce document"
+  },
+
+  "expiredDocuments": {
+    "title": "Documents expirés",
+    "subtitle": "{{count}} document(s) dont la date de validité est dépassée",
+    "dueOn": "Expiré le {{date}}",
+    "daysLate": "{{count}} j de retard",
+    "toast": "Documents à régulariser : {{expired}} expiré(s), {{missing}} manquant(s)."
   },
 
   "missingDocuments": {

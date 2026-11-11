@@ -114,8 +114,7 @@ export function MaintenanceFormFields({ register, setValue, errors, category, pa
 
       <div>
         <label className="label">{t('maintenancePage.colDescription')}</label>
-        <input className="input" placeholder={t('maintenanceForm.descriptionPlaceholder')} {...register('description', required)} />
-        {errors.description && <p className={err}>{errors.description.message}</p>}
+        <input className="input" placeholder={t('maintenanceForm.descriptionPlaceholder')} {...register('description')} />
       </div>
 
       {repair && (
@@ -138,11 +137,11 @@ export function MaintenanceFormFields({ register, setValue, errors, category, pa
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('maintenanceForm.testFuelLitersHint')}</p>
       </div>
 
-      <div>
-        <label className="label">{t('maintenanceForm.laborCost')}</label>
-        <input type="number" min="0" className="input" {...register('laborCost', required)} />
-        {errors.laborCost && <p className={err}>{errors.laborCost.message}</p>}
-        {category === 'LAVERIE' && (
+      {category === 'LAVERIE' && (
+        <div>
+          <label className="label">{t('maintenanceForm.laundryCost')}</label>
+          <input type="number" min="0" className="input" {...register('laborCost', required)} />
+          {errors.laborCost && <p className={err}>{errors.laborCost.message}</p>}
           <div className="mt-2 flex gap-2">
             {[2500, 3000].map((price) => (
               <button key={price} type="button" onClick={() => setValue('laborCost', String(price))} className="btn-ghost py-1 text-xs">
@@ -150,8 +149,8 @@ export function MaintenanceFormFields({ register, setValue, errors, category, pa
               </button>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="rounded-lg border border-surface-border p-3 dark:border-slate-700">
         <label className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300">

@@ -172,6 +172,17 @@ export const reportApi = {
         throw e;
       }),
 
+  /** Classeur Excel du suivi du fut d'huile : approvisionnements, sorties par camion, quantite restante. */
+  oilXlsx: (from: string, to: string, cityId?: number) =>
+    api.get<Blob>(`${V1}/reports/oil/xlsx`, { params: { from, to, cityId }, responseType: 'blob' })
+      .then((r) => r.data)
+      .catch(async (e) => {
+        if (e?.response?.data instanceof Blob) {
+          try { e.response.data = JSON.parse(await e.response.data.text()); } catch { /* corps non JSON */ }
+        }
+        throw e;
+      }),
+
   vehicleExpenses: (year: number) =>
     api.get<VehicleExpenseSummary[]>(`${V1}/reports/vehicle-expenses`, { params: { year } }).then((r) => r.data),
 

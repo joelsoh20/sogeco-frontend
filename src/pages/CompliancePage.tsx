@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { UnifiedSchedule } from '@/components/compliance/UnifiedSchedule';
 import { MissingDocumentsPanel } from '@/components/compliance/MissingDocumentsPanel';
+import { ExpiredDocumentsPanel } from '@/components/compliance/ExpiredDocumentsPanel';
 import { CreatePolicyDrawer } from '@/components/compliance/CreatePolicyDrawer';
 import { EditPolicyDrawer } from '@/components/compliance/EditPolicyDrawer';
 import { CreateInspectionDrawer } from '@/components/compliance/CreateInspectionDrawer';
@@ -204,6 +205,28 @@ export function CompliancePage() {
   const missingDocuments = useQuery({
     queryKey: ['compliance', 'missing-documents'], queryFn: () => complianceApi.missingDocuments(),
   });
+  // Notification a l'ouverture de l'ecran : documents expires et manquants, une fois par jour et par navigateur
+  // (de nouveau si les chiffres changent).
+  const expiredCount = (schedule.data ?? []).filter((i) => i.status === 'EXPIRE').length;
+  const missingCount = (missingDocuments.data ?? []).length;
+  useEffect(() => {
+    if (!schedule.isSuccess || !missingDocuments.isSuccess || expiredCount + missingCount === 0) return;
+    const key = `sogeco.compliance.notified.${new Date().toDateString()}`;
+    if (sessionStorage.getItem(key) === `${expiredCount}/${missingCount}`) return;
+    sessionStorage.setItem(key, `${expiredCount}/${missingCount}`);
+    toast.error(t('expiredDocuments.toast', { expired: expiredCount, missing: missingCount }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schedule.isSuccess, missingDocuments.isSuccess, expiredCount, missingCount]);
+
+  const handleExpiredClick = (item: DeadlineItem) => {
+    const tabByCategory: Partial<Record<DeadlineItem['category'], Tab>> = {
+      ASSURANCE: 'assurances', VISITE_TECHNIQUE: 'visites', CARTE_BLEUE: 'cartes_bleues',
+      CARTE_GRISE: 'cartes_grises', CARTE_ROSE: 'cartes_roses', LICENCE_TRANSPORT: 'licences_transport',
+    };
+    const target = tabByCategory[item.category];
+    if (target) setTab(target);
+  };
+
   const policies = useQuery({
     queryKey: ['compliance', 'policies'], queryFn: () => complianceApi.policies(0, 20), enabled: tab === 'assurances',
   });
@@ -268,6 +291,8 @@ export function CompliancePage() {
             accent="slate"
           />
         </StatGrid>
+
+        <ExpiredDocumentsPanel items={schedule.data ?? []} onItemClick={handleExpiredClick} />
 
         <MissingDocumentsPanel items={missingDocuments.data ?? []} onItemClick={handleMissingDocumentClick} />
 

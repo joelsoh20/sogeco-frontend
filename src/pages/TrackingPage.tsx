@@ -42,6 +42,13 @@ export function TrackingPage() {
     refetchInterval: 30_000,
   });
 
+  // Etat de deplacement (en mouvement / stationne / gare) et depuis quand : recalcule cote serveur.
+  const { data: motionStates } = useQuery({
+    queryKey: ['tracking', 'motion'],
+    queryFn: trackingApi.motion,
+    refetchInterval: 30_000,
+  });
+
   useEffect(() => {
     if (initial) {
       setPositions(Object.fromEntries(initial.map((p) => [p.vehicleId, p])));
@@ -128,7 +135,11 @@ export function TrackingPage() {
           <MapLegend stats={stats} />
         </div>
 
-        <VehiclePanel position={selectedPosition} onClose={() => setSelected(null)} />
+        <VehiclePanel
+          position={selectedPosition}
+          motionState={selected ? motionStates?.find((m) => m.vehicleId === selected) ?? null : null}
+          onClose={() => setSelected(null)}
+        />
       </div>
     </PageShell>
   );

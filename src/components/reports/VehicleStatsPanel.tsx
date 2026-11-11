@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Banknote, ChevronDown, ClipboardList, FileDown, Fuel, Gauge, Route, TrendingUp, Truck, Wallet, Wrench } from 'lucide-react';
+import { Banknote, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Droplets, FileDown, Fuel, Gauge, Route, TrendingUp, Truck, Wallet, Wrench } from 'lucide-react';
 import { Spinner, LoadingPanel } from '@/components/ui/Spinner';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
 import { reportApi } from '@/api/compliance';
+import { adminApi } from '@/api/endpoints';
+import { useAuthStore } from '@/store/authStore';
+import { OIL_CITY_NAMES } from '@/lib/oilCities';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
 import { formatFcfa, formatLiters, formatNumber } from '@/lib/utils';
@@ -56,6 +59,36 @@ function presetPeriod(preset: PeriodPreset): { from: string; to: string } {
   return { from: isoDate(lastMonday), to: isoDate(lastSunday) };
 }
 
+const MONTH_NAMES_FR = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+];
+const MONTH_NAMES_EN = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const WEEKDAY_LABELS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const WEEKDAY_LABELS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/** Premier jour de la grille (lundi de la semaine contenant le 1er du mois affiche). */
+function calendarGridStart(viewMonth: Date): Date {
+  const first = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
+  const dow = (first.getDay() + 6) % 7;
+  const start = new Date(first);
+  start.setDate(first.getDate() - dow);
+  return start;
+}
+
+/** Grille fixe de 6 semaines (42 jours), pour une hauteur de popover stable d'un mois a l'autre. */
+function calendarGridDays(viewMonth: Date): Date[] {
+  const start = calendarGridStart(viewMonth);
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
+}
+
 function share(part: number, total: number): string {
   return total === 0 ? '—' : `${formatNumber((part * 100) / total, 1)} %`;
 }
@@ -67,12 +100,35 @@ function share(part: number, total: number): string {
  * (GET /reports/vehicle-expenses/report et /pdf).
  */
 export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [period, setPeriod] = useState(() => defaultPeriod(year));
   const [selected, setSelected] = useState<number[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [viewMonth, setViewMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [rangeStart, setRangeStart] = useState<Date | null>(null);
+  const monthNames = i18n.language === 'en' ? MONTH_NAMES_EN : MONTH_NAMES_FR;
+  const weekdayLabels = i18n.language === 'en' ? WEEKDAY_LABELS_EN : WEEKDAY_LABELS_FR;
+
+  const pickDay = (day: Date) => {
+    if (!rangeStart) {
+      setRangeStart(day);
+      setPeriod({ from: isoDate(day), to: isoDate(day) });
+      return;
+    }
+    const from = rangeStart < day ? rangeStart : day;
+    const to = rangeStart < day ? day : rangeStart;
+    setPeriod({ from: isoDate(from), to: isoDate(to) });
+    setRangeStart(null);
+    setCalendarOpen(false);
+  };
   const [downloading, setDownloading] = useState(false);
   const [downloadingMissions, setDownloadingMissions] = useState(false);
+  const [downloadingOil, setDownloadingOil] = useState(false);
+  // Le stock d'huile est tenu par ville : un gestionnaire n'a que la sienne, les autres choisissent (ou les ont toutes).
+  const fixedCity = useAuthStore((state) => state.user?.cityId ?? null);
+  const [oilCity, setOilCity] = useState('');
+  const oilCities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities, enabled: fixedCity === null });
 
   const invalidPeriod = !period.from || !period.to || period.to < period.from;
 
@@ -113,6 +169,17 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+  };
+
+  const downloadOilXlsx = async () => {
+    setDownloadingOil(true);
+    try {
+      saveBlob(await reportApi.oilXlsx(period.from, period.to, oilCity ? Number(oilCity) : undefined), `suivi-huile_${period.from}_${period.to}.xlsx`);
+    } catch (e) {
+      toast.error(errorMessage(e) || t('reportsPage.pdfError'));
+    } finally {
+      setDownloadingOil(false);
+    }
   };
 
   const downloadMissionsPdf = async () => {
@@ -191,14 +258,82 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
             </div>
           )}
         </div>
-        <div className="flex gap-1.5 self-end pb-0.5">
-          {(['thisWeek', 'lastWeek', 'thisMonth'] as PeriodPreset[]).map((p) => (
-            <button key={p} type="button" onClick={() => setPeriod(presetPeriod(p))}
-              className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
-              {t(`reportsPage.preset.${p}`)}
-            </button>
-          ))}
+        <div className="relative self-end pb-0.5">
+          <button type="button" onClick={() => { setCalendarOpen((o) => !o); setRangeStart(null); }}
+            className="btn-ghost" aria-expanded={calendarOpen}>
+            <CalendarDays size={16} />
+            {t('reportsPage.calendarButton')}
+          </button>
+          {calendarOpen && (
+            <div className="absolute z-20 mt-1 w-72 rounded-lg border border-surface-border bg-white p-3 shadow-panel dark:border-slate-700 dark:bg-slate-900">
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                {(['thisWeek', 'lastWeek', 'thisMonth'] as PeriodPreset[]).map((p) => (
+                  <button key={p} type="button"
+                    onClick={() => { setPeriod(presetPeriod(p)); setRangeStart(null); setCalendarOpen(false); }}
+                    className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                    {t(`reportsPage.preset.${p}`)}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mb-1.5 flex items-center justify-between">
+                <button type="button" onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                  {monthNames[viewMonth.getMonth()]} {viewMonth.getFullYear()}
+                </span>
+                <button type="button" onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
+                  className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-7 gap-0.5 text-center text-[11px] text-slate-400 dark:text-slate-500">
+                {weekdayLabels.map((w) => <div key={w} className="py-1">{w}</div>)}
+              </div>
+              <div className="grid grid-cols-7 gap-0.5">
+                {calendarGridDays(viewMonth).map((day) => {
+                  const iso = isoDate(day);
+                  const inMonth = day.getMonth() === viewMonth.getMonth();
+                  const inRange = iso >= period.from && iso <= period.to;
+                  const isEndpoint = iso === period.from || iso === period.to;
+                  const isPendingStart = rangeStart !== null && iso === isoDate(rangeStart);
+                  return (
+                    <button
+                      key={iso}
+                      type="button"
+                      onClick={() => pickDay(day)}
+                      className={[
+                        'rounded py-1.5 text-xs tabular transition-colors',
+                        !inMonth && 'text-slate-300 dark:text-slate-600',
+                        inMonth && !inRange && 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
+                        inMonth && inRange && !isEndpoint && 'bg-accent/10 text-accent dark:bg-accent/20',
+                        (isEndpoint || isPendingStart) && 'bg-accent text-white hover:bg-accent-hover',
+                      ].filter(Boolean).join(' ')}
+                    >
+                      {day.getDate()}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
+        {fixedCity === null && (
+          <div>
+            <label className="label">{t('reportsPage.oilCity')}</label>
+            <select className="input" value={oilCity} onChange={(e) => setOilCity(e.target.value)}>
+              <option value="">{t('oil.allCities')}</option>
+              {oilCities.data?.filter((c) => OIL_CITY_NAMES.includes(c.name)).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+        )}
+        <button type="button" onClick={downloadOilXlsx} disabled={downloadingOil || invalidPeriod} className="btn-ghost">
+          {downloadingOil ? <Spinner /> : <Droplets size={16} />}
+          {t('reportsPage.oilReport')}
+        </button>
         <button type="button" onClick={downloadMissionsPdf} disabled={downloadingMissions || invalidPeriod} className="btn-ghost">
           {downloadingMissions ? <Spinner /> : <ClipboardList size={16} />}
           {t('reportsPage.missionsReport')}

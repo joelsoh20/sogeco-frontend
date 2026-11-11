@@ -12,10 +12,16 @@ import { allowedPagesFor, landingPathFor } from '@/lib/roleAccess';
  */
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { accessToken, user } = useAuthStore();
+  const canOpenSettings = useAuthStore((state) => state.hasAnyPermission('SETTING_MANAGE', 'USER_MANAGE'));
   const location = useLocation();
 
   if (!accessToken) {
     return <Navigate to="/connexion" state={{ from: location }} replace />;
+  }
+
+  // Parametres : reserves a qui peut les gerer (administrateur) ; le gestionnaire est renvoye a l'accueil.
+  if (location.pathname === '/parametres' && !canOpenSettings) {
+    return <Navigate to="/" replace />;
   }
 
   // Compte restreint (comptable) : toute autre page renvoie vers sa page d'arrivee.

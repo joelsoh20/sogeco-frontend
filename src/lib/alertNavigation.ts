@@ -8,6 +8,9 @@ const MAINTENANCE_TYPES = new Set(['PANNE_DETECTEE', 'MAINTENANCE_ECHUE']);
 
 const DRIVER_ONLY_TYPES = new Set(['PERMIS_ECHEANCE']);
 
+/** Documents expires ou manquants : l'ecran Assurance & Visite technique les liste et permet de les regulariser. */
+const DOCUMENT_TYPES = new Set(['DOCUMENT_EXPIRE', 'DOCUMENT_MANQUANT']);
+
 const MISSION_TYPES = new Set(['PEAGE_IMPAYE', 'MISSION_SANS_CA']);
 
 /**
@@ -17,6 +20,9 @@ const MISSION_TYPES = new Set(['PEAGE_IMPAYE', 'MISSION_SANS_CA']);
  * mission rattache).
  */
 export function alertSourceRoute(alert: Alert): string | null {
+  if (DOCUMENT_TYPES.has(alert.alertType)) {
+    return '/conformite';
+  }
   if (FUEL_TYPES.has(alert.alertType) && alert.vehicleId != null) {
     return `/carburant?vehicleId=${alert.vehicleId}`;
   }

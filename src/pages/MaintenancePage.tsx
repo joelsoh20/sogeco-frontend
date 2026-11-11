@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Activity, AlertOctagon, AlertTriangle, CalendarClock, MapPin, Search, Wrench } from 'lucide-react';
+import { Activity, AlertOctagon, AlertTriangle, Droplets, CalendarClock, MapPin, Search, Wrench } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -13,6 +13,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { MaintenanceCategoryBadge, MaintenanceStatusBadge, CATEGORIES, STATUSES } from '@/components/maintenance/MaintenanceBadges';
 import { MaintenanceCategoryDonut } from '@/components/maintenance/MaintenanceCategoryDonut';
 import { MaintenanceCostTrendChart } from '@/components/maintenance/MaintenanceCostTrendChart';
+import { OilDistributionDrawer, OilFollowUpDrawer } from '@/components/maintenance/OilDrawers';
 import { BrokenVehicles, DeclareBreakdownDrawer } from '@/components/maintenance/BreakdownSection';
 import { CreateMaintenanceDrawer } from '@/components/maintenance/CreateMaintenanceDrawer';
 import { MaintenanceDetailPanel } from '@/components/maintenance/MaintenanceDetailPanel';
@@ -31,6 +32,8 @@ export function MaintenancePage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [declareOpen, setDeclareOpen] = useState(false);
+  const [oilGiveOpen, setOilGiveOpen] = useState(false);
+  const [oilFollowOpen, setOilFollowOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<MaintenanceStatus | ''>('');
   const [categoryFilter, setCategoryFilter] = useState<MaintenanceCategory | ''>('');
@@ -88,6 +91,16 @@ export function MaintenancePage() {
     >
       <div className="space-y-6">
         <div className="flex flex-wrap justify-end gap-2">
+          {canCreate && (
+            <button onClick={() => setOilGiveOpen(true)} className="btn-ghost">
+              <Droplets size={16} />
+              {t('oil.giveButton')}
+            </button>
+          )}
+          <button onClick={() => setOilFollowOpen(true)} className="btn-ghost">
+            <Droplets size={16} />
+            {t('oil.followUpButton')}
+          </button>
           {canCreate && (
             <button onClick={() => setDeclareOpen(true)} className="btn-ghost border-red-300 text-red-700 dark:border-red-500/30 dark:text-red-400">
               <AlertTriangle size={16} />
@@ -328,6 +341,8 @@ export function MaintenancePage() {
         {detail.isLoading ? <LoadingPanel /> : detail.data && <MaintenanceDetailPanel log={detail.data} />}
       </Drawer>
 
+      <OilDistributionDrawer open={oilGiveOpen} onClose={() => setOilGiveOpen(false)} />
+      <OilFollowUpDrawer open={oilFollowOpen} onClose={() => setOilFollowOpen(false)} />
       <DeclareBreakdownDrawer open={declareOpen} onClose={() => setDeclareOpen(false)} onDeclared={() => setCreateOpen(true)} />
       <CreateMaintenanceDrawer open={createOpen} onClose={() => setCreateOpen(false)} />
       <MaintenanceCityStatsDrawer open={cityStatsOpen} onClose={() => setCityStatsOpen(false)} />

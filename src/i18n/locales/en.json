@@ -562,6 +562,9 @@
     "daysUnit": "d",
     "missionsReport": "Missions report",
     "preset": { "thisWeek": "This week", "lastWeek": "Last week", "thisMonth": "This month" },
+    "calendarButton": "Calendar",
+    "oilCity": "City (oil report)",
+    "oilReport": "Oil report (Excel)",
     "kpiDowntime": "Time broken down",
     "kpiTestFuel": "Garage test fuel",
     "statsCompare": "Vehicle comparison",
@@ -739,6 +742,42 @@
     "colFuel": "Fuel"
   },
 
+  "oil": {
+    "editGiveTitle": "Edit oil withdrawal",
+    "distributionUpdated": "Withdrawal updated. {{remaining}} left.",
+    "editPurchase": "Edit oil purchase",
+    "purchaseUpdated": "Purchase updated. {{remaining}} left.",
+    "saveChanges": "Save changes",
+    "city": "City",
+    "allCities": "All cities",
+    "cityStock": "{{city}} stock: {{quantity}}",
+    "noCityStock": "No oil stock recorded in {{city}}.",
+    "followUpSubtitleCity": "{{city}} stock",
+    "giveButton": "Give oil",
+    "followUpButton": "Oil tracking",
+    "giveTitle": "Give oil to a truck",
+    "giveSubtitle": "Engine-oil drum withdrawal",
+    "giveSubmit": "Record withdrawal",
+    "given": "Oil recorded. {{remaining}} left in the drum.",
+    "followUpTitle": "Oil drum tracking",
+    "followUpSubtitle": "Oil purchases and remaining stock",
+    "newPurchase": "New oil purchase",
+    "purchaseDate": "Purchase date",
+    "purchaseNoteHint": "E.g. 8th drum",
+    "purchaseSubmit": "Record purchase",
+    "purchased": "Purchase recorded. {{remaining}} now in the drum.",
+    "date": "Date",
+    "quantity": "Quantity (liters)",
+    "recipient": "Received by",
+    "recipientHint": "Driver — taken from the truck's driver if empty",
+    "note": "Remark",
+    "stockRemaining": "Left in the drum",
+    "totalPurchased": "Total purchased",
+    "totalDistributed": "Total given",
+    "recentPurchases": "Latest purchases",
+    "recentDistributions": "Latest withdrawals"
+  },
+
   "maintenanceForm": {
     "repairNeedsBreakdown": "A repair can only be opened on a truck declared broken down (truck page → Declare breakdown).",
     "createTitle": "New intervention",
@@ -752,10 +791,11 @@
     "testFuelLiters": "Fuel consumed at the garage for test drives",
     "testFuelLitersHint": "Fuel used on site to test-drive the truck, separate from regular refueling.",
     "laborCost": "Labor (FCFA)",
+    "laundryCost": "Washing cost (FCFA)",
     "partChanged": "A part was replaced on the truck",
     "partLabel": "Replaced part",
     "partCost": "Part price (FCFA)",
-    "laborOnlyHint": "If no part was replaced, only labor is counted.",
+    "laborOnlyHint": "If no part was replaced, no cost is recorded for this intervention.",
     "downtimeDays": "Time spent broken down (days)",
     "washing": "Wash",
     "itemPart": "Part",
@@ -804,7 +844,7 @@
     "suspiciousQuantityTankHint": "(tank of {{liters}} L on the vehicle's record)",
     "suspiciousQuantityDefaultHint": "(usual capacity for this type of vehicle)",
     "suspiciousQuantityCheck": "Check the entry before validating.",
-    "receiptNumber": "Receipt No. (optional)",
+    "receiptNumber": "Voucher number",
     "createSubmit": "Save refuel",
     "createSuccess": "Refuel recorded on {{registration}}.",
     "editSuccess": "Refuel on {{registration}} updated."
@@ -1055,6 +1095,17 @@
   },
 
   "vehiclePanel": {
+    "motionState": "Status",
+    "since": "Since",
+    "lastSignalSince": "Last signal",
+    "atLeast": "at least",
+    "motion": {
+      "EN_MOUVEMENT": "Moving",
+      "STATIONNE": "Stopped (engine on)",
+      "GARE": "Parked (engine off)",
+      "HORS_LIGNE": "Offline",
+      "INCONNU": "No GPS tracker"
+    },
     "approximatePosition": "Approximate position",
     "speed": "Speed",
     "noMission": "No mission",
@@ -1446,6 +1497,14 @@
     "overdueBy": "Overdue by {{count}} d",
     "dueIn": "In {{count}} d",
     "itemClickHint": "Click to update this document"
+  },
+
+  "expiredDocuments": {
+    "title": "Expired documents",
+    "subtitle": "{{count}} document(s) past their validity date",
+    "dueOn": "Expired on {{date}}",
+    "daysLate": "{{count}} d overdue",
+    "toast": "Documents to fix: {{expired}} expired, {{missing}} missing."
   },
 
   "missingDocuments": {
