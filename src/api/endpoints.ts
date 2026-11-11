@@ -6,7 +6,7 @@ import type {
   Driver, DriverSemesterRanking, DriverStats, FuelLog, FuelLogRequest, FuelStats, LivePosition, MaintenanceCityStats,
   MaintenanceLog, MaintenanceRequest, MaintenanceStats, Mission, MissionAutomation, MissionCancelRequest,
   MissionCompleteRequest, MissionDetail, MissionDetourRequest, MissionEstimate, MissionStats, PageResponse, Quartier,
-  MotionState, OilSummary, PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
+  MotionState, OilSummary, SnappedTrack, PlaceSuggestion, ReverseGeocodeResult, Role, ServiceType, TankLevel, TrackingStats, UpdateUserRequest, User, UserCreationResult,
   Vehicle, VehicleDetail, VehicleStats, WeeklyRefuel,
 } from '@/types/api';
 import type {
@@ -73,6 +73,11 @@ export const trackingApi = {
     api.get<LivePosition[]>(`${V1}/tracking/positions/current`).then((r) => r.data),
 
   stats: () => api.get<TrackingStats>(`${V1}/tracking/stats`).then((r) => r.data),
+
+  /** Trajet d'un camion redessine sur les routes (OpenRouteService) ; from / to : instants ISO. */
+  snappedHistory: (vehicleId: number, from: string, to: string) =>
+    api.get<SnappedTrack>(`${V1}/tracking/vehicles/${vehicleId}/history/snapped`, { params: { from, to } })
+       .then((r) => r.data),
 
   /** En mouvement / stationne / gare, et depuis quelle heure, pour chaque camion. */
   motion: () => api.get<MotionState[]>(`${V1}/tracking/motion`).then((r) => r.data),

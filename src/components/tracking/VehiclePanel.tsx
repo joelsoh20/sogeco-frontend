@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'motion/react';
-import { Navigation, Phone, Truck, X } from 'lucide-react';
+import { useState } from 'react';
+import { History, Navigation, Phone, Truck, X } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
+import { TrackHistoryDrawer } from './TrackHistoryDrawer';
 import type { LivePosition, MotionKind, MotionState } from '@/types/api';
 import { VehicleStatusBadge } from '@/components/ui/StatusBadge';
 import { DetailRow } from '@/components/ui/Drawer';
@@ -49,7 +52,10 @@ function formatSince(iso: string): string {
 
 export function VehiclePanel({ position, motionState, onClose }: VehiclePanelProps) {
   const { t } = useTranslation();
+  const canSeeHistory = useAuthStore((state) => state.hasPermission('TRACKING_HISTORY_READ'));
+  const [historyOpen, setHistoryOpen] = useState(false);
   return (
+    <>
     <AnimatePresence>
       {position && (
         <motion.div
@@ -136,7 +142,13 @@ export function VehiclePanel({ position, motionState, onClose }: VehiclePanelPro
             />
           </div>
 
-          <div className="border-t border-surface-border px-4 py-3 dark:border-slate-800">
+          <div className="space-y-2 border-t border-surface-border px-4 py-3 dark:border-slate-800">
+            {canSeeHistory && (
+              <button type="button" onClick={() => setHistoryOpen(true)} className="btn-ghost w-full">
+                <History size={15} />
+                {t('trackHistory.open')}
+              </button>
+            )}
             <a
               href={`https://www.google.com/maps?q=${position.latitude},${position.longitude}`}
               target="_blank"
@@ -150,5 +162,10 @@ export function VehiclePanel({ position, motionState, onClose }: VehiclePanelPro
         </motion.div>
       )}
     </AnimatePresence>
+    {position && (
+      <TrackHistoryDrawer open={historyOpen} onClose={() => setHistoryOpen(false)}
+        vehicleId={position.vehicleId} registrationNumber={position.registrationNumber} />
+    )}
+    </>
   );
 }

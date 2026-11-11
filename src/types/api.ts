@@ -215,6 +215,20 @@ export interface LivePosition {
   gpsTracked: boolean;
 }
 
+/** Trajet redessine sur les routes (GET /tracking/vehicles/{id}/history/snapped). */
+export interface SnappedTrack {
+  vehicleId: number;
+  from: string;
+  to: string;
+  positionCount: number;
+  keptPoints: number;
+  snappingAvailable: boolean;
+  gapCount: number;
+  segments: { kind: 'SNAPPED' | 'ESTIMATED' | 'RAW'; points: [number, number][] }[];
+  start: { at: string; latitude: number; longitude: number } | null;
+  end: { at: string; latitude: number; longitude: number } | null;
+}
+
 export type MotionKind = 'EN_MOUVEMENT' | 'STATIONNE' | 'GARE' | 'HORS_LIGNE' | 'INCONNU';
 
 /** Etat de deplacement d'un camion et depuis quand (GET /tracking/motion). */

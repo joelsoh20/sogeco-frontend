@@ -1091,6 +1091,23 @@
     "vsPreviousPeriod": "{{value}} % vs période précédente"
   },
 
+  "trackHistory": {
+    "open": "Historique sur les routes",
+    "title": "Historique du camion",
+    "day": "Jour",
+    "today": "Aujourd’hui",
+    "yesterday": "Hier",
+    "noData": "Aucune position GPS enregistrée ce jour-là pour ce camion.",
+    "legendRoad": "Trajet sur les routes",
+    "legendEstimated": "Trou de réception (estimé)",
+    "legendRaw": "Ligne droite (routage indisponible)",
+    "points": "Positions GPS",
+    "period": "De — à",
+    "gaps": "Trous de réception",
+    "gapHint": "Le pointillé orange relie deux points GPS éloignés dans le temps : le chemin y est estimé (le plus court), le camion a pu passer ailleurs.",
+    "snappingUnavailable": "Le service de routage n’est pas configuré : le trajet s’affiche en lignes droites."
+  },
+
   "vehiclePanel": {
     "motionState": "État",
     "since": "Depuis",

@@ -1094,6 +1094,23 @@
     "vsPreviousPeriod": "{{value}}% vs previous period"
   },
 
+  "trackHistory": {
+    "open": "History on the roads",
+    "title": "Truck history",
+    "day": "Day",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "noData": "No GPS position recorded for this truck on that day.",
+    "legendRoad": "Route on the roads",
+    "legendEstimated": "Reception gap (estimated)",
+    "legendRaw": "Straight line (routing unavailable)",
+    "points": "GPS positions",
+    "period": "From — to",
+    "gaps": "Reception gaps",
+    "gapHint": "The orange dashed line joins two GPS points far apart in time: the path is estimated (shortest), the truck may have gone elsewhere.",
+    "snappingUnavailable": "The routing service is not configured: the track is shown as straight lines."
+  },
+
   "vehiclePanel": {
     "motionState": "Status",
     "since": "Since",
