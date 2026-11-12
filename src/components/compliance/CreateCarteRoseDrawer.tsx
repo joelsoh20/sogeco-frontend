@@ -15,15 +15,11 @@ interface FormValues {
   vehicleId: string;
   insurerId: string;
   insuredName: string;
-  insuredAddress: string;
   issuingBureauName: string;
   issuingBureauAddress: string;
-  registrationNumber: string;
-  vehicleMakeType: string;
   vehicleCategory: string;
   validFrom: string;
   validTo: string;
-  cost: string;
   notes: string;
 }
 
@@ -56,9 +52,11 @@ export function CreateCarteRoseDrawer({ open, onClose, initialVehicleId }: Creat
     enabled: open,
   });
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
     defaultValues: DEFAULT_VALUES,
   });
+  const vehicleId = watch('vehicleId');
+  const selectedVehicle = vehicles.data?.content.find((v) => String(v.id) === vehicleId);
 
   // Reinitialise a chaque ouverture : ce drawer reste monte en permanence
   // (juste masque), un simple defaultValues ne serait donc pris en compte
@@ -87,15 +85,13 @@ export function CreateCarteRoseDrawer({ open, onClose, initialVehicleId }: Creat
       vehicleId: Number(values.vehicleId),
       insurerId: Number(values.insurerId),
       insuredName: values.insuredName,
-      insuredAddress: values.insuredAddress || undefined,
       issuingBureauName: values.issuingBureauName,
       issuingBureauAddress: values.issuingBureauAddress || undefined,
-      registrationNumber: values.registrationNumber,
-      vehicleMakeType: values.vehicleMakeType,
+      registrationNumber: selectedVehicle?.registrationNumber ?? '',
+      vehicleMakeType: selectedVehicle ? `${selectedVehicle.brand} ${selectedVehicle.model}` : '',
       vehicleCategory: values.vehicleCategory,
       validFrom: values.validFrom,
       validTo: values.validTo || undefined,
-      cost: values.cost ? Number(values.cost) : undefined,
       notes: values.notes || undefined,
     });
   };
@@ -120,16 +116,10 @@ export function CreateCarteRoseDrawer({ open, onClose, initialVehicleId }: Creat
           {errors.vehicleId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.vehicleId.message}</p>}
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="label">{t('carteRoseForm.insuredName')}</label>
-            <input className="input" {...register('insuredName', { required: t('common.requiredField') })} />
-            {errors.insuredName && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.insuredName.message}</p>}
-          </div>
-          <div>
-            <label className="label">{t('carteRoseForm.insuredAddressOptional')}</label>
-            <input className="input" {...register('insuredAddress')} />
-          </div>
+        <div>
+          <label className="label">{t('carteRoseForm.insuredName')}</label>
+          <input className="input" {...register('insuredName', { required: t('common.requiredField') })} />
+          {errors.insuredName && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.insuredName.message}</p>}
         </div>
 
         <div>
@@ -158,19 +148,6 @@ export function CreateCarteRoseDrawer({ open, onClose, initialVehicleId }: Creat
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="label">{t('carteGriseForm.registrationNumber')}</label>
-            <input className="input" placeholder="LT-236-AA" {...register('registrationNumber', { required: t('common.requiredField') })} />
-            {errors.registrationNumber && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.registrationNumber.message}</p>}
-          </div>
-          <div>
-            <label className="label">{t('carteRoseForm.vehicleMakeType')}</label>
-            <input className="input" placeholder="Mercedes Actros 1845" {...register('vehicleMakeType', { required: t('common.requiredField') })} />
-            {errors.vehicleMakeType && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.vehicleMakeType.message}</p>}
-          </div>
-        </div>
-
         <div>
           <label className="label">{t('carteRoseForm.vehicleCategory')}</label>
           <input className="input" placeholder="Camion" {...register('vehicleCategory', { required: t('common.requiredField') })} />
@@ -188,11 +165,6 @@ export function CreateCarteRoseDrawer({ open, onClose, initialVehicleId }: Creat
             <input type="date" className="input" {...register('validTo')} />
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('carteRoseForm.validToHint')}</p>
           </div>
-        </div>
-
-        <div>
-          <label className="label">{t('carteGriseForm.amount')}</label>
-          <input type="number" className="input" {...register('cost')} />
         </div>
 
         <div>

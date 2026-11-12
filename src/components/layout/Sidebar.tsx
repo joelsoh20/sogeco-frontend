@@ -74,7 +74,7 @@ export function Sidebar({ alertCount = 0, open = false, onClose }: SidebarProps)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[450] bg-black/40 lg:hidden"
+            className="fixed inset-0 z-[450] bg-black/40 backdrop-blur-sm lg:hidden"
             onClick={onClose}
           />
         )}
@@ -86,7 +86,7 @@ export function Sidebar({ alertCount = 0, open = false, onClose }: SidebarProps)
           // GPS, z-[400]) — le menu mobile, une fois ouvert, doit toujours
           // recouvrir l'integralite de la page, jamais laisser un element
           // flottant par-dessus. Seuls les toasts (z-[600]) restent au-dessus.
-          'fixed inset-y-0 left-0 z-[460] flex w-64 shrink-0 flex-col bg-navy-900/90 text-slate-300 backdrop-blur-md',
+          'fixed inset-y-0 left-0 z-[460] flex w-64 shrink-0 flex-col border-r border-white/10 bg-navy-900/60 text-slate-300 backdrop-blur-md backdrop-saturate-150',
           'transition-transform duration-200 ease-out lg:static lg:translate-x-0',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
