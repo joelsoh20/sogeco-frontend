@@ -34,6 +34,10 @@ function useOilScope() {
 
 interface DistributionForm {
   vehicleId: string;
+  /** Vehicule hors flotte (ou d'une autre ville) : immatriculation saisie a la main. */
+  externalPlate: string;
+  /** Ville du stock pour un vehicule hors flotte (administrateur ; un gestionnaire a sa ville). */
+  cityId: string;
   distributionDate: string;
   quantityLiters: string;
   recipientName: string;
@@ -53,33 +57,50 @@ export function OilDistributionDrawer({ open, onClose, editing }: DistributionDr
   const vehicles = useQuery({ queryKey: ['vehicles', 'for-maintenance'], queryFn: () => vehicleApi.list(0, 200), enabled: open });
   const stock = useQuery({ queryKey: [...SUMMARY_KEY, 'all'], queryFn: () => oilApi.summary(), enabled: open });
 
+  const { fixedCityId } = useOilScope();
+  const allCities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities, enabled: open && fixedCityId === null });
+  const oilCities = (allCities.data ?? []).filter((c) => OIL_CITY_NAMES.includes(c.name));
+
   const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<DistributionForm>({
     defaultValues: { distributionDate: toLocalDateString(new Date()) },
   });
+  const typedPlate = (watch('externalPlate') ?? '').trim();
+  const chosenVehicleId = watch('vehicleId');
+  const chosenCityId = watch('cityId');
 
   useEffect(() => {
     if (!open) return;
     reset(editing
       ? {
-        vehicleId: String(editing.vehicleId),
+        vehicleId: editing.vehicleId == null ? '' : String(editing.vehicleId),
+        externalPlate: editing.external ? editing.registrationNumber : '',
+        cityId: editing.external && editing.cityId != null ? String(editing.cityId) : '',
         distributionDate: editing.date.slice(0, 10),
         quantityLiters: String(editing.quantityLiters),
         recipientName: editing.recipientName ?? '',
         note: editing.note ?? '',
       }
-      : { distributionDate: toLocalDateString(new Date()), vehicleId: '', quantityLiters: '', recipientName: '', note: '' });
+      : { distributionDate: toLocalDateString(new Date()), vehicleId: '', externalPlate: '', cityId: '', quantityLiters: '', recipientName: '', note: '' });
     setError(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editing?.id]);
 
   // Stock de la ville du camion choisi.
   const vehicle = vehicles.data?.content.find((v) => String(v.id) === watch('vehicleId'));
-  const cityStock = vehicle?.cityId != null ? stock.data?.byCity.find((c) => c.cityId === vehicle.cityId) : undefined;
+  const externalCityId = fixedCityId ?? (chosenCityId ? Number(chosenCityId) : null);
+  const cityStock = vehicle?.cityId != null
+    ? stock.data?.byCity.find((c) => c.cityId === vehicle.cityId)
+    : typedPlate && externalCityId != null
+      ? stock.data?.byCity.find((c) => c.cityId === externalCityId)
+      : undefined;
 
   const save = useMutation({
     mutationFn: (v: DistributionForm) => {
+      const external = !v.vehicleId && v.externalPlate?.trim();
       const payload = {
-        vehicleId: Number(v.vehicleId),
+        vehicleId: v.vehicleId ? Number(v.vehicleId) : undefined,
+        externalPlate: external ? v.externalPlate.trim() : undefined,
+        cityId: external && fixedCityId === null && v.cityId ? Number(v.cityId) : undefined,
         distributionDate: v.distributionDate,
         quantityLiters: Number(v.quantityLiters),
         recipientName: v.recipientName.trim() || undefined,
@@ -106,21 +127,43 @@ export function OilDistributionDrawer({ open, onClose, editing }: DistributionDr
       <form onSubmit={handleSubmit((v) => { setError(null); save.mutate(v); })} className="space-y-4">
         <div>
           <label className="label">{t('compliancePage.colVehicle')}</label>
-          <select className="input" {...register('vehicleId', { required: t('common.requiredField') })}>
+          <select className="input disabled:opacity-50" disabled={Boolean(typedPlate)}
+            {...register('vehicleId', { validate: (v, f) => Boolean(v || f.externalPlate?.trim()) || t('oil.vehicleOrPlateRequired') })}>
             <option value="">{t('common.selectPlaceholder')}</option>
             {vehicles.data?.content.map((v) => (
               <option key={v.id} value={v.id}>{v.registrationNumber} — {v.brand} {v.model}{v.cityName ? ` (${v.cityName})` : ''}</option>
             ))}
           </select>
           {errors.vehicleId && <p className={err}>{errors.vehicleId.message}</p>}
-          {vehicle && (
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {cityStock
-                ? t('oil.cityStock', { city: cityStock.cityName, quantity: formatLiters(cityStock.remaining) })
-                : t('oil.noCityStock', { city: vehicle.cityName ?? '—' })}
-            </p>
+        </div>
+
+        <div className="rounded-lg border border-dashed border-surface-border p-3 dark:border-slate-700">
+          <label className="label">{t('oil.externalPlate')}</label>
+          <input className="input uppercase disabled:opacity-50" placeholder={t('oil.externalPlateHint')}
+            disabled={Boolean(chosenVehicleId)} {...register('externalPlate')} />
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t('oil.externalPlateHelp')}</p>
+
+          {typedPlate && fixedCityId === null && (
+            <div className="mt-3">
+              <label className="label">{t('oil.stockCity')}</label>
+              <select className="input" {...register('cityId', { validate: (v, f) => !f.externalPlate?.trim() || Boolean(v) || t('common.requiredField') })}>
+                <option value="">{t('common.selectPlaceholder')}</option>
+                {oilCities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              {errors.cityId && <p className={err}>{errors.cityId.message}</p>}
+            </div>
           )}
         </div>
+
+        {(vehicle || typedPlate) && (
+          <p className="-mt-2 text-xs text-slate-500 dark:text-slate-400">
+            {cityStock
+              ? t('oil.cityStock', { city: cityStock.cityName, quantity: formatLiters(cityStock.remaining) })
+              : vehicle
+                ? t('oil.noCityStock', { city: vehicle.cityName ?? '—' })
+                : fixedCityId !== null || chosenCityId ? t('oil.noStockForCity') : ''}
+          </p>
+        )}
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
@@ -354,7 +397,7 @@ export function OilFollowUpDrawer({ open, onClose }: DrawerProps) {
                 {data.distributions.map((d) => (
                   <li key={d.id} className="flex items-center justify-between gap-2 py-1.5">
                     <span className="min-w-0 truncate">
-                      {formatDate(d.date)} — <span className="font-medium">{d.registrationNumber}</span>
+                      {formatDate(d.date)} — <span className="font-medium">{d.registrationNumber}</span>{d.external ? <span className="ml-1 rounded bg-slate-100 px-1 py-0.5 text-[10px] text-slate-500 dark:bg-slate-800 dark:text-slate-400">{t('oil.external')}</span> : null}
                       {d.recipientName ? <span className="text-slate-500 dark:text-slate-400"> {d.recipientName}</span> : null}
                     </span>
                     <span className="flex shrink-0 items-center gap-2">

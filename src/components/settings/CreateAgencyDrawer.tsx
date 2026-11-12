@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { adminApi, geocodingApi, quartierApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
 import { toast } from '@/store/toastStore';
+import { COMPANY_CITY_NAMES } from '@/lib/companyCities';
 import { MissionRouteMap, type RoutePoint } from '@/components/missions/MissionRouteMap';
 import type { CreateAgencyRequest } from '@/types/api';
 
@@ -42,7 +43,9 @@ export function CreateAgencyDrawer({ open, onClose }: CreateAgencyDrawerProps) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities, enabled: open });
+  const allCities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities, enabled: open });
+  // Un site n'existe qu'a Douala, Yaoundé ou Bafoussam : le choix, la carte et le clic sur la carte sont limites a ces villes.
+  const cities = { data: allCities.data?.filter((c) => COMPANY_CITY_NAMES.includes(c.name)) };
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>();
 

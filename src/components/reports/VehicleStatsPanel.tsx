@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Banknote, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Droplets, FileDown, Fuel, Gauge, Route, TrendingUp, Truck, Wallet, Wrench } from 'lucide-react';
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Droplets, FileDown, Fuel, Route, Truck, Wallet } from 'lucide-react';
 import { Spinner, LoadingPanel } from '@/components/ui/Spinner';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -219,133 +219,149 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
         <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{t('reportsPage.statsDescription')}</p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3">
-        <div>
-          <label className="label">{t('reportsPage.pdfFrom')}</label>
-          <input type="date" className="input" value={period.from}
-            onChange={(e) => setPeriod((p) => ({ ...p, from: e.target.value }))} />
-        </div>
-        <div>
-          <label className="label">{t('reportsPage.pdfTo')}</label>
-          <input type="date" className="input" value={period.to}
-            onChange={(e) => setPeriod((p) => ({ ...p, to: e.target.value }))} />
-        </div>
-        <div className="relative">
-          <label className="label">{t('reportsPage.pdfVehicle')}</label>
-          <button type="button" className="input flex min-w-[14rem] items-center justify-between gap-2 text-left"
-            onClick={() => setPickerOpen((o) => !o)} aria-expanded={pickerOpen}>
-            <span className="truncate">
-              {selected.length === 0 ? t('reportsPage.pdfAllVehicles') : t('reportsPage.vehiclesSelected', { count: selected.length })}
-            </span>
-            <ChevronDown size={14} className="shrink-0 text-slate-400" />
-          </button>
-          {pickerOpen && (
-            <div className="absolute z-20 mt-1 w-64 rounded-lg border border-surface-border bg-white p-2 shadow-panel dark:border-slate-700 dark:bg-slate-900">
-              <div className="max-h-56 space-y-0.5 overflow-y-auto">
-                {vehicles.map((v) => (
-                  <label key={v.id} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
-                    <input type="checkbox" checked={selected.includes(v.id)} onChange={() => toggle(v.id)} />
-                    {v.registrationNumber}
-                  </label>
-                ))}
-              </div>
-              <div className="mt-2 flex justify-between border-t border-surface-border pt-2 text-xs dark:border-slate-800">
-                <button type="button" className="text-slate-500 hover:text-slate-700 dark:text-slate-400" onClick={() => setSelected([])}>
-                  {t('reportsPage.clearSelection')}
-                </button>
-                <button type="button" className="font-medium text-accent" onClick={() => setPickerOpen(false)}>OK</button>
-              </div>
+      <div className="space-y-4">
+        {/* Filtres : periode d'analyse, puis vehicule(s) concerne(s) */}
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-wrap items-end gap-2 rounded-lg border border-surface-border bg-slate-50/60 p-2 dark:border-slate-800 dark:bg-slate-800/30">
+            <div>
+              <label className="label">{t('reportsPage.pdfFrom')}</label>
+              <input type="date" className="input" value={period.from}
+                onChange={(e) => setPeriod((p) => ({ ...p, from: e.target.value }))} />
             </div>
-          )}
-        </div>
-        <div className="relative self-end pb-0.5">
-          <button type="button" onClick={() => { setCalendarOpen((o) => !o); setRangeStart(null); }}
-            className="btn-ghost" aria-expanded={calendarOpen}>
-            <CalendarDays size={16} />
-            {t('reportsPage.calendarButton')}
-          </button>
-          {calendarOpen && (
-            <div className="absolute z-20 mt-1 w-72 rounded-lg border border-surface-border bg-white p-3 shadow-panel dark:border-slate-700 dark:bg-slate-900">
-              <div className="mb-2 flex flex-wrap gap-1.5">
-                {(['thisWeek', 'lastWeek', 'thisMonth'] as PeriodPreset[]).map((p) => (
-                  <button key={p} type="button"
-                    onClick={() => { setPeriod(presetPeriod(p)); setRangeStart(null); setCalendarOpen(false); }}
-                    className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
-                    {t(`reportsPage.preset.${p}`)}
-                  </button>
-                ))}
-              </div>
+            <div>
+              <label className="label">{t('reportsPage.pdfTo')}</label>
+              <input type="date" className="input" value={period.to}
+                onChange={(e) => setPeriod((p) => ({ ...p, to: e.target.value }))} />
+            </div>
+            <div className="relative self-stretch">
+              <button type="button" onClick={() => { setCalendarOpen((o) => !o); setRangeStart(null); }}
+                className="btn-ghost h-full" aria-expanded={calendarOpen}>
+                <CalendarDays size={16} />
+                {t('reportsPage.calendarButton')}
+              </button>
+              {calendarOpen && (
+                <div className="absolute z-20 mt-1 w-72 rounded-lg border border-surface-border bg-white p-3 shadow-panel dark:border-slate-700 dark:bg-slate-900">
+                  <div className="mb-2 flex flex-wrap gap-1.5">
+                    {(['thisWeek', 'lastWeek', 'thisMonth'] as PeriodPreset[]).map((p) => (
+                      <button key={p} type="button"
+                        onClick={() => { setPeriod(presetPeriod(p)); setRangeStart(null); setCalendarOpen(false); }}
+                        className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                        {t(`reportsPage.preset.${p}`)}
+                      </button>
+                    ))}
+                  </div>
 
-              <div className="mb-1.5 flex items-center justify-between">
-                <button type="button" onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
-                  className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
-                  <ChevronLeft size={16} />
-                </button>
-                <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                  {monthNames[viewMonth.getMonth()]} {viewMonth.getFullYear()}
-                </span>
-                <button type="button" onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
-                  className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-7 gap-0.5 text-center text-[11px] text-slate-400 dark:text-slate-500">
-                {weekdayLabels.map((w) => <div key={w} className="py-1">{w}</div>)}
-              </div>
-              <div className="grid grid-cols-7 gap-0.5">
-                {calendarGridDays(viewMonth).map((day) => {
-                  const iso = isoDate(day);
-                  const inMonth = day.getMonth() === viewMonth.getMonth();
-                  const inRange = iso >= period.from && iso <= period.to;
-                  const isEndpoint = iso === period.from || iso === period.to;
-                  const isPendingStart = rangeStart !== null && iso === isoDate(rangeStart);
-                  return (
-                    <button
-                      key={iso}
-                      type="button"
-                      onClick={() => pickDay(day)}
-                      className={[
-                        'rounded py-1.5 text-xs tabular transition-colors',
-                        !inMonth && 'text-slate-300 dark:text-slate-600',
-                        inMonth && !inRange && 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
-                        inMonth && inRange && !isEndpoint && 'bg-accent/10 text-accent dark:bg-accent/20',
-                        (isEndpoint || isPendingStart) && 'bg-accent text-white hover:bg-accent-hover',
-                      ].filter(Boolean).join(' ')}
-                    >
-                      {day.getDate()}
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <button type="button" onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
+                      className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                      <ChevronLeft size={16} />
                     </button>
-                  );
-                })}
-              </div>
+                    <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                      {monthNames[viewMonth.getMonth()]} {viewMonth.getFullYear()}
+                    </span>
+                    <button type="button" onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
+                      className="rounded p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-7 gap-0.5 text-center text-[11px] text-slate-400 dark:text-slate-500">
+                    {weekdayLabels.map((w) => <div key={w} className="py-1">{w}</div>)}
+                  </div>
+                  <div className="grid grid-cols-7 gap-0.5">
+                    {calendarGridDays(viewMonth).map((day) => {
+                      const iso = isoDate(day);
+                      const inMonth = day.getMonth() === viewMonth.getMonth();
+                      const inRange = iso >= period.from && iso <= period.to;
+                      const isEndpoint = iso === period.from || iso === period.to;
+                      const isPendingStart = rangeStart !== null && iso === isoDate(rangeStart);
+                      return (
+                        <button
+                          key={iso}
+                          type="button"
+                          onClick={() => pickDay(day)}
+                          className={[
+                            'rounded py-1.5 text-xs tabular transition-colors',
+                            !inMonth && 'text-slate-300 dark:text-slate-600',
+                            inMonth && !inRange && 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
+                            inMonth && inRange && !isEndpoint && 'bg-accent/10 text-accent dark:bg-accent/20',
+                            (isEndpoint || isPendingStart) && 'bg-accent text-white hover:bg-accent-hover',
+                          ].filter(Boolean).join(' ')}
+                        >
+                          {day.getDate()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        {fixedCity === null && (
-          <div>
-            <label className="label">{t('reportsPage.oilCity')}</label>
-            <select className="input" value={oilCity} onChange={(e) => setOilCity(e.target.value)}>
-              <option value="">{t('oil.allCities')}</option>
-              {oilCities.data?.filter((c) => OIL_CITY_NAMES.includes(c.name)).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
           </div>
+
+          <div className="relative">
+            <label className="label">{t('reportsPage.pdfVehicle')}</label>
+            <button type="button" className="input flex min-w-[14rem] items-center justify-between gap-2 text-left"
+              onClick={() => setPickerOpen((o) => !o)} aria-expanded={pickerOpen}>
+              <span className="truncate">
+                {selected.length === 0 ? t('reportsPage.pdfAllVehicles') : t('reportsPage.vehiclesSelected', { count: selected.length })}
+              </span>
+              <ChevronDown size={14} className="shrink-0 text-slate-400" />
+            </button>
+            {pickerOpen && (
+              <div className="absolute z-20 mt-1 w-64 rounded-lg border border-surface-border bg-white p-2 shadow-panel dark:border-slate-700 dark:bg-slate-900">
+                <div className="max-h-56 space-y-0.5 overflow-y-auto">
+                  {vehicles.map((v) => (
+                    <label key={v.id} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <input type="checkbox" checked={selected.includes(v.id)} onChange={() => toggle(v.id)} />
+                      {v.registrationNumber}
+                    </label>
+                  ))}
+                </div>
+                <div className="mt-2 flex justify-between border-t border-surface-border pt-2 text-xs dark:border-slate-800">
+                  <button type="button" className="text-slate-500 hover:text-slate-700 dark:text-slate-400" onClick={() => setSelected([])}>
+                    {t('reportsPage.clearSelection')}
+                  </button>
+                  <button type="button" className="font-medium text-accent" onClick={() => setPickerOpen(false)}>OK</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {invalidPeriod && (
+          <p className="text-xs text-red-600 dark:text-red-400">{t('reportsPage.pdfInvalidPeriod')}</p>
         )}
-        <button type="button" onClick={downloadOilXlsx} disabled={downloadingOil || invalidPeriod} className="btn-ghost">
-          {downloadingOil ? <Spinner /> : <Droplets size={16} />}
-          {t('reportsPage.oilReport')}
-        </button>
-        <button type="button" onClick={downloadMissionsPdf} disabled={downloadingMissions || invalidPeriod} className="btn-ghost">
-          {downloadingMissions ? <Spinner /> : <ClipboardList size={16} />}
-          {t('reportsPage.missionsReport')}
-        </button>
-        <button type="button" onClick={downloadPdf} disabled={downloading || invalidPeriod} className="btn-primary">
-          {downloading ? <Spinner className="text-white" /> : <FileDown size={16} />}
-          {t('reportsPage.pdfDownload')}
-        </button>
+
+        {/* Exports : filtre ville (specifique au rapport d'huile) a cote de son bouton, actions a droite */}
+        <div className="flex flex-wrap items-end justify-between gap-3 border-t border-surface-border pt-4 dark:border-slate-800">
+          <div className="flex flex-wrap items-end gap-3">
+            {fixedCity === null && (
+              <div>
+                <label className="label">{t('reportsPage.oilCity')}</label>
+                <select className="input" value={oilCity} onChange={(e) => setOilCity(e.target.value)}>
+                  <option value="">{t('oil.allCities')}</option>
+                  {oilCities.data?.filter((c) => OIL_CITY_NAMES.includes(c.name)).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+            )}
+            <button type="button" onClick={downloadOilXlsx} disabled={downloadingOil || invalidPeriod} className="btn-ghost">
+              {downloadingOil ? <Spinner /> : <Droplets size={16} />}
+              {t('reportsPage.oilReport')}
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={downloadMissionsPdf} disabled={downloadingMissions || invalidPeriod} className="btn-ghost">
+              {downloadingMissions ? <Spinner /> : <ClipboardList size={16} />}
+              {t('reportsPage.missionsReport')}
+            </button>
+            <button type="button" onClick={downloadPdf} disabled={downloading || invalidPeriod} className="btn-primary">
+              {downloading ? <Spinner className="text-white" /> : <FileDown size={16} />}
+              {t('reportsPage.pdfDownload')}
+            </button>
+          </div>
+        </div>
       </div>
-      {invalidPeriod && (
-        <p className="text-xs text-red-600 dark:text-red-400">{t('reportsPage.pdfInvalidPeriod')}</p>
-      )}
 
       {report.isLoading && <LoadingPanel />}
       {report.isError && (
@@ -359,13 +375,40 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
           <StatGrid className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <StatCard label={t('reportsPage.kpiTotalExpenses')} value={formatFcfa(view.total)} icon={Wallet} lowerIsBetter accent="amber" />
             <StatCard label={t('reportsPage.kpiMissions')} value={String(view.missionCount)} icon={Truck} />
-            <StatCard label={t('reportsPage.kpiRevenue')} value={formatFcfa(view.revenue)} icon={Banknote} accent="green" />
             <StatCard label={t('reportsPage.kpiDistance')} value={`${formatNumber(view.km)} km`} icon={Route} accent="slate" />
-            <StatCard label={t('reportsPage.kpiExpensePerKm')} value={view.perKm == null ? '—' : formatFcfa(view.perKm)} icon={Gauge} lowerIsBetter accent="slate" />
-            <StatCard label={t('reportsPage.kpiDowntime')} value={`${formatNumber(view.downtime)} ${t('reportsPage.daysUnit')}`} icon={Wrench} lowerIsBetter accent="red" />
             <StatCard label={t('reportsPage.kpiTestFuel')} value={formatLiters(view.testFuel)} icon={Fuel} accent="slate" />
-            <StatCard label={t('reportsPage.kpiMargin')} value={formatFcfa(view.margin)} icon={TrendingUp} accent={view.margin < 0 ? 'red' : 'green'} />
           </StatGrid>
+
+          {/* Temps en panne de chaque vehicule de la selection (tous les vehicules si aucun n'est choisi) */}
+          {data && data.vehicles.length > 0 && (
+            <div>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {t('reportsPage.downtimeByVehicle')}
+              </h3>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-slate-500 dark:text-slate-400">
+                    <th className="py-1.5 font-medium">{t('compliancePage.colVehicle')}</th>
+                    <th className="py-1.5 text-right font-medium">{t('reportsPage.kpiDowntime')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...data.vehicles].sort((a, b) => b.downtimeDays - a.downtimeDays).map((v) => (
+                    <tr key={v.vehicleId} className="border-t border-surface-border dark:border-slate-800">
+                      <td className="py-2 text-slate-700 dark:text-slate-300">{v.registrationNumber}</td>
+                      <td className={`tabular py-2 text-right ${v.downtimeDays > 0 ? 'font-medium text-red-600 dark:text-red-400' : ''}`}>
+                        {v.downtimeDays} {t('reportsPage.daysUnit')}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="border-t-2 border-surface-border font-semibold dark:border-slate-700">
+                    <td className="py-2">{t('reportsPage.colTotal')}</td>
+                    <td className="tabular py-2 text-right">{view.downtime} {t('reportsPage.daysUnit')}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
 
           <div className="grid gap-5 lg:grid-cols-2">
             <div>

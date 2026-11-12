@@ -952,8 +952,12 @@ export interface OilPurchaseEntry {
 export interface OilDistributionEntry {
   id: number;
   date: string;
-  vehicleId: number;
+  /** Absent pour un vehicule hors flotte. */
+  vehicleId: number | null;
+  /** Immatriculation du camion, ou celle saisie pour un vehicule hors flotte. */
   registrationNumber: string;
+  external: boolean;
+  cityId: number | null;
   cityName: string | null;
   recipientName: string | null;
   quantityLiters: number;

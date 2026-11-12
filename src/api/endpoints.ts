@@ -315,6 +315,9 @@ export const adminApi = {
   createAgency: (payload: CreateAgencyRequest) =>
     api.post<Agency>(`${V1}/agencies`, payload).then((r) => r.data),
 
+  /** Supprime un site : il n'est plus propose dans les formulaires (desactivation cote serveur). */
+  deleteAgency: (id: number) => api.delete(`${V1}/agencies/${id}`),
+
   cities: () => api.get<City[]>(`${V1}/cities/active`).then((r) => r.data),
 
   createCity: (payload: CreateCityRequest) =>
@@ -347,10 +350,10 @@ export const oilApi = {
   updatePurchase: (id: number, payload: { purchaseDate: string; quantityLiters: number; note?: string; cityId?: number }) =>
     api.put<OilSummary>(`${V1}/oil/purchases/${id}`, payload).then((r) => r.data),
 
-  distribute: (payload: { vehicleId: number; distributionDate: string; quantityLiters: number; recipientName?: string; note?: string }) =>
+  distribute: (payload: { vehicleId?: number; externalPlate?: string; cityId?: number; distributionDate: string; quantityLiters: number; recipientName?: string; note?: string }) =>
     api.post<OilSummary>(`${V1}/oil/distributions`, payload).then((r) => r.data),
 
-  updateDistribution: (id: number, payload: { vehicleId: number; distributionDate: string; quantityLiters: number; recipientName?: string; note?: string }) =>
+  updateDistribution: (id: number, payload: { vehicleId?: number; externalPlate?: string; cityId?: number; distributionDate: string; quantityLiters: number; recipientName?: string; note?: string }) =>
     api.put<OilSummary>(`${V1}/oil/distributions/${id}`, payload).then((r) => r.data),
 };
 

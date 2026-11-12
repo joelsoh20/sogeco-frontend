@@ -10,6 +10,7 @@ import { EditUserDrawer } from '@/components/admin/EditUserDrawer';
 import { SetUserPasswordModal } from '@/components/admin/SetUserPasswordModal';
 import { ChangeMyPasswordModal } from '@/components/layout/ChangeMyPasswordModal';
 import { CreateInsurerDrawer } from '@/components/settings/CreateInsurerDrawer';
+import { CreateAgencyDrawer } from '@/components/settings/CreateAgencyDrawer';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
 import { DataTable } from '@/components/ui/DataTable';
@@ -41,6 +42,7 @@ export function SettingsPage() {
   const [page, setPage] = useState(0);
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createInsurerOpen, setCreateInsurerOpen] = useState(false);
+  const [createAgencyOpen, setCreateAgencyOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [passwordTarget, setPasswordTarget] = useState<User | null>(null);
@@ -50,6 +52,17 @@ export function SettingsPage() {
   const users = useQuery({ queryKey: ['admin', 'users', page], queryFn: () => adminApi.users(page, 20) });
   const roles = useQuery({ queryKey: ['admin', 'roles'], queryFn: adminApi.roles });
   const agencies = useQuery({ queryKey: ['admin', 'agencies'], queryFn: adminApi.agencies });
+  const deleteAgency = useMutation({
+    mutationFn: (id: number) => adminApi.deleteAgency(id),
+    onSuccess: () => {
+      toast.success(t('settingsPage.agencyDeleted'));
+      queryClient.invalidateQueries({ queryKey: ['admin', 'agencies'] });
+    },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+  const confirmDeleteAgency = (agency: { id: number; name: string }) => {
+    if (window.confirm(t('settingsPage.confirmDeleteAgency', { name: agency.name }))) deleteAgency.mutate(agency.id);
+  };
   const cities = useQuery({ queryKey: ['admin', 'cities'], queryFn: adminApi.cities });
   const rules = useQuery({ queryKey: ['admin', 'alertRules'], queryFn: adminApi.alertRules });
   const vehicleStats = useQuery({ queryKey: ['vehicles', 'stats'], queryFn: vehicleApi.stats });
@@ -182,14 +195,22 @@ export function SettingsPage() {
                       <p className="truncate font-medium text-slate-800 dark:text-slate-200">{a.name}</p>
                       <p className="truncate text-xs text-slate-500 dark:text-slate-400">{a.cityName} · {a.siteType}</p>
                     </div>
-                    <span className={a.active ? 'shrink-0 text-xs text-emerald-600' : 'shrink-0 text-xs text-slate-500'}>
-                      {a.active ? t('settingsPage.statusActive') : t('settingsPage.statusInactive')}
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className={a.active ? 'text-xs text-emerald-600' : 'text-xs text-slate-500'}>
+                        {a.active ? t('settingsPage.statusActive') : t('settingsPage.statusInactive')}
+                      </span>
+                      <button type="button" onClick={() => confirmDeleteAgency(a)} disabled={deleteAgency.isPending}
+                        aria-label={t('settingsPage.deleteAgency')} title={t('settingsPage.deleteAgency')}
+                        className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10">
+                        <Trash2 size={14} />
+                      </button>
                     </span>
                   </li>
                 ))}
               </ul>
             )}
-            <button onClick={() => setTab('sites')} className="btn-ghost mt-4 w-full justify-center">
+            <button onClick={() => setCreateAgencyOpen(true)} className="btn-ghost mt-4 w-full justify-center">
+              <Plus size={14} />
               {t('settingsPage.manageAgencies')}
               <ArrowRight size={14} />
             </button>
@@ -363,8 +384,12 @@ export function SettingsPage() {
         {tab === 'sites' && (
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="card overflow-hidden">
-              <div className="border-b border-surface-border px-5 py-4">
+              <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
                 <h2 className="font-semibold text-slate-900">{t('settingsPage.sites')}</h2>
+                <button onClick={() => setCreateAgencyOpen(true)} className="btn-primary px-3 py-1.5 text-xs">
+                  <Plus size={14} />
+                  {t('settingsPage.addAgency')}
+                </button>
               </div>
               <table className="w-full">
                 <thead className="bg-slate-50">
@@ -373,6 +398,7 @@ export function SettingsPage() {
                     <th className="table-header">{t('settingsPage.colName')}</th>
                     <th className="table-header">{t('reportsPage.colCity')}</th>
                     <th className="table-header">{t('settingsPage.colType')}</th>
+                    <th className="table-header" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-border">
@@ -382,6 +408,13 @@ export function SettingsPage() {
                       <td className="table-cell">{agency.name}</td>
                       <td className="table-cell">{agency.cityName}</td>
                       <td className="table-cell text-slate-500">{agency.siteType}</td>
+                      <td className="table-cell text-right">
+                        <button type="button" onClick={() => confirmDeleteAgency(agency)} disabled={deleteAgency.isPending}
+                          aria-label={t('settingsPage.deleteAgency')} title={t('settingsPage.deleteAgency')}
+                          className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600">
+                          <Trash2 size={15} />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -563,6 +596,7 @@ export function SettingsPage() {
 
       <CreateUserDrawer open={createUserOpen} onClose={() => setCreateUserOpen(false)} />
       <EditUserDrawer user={editingUser} onClose={() => setEditingUser(null)} />
+      <CreateAgencyDrawer open={createAgencyOpen} onClose={() => setCreateAgencyOpen(false)} />
       <CreateInsurerDrawer open={createInsurerOpen} onClose={() => setCreateInsurerOpen(false)} />
       <ChangeMyPasswordModal open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} />
       <SetUserPasswordModal user={passwordTarget} onClose={() => setPasswordTarget(null)} />
