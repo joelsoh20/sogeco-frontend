@@ -1227,6 +1227,8 @@
   },
 
   "missionForm": {
+    "searchPlaceIn": "Search a place in {{city}}",
+    "chooseCityFirst": "Choose the city first",
     "searchPlace": "Search a place (e.g. Bonaberi, Mboppi market)",
     "searching": "Searching…",
     "noSearchResult": "No place found: check the spelling or pick it on the map.",

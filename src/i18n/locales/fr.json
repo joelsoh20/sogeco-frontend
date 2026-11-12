@@ -1224,6 +1224,8 @@
   },
 
   "missionForm": {
+    "searchPlaceIn": "Rechercher un lieu à {{city}}",
+    "chooseCityFirst": "Choisissez d’abord la ville",
     "searchPlace": "Rechercher un lieu (ex. Bonabéri, marché Mboppi)",
     "searching": "Recherche…",
     "noSearchResult": "Aucun lieu trouvé : vérifiez l’orthographe ou choisissez sur la carte.",

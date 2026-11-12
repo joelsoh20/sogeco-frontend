@@ -356,8 +356,11 @@ export const oilApi = {
 
 export const geocodingApi = {
   /** Propositions de lieux du Cameroun pour un texte saisi (autocompletion). */
-  search: (q: string) =>
-    api.get<PlaceSuggestion[]>(`${V1}/geocoding/search`, { params: { q } }).then((r) => r.data),
+  /** scope : restreint la recherche a une ville (et sa region) — mission en ville. */
+  search: (q: string, scope?: { city?: string; region?: string | null; lat?: number | null; lng?: number | null }) =>
+    api.get<PlaceSuggestion[]>(`${V1}/geocoding/search`, {
+      params: { q, city: scope?.city, region: scope?.region ?? undefined, lat: scope?.lat ?? undefined, lng: scope?.lng ?? undefined },
+    }).then((r) => r.data),
 
   /** null si aucun lieu connu pres de ce point (204). */
   reverse: (lat: number, lng: number) =>

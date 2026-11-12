@@ -522,9 +522,32 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
           </>
         ) : (
           <>
+            <div>
+              <label className="label">{t('missionAutomationForm.city')}</label>
+              <select
+                className="input"
+                {...register('originCityId', {
+                  required: t('missionForm.requiredForLocal'),
+                  onChange: () => {
+                    setValue('agencyId', '');
+                    setValue('destinationAgencyId', '');
+                    setValue('originQuartierId', '');
+                    setValue('destinationQuartierId', '');
+                    setValue('vehicleId', '');
+                  },
+                })}
+              >
+                <option value="">{t('common.selectPlaceholder')}</option>
+                {localCities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              {errors.originCityId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.originCityId.message}</p>}
+            </div>
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <PlaceSearchField
                 label={t('missionAutomationForm.departureSite')}
+                scope={originCityObj ? { city: originCityObj.name, region: originCityObj.region, lat: originCityObj.latitude, lng: originCityObj.longitude } : undefined}
+                disabledHint={originCityObj ? undefined : t('missionForm.chooseCityFirst')}
                 value={originAgencyObj?.name ?? originQuartierObj?.name}
                 onSelect={(p) => handleSearchPick(p, 'origin')}
                 onClear={() => { setValue('agencyId', ''); setValue('originQuartierId', '', { shouldValidate: true }); }}
@@ -534,6 +557,8 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
               <input type="hidden" {...register('originQuartierId')} />
               <PlaceSearchField
                 label={t('missionDetail.arrivalSite')}
+                scope={originCityObj ? { city: originCityObj.name, region: originCityObj.region, lat: originCityObj.latitude, lng: originCityObj.longitude } : undefined}
+                disabledHint={originCityObj ? undefined : t('missionForm.chooseCityFirst')}
                 value={destAgencyObj?.name ?? destQuartierObj?.name}
                 onSelect={(p) => handleSearchPick(p, 'destination')}
                 onClear={() => { setValue('destinationAgencyId', ''); setValue('destinationQuartierId', '', { shouldValidate: true }); }}
@@ -581,26 +606,6 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
               </div>
             )}
 
-            <div>
-              <label className="label">{t('missionAutomationForm.city')}</label>
-              <select
-                className="input"
-                {...register('originCityId', {
-                  required: t('missionForm.requiredForLocal'),
-                  onChange: () => {
-                    setValue('agencyId', '');
-                    setValue('destinationAgencyId', '');
-                    setValue('originQuartierId', '');
-                    setValue('destinationQuartierId', '');
-                    setValue('vehicleId', '');
-                  },
-                })}
-              >
-                <option value="">{t('common.selectPlaceholder')}</option>
-                {localCities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-              {errors.originCityId && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.originCityId.message}</p>}
-            </div>
 
           </>
         )}

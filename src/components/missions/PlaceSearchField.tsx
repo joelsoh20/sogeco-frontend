@@ -13,6 +13,10 @@ interface PlaceSearchFieldProps {
   onSelect: (place: PlaceSuggestion) => void | Promise<void>;
   onClear: () => void;
   error?: string;
+  /** Ville (et region) dans lesquelles chercher : la recherche reste limitee a cette zone. */
+  scope?: { city: string; region: string | null; lat: number | null; lng: number | null };
+  /** Recherche desactivee (ex. ville pas encore choisie), avec le texte d'invite a afficher. */
+  disabledHint?: string;
 }
 
 /**
@@ -21,7 +25,7 @@ interface PlaceSearchFieldProps {
  * une proposition, et le lieu est selectionne — cree dans le referentiel s'il n'y figure
  * pas encore. La valeur reelle reste portee par les champs caches du formulaire parent.
  */
-export function PlaceSearchField({ label, value, placeholder, onSelect, onClear, error }: PlaceSearchFieldProps) {
+export function PlaceSearchField({ label, value, placeholder, onSelect, onClear, error, scope, disabledHint }: PlaceSearchFieldProps) {
   const { t } = useTranslation();
   const [text, setText] = useState('');
   const [debounced, setDebounced] = useState('');
@@ -44,9 +48,9 @@ export function PlaceSearchField({ label, value, placeholder, onSelect, onClear,
   }, []);
 
   const search = useQuery({
-    queryKey: ['geocoding', 'search', debounced],
-    queryFn: () => geocodingApi.search(debounced),
-    enabled: debounced.length >= 3,
+    queryKey: ['geocoding', 'search', debounced, scope?.city ?? '', scope?.region ?? ''],
+    queryFn: () => geocodingApi.search(debounced, scope),
+    enabled: debounced.length >= 3 && !disabledHint,
     staleTime: 10 * 60 * 1000,
   });
 
@@ -79,7 +83,8 @@ export function PlaceSearchField({ label, value, placeholder, onSelect, onClear,
           {picking ? <Loader2 size={15} className="shrink-0 animate-spin text-slate-400" /> : <Search size={15} className="shrink-0 text-slate-400" />}
           <input
             className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate-400"
-            placeholder={placeholder ?? t('missionForm.searchPlace')}
+            placeholder={disabledHint ?? placeholder ?? (scope ? t('missionForm.searchPlaceIn', { city: scope.city }) : t('missionForm.searchPlace'))}
+            disabled={Boolean(disabledHint)}
             value={text}
             onChange={(e) => { setText(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
