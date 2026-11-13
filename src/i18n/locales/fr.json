@@ -543,6 +543,11 @@
     "colProgress": "Avancement"
   },
 
+  "install": {
+    "prompt": "Installez l'application sur cet appareil pour y accéder comme une application et recevoir les alertes même fermée.",
+    "action": "Installer",
+    "iosHint": "Sur iPhone/iPad : touchez Partager puis « Sur l'écran d'accueil » pour installer l'application et recevoir les alertes."
+  },
   "alertNotifications": {
     "prompt": "Activez les notifications pour être averti des nouvelles alertes, même lorsque cet onglet est en arrière-plan.",
     "enable": "Activer",

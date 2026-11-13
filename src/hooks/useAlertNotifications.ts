@@ -1,9 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { alertApi } from '@/api/endpoints';
 import { toast } from '@/store/toastStore';
+import { ensurePushSubscription, showSystemNotification } from '@/lib/push';
 import { useStompSubscription } from '@/hooks/useWebSocket';
 import type { Alert } from '@/types/api';
 
@@ -46,7 +46,6 @@ function beep(strong: boolean) {
  */
 export function useAlertNotifications(enabled: boolean) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [permission, setPermission] = useState<NotificationPermissionState>(currentPermission());
   // Une meme alerte est re-diffusee a chaque nouvelle occurrence : une notification par (id, occurrences).
@@ -54,8 +53,15 @@ export function useAlertNotifications(enabled: boolean) {
 
   const requestPermission = useCallback(async () => {
     if (typeof Notification === 'undefined') return;
-    setPermission(await Notification.requestPermission());
+    const result = await Notification.requestPermission();
+    setPermission(result);
+    if (result === 'granted') void ensurePushSubscription();
   }, []);
+
+  // Autorisation deja donnee : on (re)rattache cet appareil au compte pour recevoir le push navigateur ferme.
+  useEffect(() => {
+    if (enabled && permission === 'granted') void ensurePushSubscription();
+  }, [enabled, permission]);
 
   useStompSubscription<Alert>('/topic/alerts', async (payload) => {
     queryClient.invalidateQueries({ queryKey: ['alerts'] });
@@ -83,17 +89,12 @@ export function useAlertNotifications(enabled: boolean) {
     }
 
     if (permission === 'granted' && !document.hasFocus()) {
-      const n = new Notification(title, {
+      void showSystemNotification(title, {
         body,
         tag: `alert-${alert.id}`, // une seule notification par alerte, mise a jour plutot que dupliquee
-        icon: '/logo.jpeg',
         requireInteraction: alert.level === 'CRITIQUE',
+        url: '/alertes',
       });
-      n.onclick = () => {
-        window.focus();
-        navigate('/alertes');
-        n.close();
-      };
     } else {
       toast.info(body ? `${title} — ${body}` : title);
     }

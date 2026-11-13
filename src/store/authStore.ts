@@ -51,8 +51,12 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user }),
 
-      logout: () =>
-        set({ accessToken: null, refreshToken: null, user: null }),
+      logout: () => {
+        // L'appareil ne doit plus recevoir les alertes de ce compte apres la deconnexion.
+        const token = get().accessToken;
+        import('@/lib/push').then((m) => m.unsubscribeDevice(token));
+        set({ accessToken: null, refreshToken: null, user: null });
+      },
 
       // Les permissions viennent du jeton : l'interface masque ce que
       // l'utilisateur ne peut pas faire, le backend le refuse de toute

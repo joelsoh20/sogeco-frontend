@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { MotionConfig } from 'motion/react';
 import App from './App';
+import { registerServiceWorker } from './lib/push';
 import './i18n/config';
 // Import explicite et en tete : ce module pose la classe "dark" sur
 // <html> des son evaluation, avant meme le premier rendu React. Sans
@@ -11,6 +12,8 @@ import './i18n/config';
 // quelqu'un ayant choisi le sombre.
 import './store/themeStore';
 import './index.css';
+
+registerServiceWorker();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

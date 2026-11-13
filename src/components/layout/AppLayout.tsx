@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Sidebar } from './Sidebar';
 import { ToastStack } from '@/components/ui/Toast';
 import { NotificationPrompt } from './NotificationPrompt';
+import { InstallPrompt } from './InstallPrompt';
 import { useAlertNotifications } from '@/hooks/useAlertNotifications';
 import { alertApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/authStore';
@@ -50,6 +51,7 @@ export function AppLayout() {
         onClose={() => setSidebarOpen(false)}
       />
       <div className="flex flex-1 flex-col overflow-hidden">
+        <InstallPrompt />
         {canReadAlerts && <NotificationPrompt permission={permission} onEnable={requestPermission} />}
         <Outlet
           context={{

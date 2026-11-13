@@ -546,6 +546,11 @@
     "colProgress": "Progress"
   },
 
+  "install": {
+    "prompt": "Install the app on this device to use it like a native app and receive alerts even when closed.",
+    "action": "Install",
+    "iosHint": "On iPhone/iPad: tap Share then “Add to Home Screen” to install the app and receive alerts."
+  },
   "alertNotifications": {
     "prompt": "Turn on notifications to be told about new alerts, even when this tab is in the background.",
     "enable": "Turn on",
