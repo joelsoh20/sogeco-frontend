@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Building2, CheckCircle2, Clock, Hourglass, MapPin, Package, Plus, Repeat, Search, XCircle } from 'lucide-react';
+import { Building2, CheckCircle2, Clock, Hourglass, Package, Plus, Repeat, Search, XCircle } from 'lucide-react';
 import { PageShell } from '@/components/layout/PageShell';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
@@ -13,8 +13,6 @@ import { MissionDetailPanel } from '@/components/missions/MissionDetailPanel';
 import { CreateMissionDrawer } from '@/components/missions/CreateMissionDrawer';
 import { MissionAutomationListDrawer } from '@/components/missions/MissionAutomationListDrawer';
 import { CreateClientDrawer } from '@/components/clients/CreateClientDrawer';
-import { CreateAgencyDrawer } from '@/components/settings/CreateAgencyDrawer';
-import { CreatePositionDrawer } from '@/components/settings/CreatePositionDrawer';
 import { ProgressBar } from '@/components/missions/ProgressBar';
 import { LoadingPanel } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -31,14 +29,10 @@ export function MissionsPage() {
   const { t } = useTranslation();
   const canCreate = useAuthStore((state) => state.hasPermission('MISSION_CREATE'));
   const canManageClients = useAuthStore((state) => state.hasPermission('CLIENT_MANAGE'));
-  const canManageAgencies = useAuthStore((state) => state.hasPermission('AGENCY_MANAGE'));
-  const canManageCities = useAuthStore((state) => state.hasPermission('CITY_MANAGE'));
   const [page, setPage] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [automationsOpen, setAutomationsOpen] = useState(false);
   const [createClientOpen, setCreateClientOpen] = useState(false);
-  const [createAgencyOpen, setCreateAgencyOpen] = useState(false);
-  const [createPositionOpen, setCreatePositionOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<MissionStatus | ''>('');
@@ -140,18 +134,6 @@ export function MissionsPage() {
           </select>
 
           <div className="ml-auto flex gap-2">
-            {canManageCities && (
-              <button onClick={() => setCreatePositionOpen(true)} className="btn-ghost">
-                <MapPin size={16} />
-                {t('missionsPage.newDeliveryPoint')}
-              </button>
-            )}
-            {canManageAgencies && (
-              <button onClick={() => setCreateAgencyOpen(true)} className="btn-ghost">
-                <Building2 size={16} />
-                {t('missionsPage.newSite')}
-              </button>
-            )}
             {canManageClients && (
               <button onClick={() => setCreateClientOpen(true)} className="btn-ghost">
                 <Building2 size={16} />
@@ -216,8 +198,6 @@ export function MissionsPage() {
       <CreateMissionDrawer open={createOpen} onClose={() => setCreateOpen(false)} />
       <MissionAutomationListDrawer open={automationsOpen} onClose={() => setAutomationsOpen(false)} canCreate={canCreate} />
       <CreateClientDrawer open={createClientOpen} onClose={() => setCreateClientOpen(false)} />
-      <CreateAgencyDrawer open={createAgencyOpen} onClose={() => setCreateAgencyOpen(false)} />
-      <CreatePositionDrawer open={createPositionOpen} onClose={() => setCreatePositionOpen(false)} />
     </PageShell>
   );
 }

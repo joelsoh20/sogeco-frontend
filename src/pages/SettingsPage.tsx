@@ -11,6 +11,7 @@ import { SetUserPasswordModal } from '@/components/admin/SetUserPasswordModal';
 import { ChangeMyPasswordModal } from '@/components/layout/ChangeMyPasswordModal';
 import { CreateInsurerDrawer } from '@/components/settings/CreateInsurerDrawer';
 import { CreateAgencyDrawer } from '@/components/settings/CreateAgencyDrawer';
+import { EditAlertRuleDrawer } from '@/components/settings/EditAlertRuleDrawer';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatGrid } from '@/components/ui/StatGrid';
 import { DataTable } from '@/components/ui/DataTable';
@@ -43,6 +44,7 @@ export function SettingsPage() {
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [createInsurerOpen, setCreateInsurerOpen] = useState(false);
   const [createAgencyOpen, setCreateAgencyOpen] = useState(false);
+  const [editingRule, setEditingRule] = useState<AlertRule | null>(null);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [passwordTarget, setPasswordTarget] = useState<User | null>(null);
@@ -587,6 +589,16 @@ export function SettingsPage() {
                       </button>
                     ),
                   },
+                  {
+                    header: '',
+                    accessor: (r) => (
+                      <button onClick={() => setEditingRule(r)} className="btn-ghost px-2.5 py-1 text-xs">
+                        <Pencil size={13} />
+                        {t('settingsPage.editRule')}
+                      </button>
+                    ),
+                    align: 'right',
+                  },
                 ]}
               />
             </>
@@ -596,6 +608,7 @@ export function SettingsPage() {
 
       <CreateUserDrawer open={createUserOpen} onClose={() => setCreateUserOpen(false)} />
       <EditUserDrawer user={editingUser} onClose={() => setEditingUser(null)} />
+      <EditAlertRuleDrawer rule={editingRule} onClose={() => setEditingRule(null)} />
       <CreateAgencyDrawer open={createAgencyOpen} onClose={() => setCreateAgencyOpen(false)} />
       <CreateInsurerDrawer open={createInsurerOpen} onClose={() => setCreateInsurerOpen(false)} />
       <ChangeMyPasswordModal open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} />
