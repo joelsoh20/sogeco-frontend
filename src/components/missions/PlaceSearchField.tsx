@@ -14,7 +14,7 @@ interface PlaceSearchFieldProps {
   onClear: () => void;
   error?: string;
   /** Ville (et region) dans lesquelles chercher : la recherche reste limitee a cette zone. */
-  scope?: { city: string; region: string | null; lat: number | null; lng: number | null };
+  scope?: { city?: string; region?: string | null; lat?: number | null; lng?: number | null };
   /** Recherche desactivee (ex. ville pas encore choisie), avec le texte d'invite a afficher. */
   disabledHint?: string;
 }
