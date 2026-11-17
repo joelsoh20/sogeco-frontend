@@ -140,6 +140,9 @@ export function MissionDetailPanel({ missionId }: { missionId: number }) {
         <DetailRow label={t('missionDetail.service')} value={mission.serviceTypeLabel} />
         {mission.agencyName && <DetailRow label={t('missionAutomationForm.departureSite')} value={mission.agencyName} />}
         {mission.destinationAgencyName && <DetailRow label={t('missionDetail.arrivalSite')} value={mission.destinationAgencyName} />}
+        {mission.waypoints?.length > 0 && (
+          <DetailRow label={t('missionDetail.extraStops')} value={mission.waypoints.map((w) => w.label).join(' → ')} />
+        )}
         <DetailRow label={t('compliancePage.colVehicle')} value={mission.registrationNumber} />
         <DetailRow
           label={t('driversPage.colDriver')}

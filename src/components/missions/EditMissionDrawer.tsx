@@ -12,6 +12,7 @@ import { formatConsumption, formatKm, formatLiters, formatNumber } from '@/lib/u
 import { MissionRouteMap, type RoutePoint } from './MissionRouteMap';
 import { RegionSelect, SELECTABLE_REGIONS } from './RegionSelect';
 import { PlaceSearchField } from './PlaceSearchField';
+import { ExtraStopsField, type StopDraft } from './ExtraStopsField';
 import type { PlaceSuggestion, City, CreateMissionRequest, MissionDetail } from '@/types/api';
 
 /** Premier candidat avec des coordonnees connues — site plus precis qu'une ville, quartier plus precis qu'une ville. */
@@ -81,10 +82,16 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
   // Regions choisies pour la recherche de lieux : depart (mission en ville ou voyage) et destination (voyage).
   const [originRegion, setOriginRegion] = useState('');
   const [destRegion, setDestRegion] = useState('');
+  // Points de livraison supplementaires : ceux deja enregistres, modifiables (ajout, retrait).
+  const [stops, setStops] = useState<StopDraft[]>([]);
   useEffect(() => {
     setOriginRegion('');
     setDestRegion('');
-  }, [mission.id]);
+    setStops((mission.waypoints ?? []).filter((w) => w.latitude != null && w.longitude != null).map((w) => ({
+      key: w.id,
+      place: { label: w.label, placeName: w.label, cityName: '', latitude: w.latitude as number, longitude: w.longitude as number },
+    })));
+  }, [mission.id, mission.waypoints]);
 
   const selectedServiceTypeId = watch('serviceTypeId');
   const selectedServiceType = serviceTypes.data?.find((s) => String(s.id) === selectedServiceTypeId);
@@ -425,6 +432,9 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
       cargoDescription: values.cargoDescription || undefined,
       cargoWeightKg: values.cargoWeightKg ? Number(values.cargoWeightKg) : undefined,
       missionFeeCost: values.missionFeeCost ? Number(values.missionFeeCost) : undefined,
+      stops: stops.flatMap((st) => st.place
+        ? [{ label: st.place.placeName || st.place.label, latitude: st.place.latitude, longitude: st.place.longitude }]
+        : []),
     });
   };
 
@@ -637,6 +647,16 @@ export function EditMissionDrawer({ open, onClose, mission }: EditMissionDrawerP
 
           </>
         )}
+
+        {/* Livraison a plusieurs points : le « + » ajoute des points de passage apres le depart. */}
+        <ExtraStopsField
+          stops={stops}
+          onChange={setStops}
+          scope={isVoyageHorsVille
+            ? (destRegionValue ? { region: destRegionValue } : undefined)
+            : (originCityObj ? { city: originCityObj.name, region: originCityObj.region, lat: originCityObj.latitude, lng: originCityObj.longitude } : originRegionValue ? { region: originRegionValue } : undefined)}
+          disabledHint={(isVoyageHorsVille ? destRegionValue : originCityObj || originRegionValue) ? undefined : t('missionForm.chooseRegionFirst')}
+        />
 
         {hasEnoughForEstimate && (
           <div className="rounded-lg border border-surface-border bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/50">

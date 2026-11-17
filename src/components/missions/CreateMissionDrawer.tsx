@@ -12,6 +12,7 @@ import { formatConsumption, formatKm, formatLiters, formatNumber } from '@/lib/u
 import { MissionRouteMap, type RoutePoint } from './MissionRouteMap';
 import { RegionSelect, SELECTABLE_REGIONS } from './RegionSelect';
 import { PlaceSearchField } from './PlaceSearchField';
+import { ExtraStopsField, type StopDraft } from './ExtraStopsField';
 import type { PlaceSuggestion, City, CreateMissionRequest } from '@/types/api';
 
 /** Premier candidat avec des coordonnees connues — site plus precis qu'une ville, quartier plus precis qu'une ville. */
@@ -102,6 +103,7 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
   const [showMap, setShowMap] = useState(false);
   // Regions choisies pour la recherche de lieux : depart (mission en ville ou voyage) et destination (voyage).
   const [originRegion, setOriginRegion] = useState('');
+  const [stops, setStops] = useState<StopDraft[]>([]);
   const [destRegion, setDestRegion] = useState('');
 
   useEffect(() => {
@@ -110,6 +112,7 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
       setMapTarget('origin');
       setOriginRegion('');
       setDestRegion('');
+      setStops([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialDriverId]);
@@ -428,6 +431,9 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
       cargoDescription: values.cargoDescription || undefined,
       cargoWeightKg: values.cargoWeightKg ? Number(values.cargoWeightKg) : undefined,
       missionFeeCost: values.missionFeeCost ? Number(values.missionFeeCost) : undefined,
+      stops: stops.flatMap((st) => st.place
+        ? [{ label: st.place.placeName || st.place.label, latitude: st.place.latitude, longitude: st.place.longitude }]
+        : []),
     });
   };
 
@@ -658,6 +664,16 @@ export function CreateMissionDrawer({ open, onClose, initialDriverId, initialDri
 
           </>
         )}
+
+        {/* Livraison a plusieurs points : le « + » ajoute des points de passage apres le depart. */}
+        <ExtraStopsField
+          stops={stops}
+          onChange={setStops}
+          scope={isVoyageHorsVille
+            ? (destRegionValue ? { region: destRegionValue } : undefined)
+            : (originCityObj ? { city: originCityObj.name, region: originCityObj.region, lat: originCityObj.latitude, lng: originCityObj.longitude } : originRegionValue ? { region: originRegionValue } : undefined)}
+          disabledHint={(isVoyageHorsVille ? destRegionValue : originCityObj || originRegionValue) ? undefined : t('missionForm.chooseRegionFirst')}
+        />
 
         {/* Estimation : aide a la saisie, pas une valeur enregistree — voir GET /missions/estimate */}
         {hasEnoughForEstimate && (

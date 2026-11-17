@@ -182,10 +182,10 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
     }
   };
 
-  const downloadMissionsPdf = async () => {
+  const downloadMissionsXlsx = async () => {
     setDownloadingMissions(true);
     try {
-      saveBlob(await reportApi.missionsPdf(period.from, period.to, selected), `missions_${period.from}_${period.to}.pdf`);
+      saveBlob(await reportApi.missionsXlsx(period.from, period.to, selected), `productivite-camions_${period.from}_${period.to}.xlsx`);
     } catch (e) {
       toast.error(errorMessage(e) || t('reportsPage.pdfError'));
     } finally {
@@ -351,7 +351,7 @@ export function VehicleStatsPanel({ year, vehicles }: VehicleStatsPanelProps) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={downloadMissionsPdf} disabled={downloadingMissions || invalidPeriod} className="btn-ghost">
+            <button type="button" onClick={downloadMissionsXlsx} disabled={downloadingMissions || invalidPeriod} className="btn-ghost">
               {downloadingMissions ? <Spinner /> : <ClipboardList size={16} />}
               {t('reportsPage.missionsReport')}
             </button>

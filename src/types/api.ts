@@ -334,6 +334,8 @@ export interface CreateMissionRequest {
   cargoVolumeM3?: number;
   externalReference?: string;
   missionFeeCost?: number;
+  /** Points de livraison supplementaires, dans l'ordre de passage. */
+  stops?: { label: string; latitude: number; longitude: number }[];
 }
 
 export type MissionEstimateSource =

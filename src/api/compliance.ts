@@ -161,9 +161,9 @@ export const reportApi = {
         throw e;
       }),
 
-  /** Rapport PDF des missions terminees des camions choisis (ou de toute la flotte) sur une periode. */
-  missionsPdf: (from: string, to: string, vehicleIds: number[] = []) =>
-    api.get<Blob>(`${V1}/reports/missions/pdf`, { params: { from, to, vehicleIds: vehicleIds.join(',') || undefined }, responseType: 'blob' })
+  /** Fichier Excel du suivi quotidien de la productivite des camions choisis (ou de toute la flotte) sur une periode. */
+  missionsXlsx: (from: string, to: string, vehicleIds: number[] = []) =>
+    api.get<Blob>(`${V1}/reports/missions/xlsx`, { params: { from, to, vehicleIds: vehicleIds.join(',') || undefined }, responseType: 'blob' })
       .then((r) => r.data)
       .catch(async (e) => {
         if (e?.response?.data instanceof Blob) {
